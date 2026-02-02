@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Volktronic Crypto</title>
 
-<!-- FIREBASE -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getDatabase, ref, push, onChildAdded } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
@@ -28,20 +27,19 @@ window.fbOnAdd = onChildAdded;
 body{
   margin:0;min-height:100vh;
   background:
-    radial-gradient(circle at top,#0ff2,transparent 60%),
+    radial-gradient(circle at top,#0ff3,transparent 60%),
     linear-gradient(135deg,#020617,#020b2e);
   color:#fff;
   display:flex;align-items:center;justify-content:center
 }
 .hidden{display:none}
 .card,.container{
-  background:rgba(10,20,50,.95);
+  background:rgba(10,20,50,.92);
+  backdrop-filter:blur(10px);
   box-shadow:0 0 40px #0ff3;
   border-radius:20px
 }
-.card{
-  width:420px;padding:30px;text-align:center
-}
+.card{width:420px;padding:30px;text-align:center}
 .card h1{color:#4deaff}
 input,textarea{
   width:100%;padding:12px;border-radius:10px;
@@ -54,19 +52,12 @@ button{
 }
 .primary{background:#25d9f0;color:#000}
 .secondary{background:#ff77b7}
-.container{
-  width:1100px;padding:25px
-}
-.header{
-  display:flex;justify-content:space-between;
-  align-items:center;margin-bottom:15px;flex-wrap:wrap
-}
+.container{width:1100px;padding:25px}
+.header{display:flex;justify-content:space-between;align-items:center;margin-bottom:15px}
 .header h2{margin:0;color:#4deaff}
-.grid{
-  display:grid;grid-template-columns:1fr 1fr;
-  gap:25px
-}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:25px}
 .section h3{color:#ff9ad5}
+
 .layers{
   display:grid;grid-template-columns:repeat(5,1fr);
   gap:10px;margin-bottom:10px
@@ -81,19 +72,28 @@ button{
   background:linear-gradient(135deg,#00ffd5,#00aaff);
   box-shadow:0 0 15px #00ffd5aa
 }
+
 .messages{
   margin-top:25px;padding:15px;
   background:rgba(0,0,0,.4);
-  border-radius:15px;max-height:220px;
+  border-radius:15px;max-height:230px;
   overflow-y:auto
 }
+
 .msg{
-  background:#020617;
   padding:10px 40px 10px 10px;
   border-radius:10px;
   margin-top:8px;
   position:relative;
+  animation:pop .25s ease;
   word-break:break-word
+}
+.msg.me{
+  background:linear-gradient(135deg,#00ffd5,#00aaff);
+  color:#000
+}
+.msg.other{
+  background:#020617
 }
 .copy{
   position:absolute;
@@ -104,9 +104,14 @@ button{
   border-radius:8px;
   cursor:pointer
 }
+
+@keyframes pop{
+  from{opacity:0;transform:scale(.95)}
+  to{opacity:1;transform:scale(1)}
+}
+
 .footer{text-align:right;font-size:12px;opacity:.6;margin-top:10px}
 
-/* 📱 MOBİL */
 @media(max-width:900px){
   .container{width:95%}
   .grid{grid-template-columns:1fr}
@@ -117,7 +122,6 @@ button{
 
 <body>
 
-<!-- LOGIN -->
 <div class="card" id="login">
   <h1>🔐 Volktronic Crypto</h1>
   <input id="username" placeholder="Kullanıcı adı">
@@ -125,19 +129,13 @@ button{
   <button class="primary" onclick="enterRoom()">Odaya Gir</button>
 </div>
 
-<!-- CHAT -->
 <div class="container hidden" id="chat">
-
   <div class="header">
     <h2>Oda: <span id="roomName"></span></h2>
-    <div>
-      👤 <span id="userName"></span> |
-      <button class="secondary" onclick="location.reload()">Oda Değiştir</button>
-    </div>
+    <div>👤 <span id="userName"></span></div>
   </div>
 
   <div class="grid">
-
     <div class="section">
       <h3>🔒 Şifrele</h3>
       <div class="layers" id="encLayers"></div>
@@ -148,11 +146,10 @@ button{
     <div class="section">
       <h3>🔓 Şifre Çöz</h3>
       <div class="layers" id="decLayers"></div>
-      <textarea id="cipher" placeholder="Şifreli mesaj otomatik gelir"></textarea>
+      <textarea id="cipher"></textarea>
       <button class="secondary" onclick="decrypt()">Çöz</button>
       <div id="result" style="margin-top:8px;color:#7CFF9E"></div>
     </div>
-
   </div>
 
   <div class="messages">
@@ -160,7 +157,7 @@ button{
     <div id="log"></div>
   </div>
 
-  <div class="footer">Volkan Özdemir tarafından geliştirilmiştir</div>
+  <div class="footer">Volkan Özdemir</div>
 </div>
 
 <script>
@@ -170,7 +167,7 @@ const encSel=new Set(), decSel=new Set();
 function enterRoom(){
   USER=username.value.trim();
   ROOM=room.value.trim();
-  if(!USER||!ROOM) return alert("Kullanıcı adı ve oda gerekli");
+  if(!USER||!ROOM) return alert("Bilgiler eksik");
 
   userName.textContent=USER;
   roomName.textContent=ROOM;
@@ -182,15 +179,10 @@ function enterRoom(){
   fbOnAdd(roomRef,snap=>{
     const d=snap.val();
     const div=document.createElement("div");
-    div.className="msg";
-    div.innerHTML=`
-      <b>${d.user}:</b><br>${d.text}
-      <span class="copy">📋</span>
-    `;
-    div.querySelector(".copy").onclick=()=>{
-      navigator.clipboard.writeText(d.text);
-      cipher.value=d.text;
-    };
+    div.className="msg "+(d.user===USER?"me":"other");
+    const t=new Date(d.time).toLocaleTimeString();
+    div.innerHTML=`<b>${d.user}</b> <span style="opacity:.5;font-size:11px">${t}</span><br>${d.text}<span class="copy">📋</span>`;
+    div.querySelector(".copy").onclick=()=>{navigator.clipboard.writeText(d.text);cipher.value=d.text};
     log.appendChild(div);
     log.scrollTop=log.scrollHeight;
   });
@@ -201,10 +193,7 @@ function makeLayers(el,set){
     const d=document.createElement("div");
     d.className="layer";
     d.textContent="Katman "+i;
-    d.onclick=()=>{
-      set.has(i)?set.delete(i):set.add(i);
-      d.classList.toggle("active");
-    };
+    d.onclick=()=>{set.has(i)?set.delete(i):set.add(i);d.classList.toggle("active")};
     el.appendChild(d);
   }
 }
@@ -228,12 +217,10 @@ function removeLayers(t,l){
 
 function encrypt(){
   if(!message.value)return;
-  const e=applyLayers(message.value,encSel);
-  fbPush(roomRef,{user:USER,text:e,time:Date.now()});
+  fbPush(roomRef,{user:USER,text:applyLayers(message.value,encSel),time:Date.now()});
   message.value="";
 }
 function decrypt(){
-  if(!cipher.value)return;
   result.textContent="Çözüm: "+removeLayers(cipher.value,decSel);
 }
 </script>
