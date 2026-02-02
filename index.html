@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<title>Volktronic Crypto</title>
+
+<style>
+*{box-sizing:border-box;font-family:"Segoe UI",sans-serif}
+body{
+  margin:0;min-height:100vh;
+  background:
+    radial-gradient(circle at top,#0ff2,transparent 60%),
+    linear-gradient(135deg,#020617,#020b2e);
+  color:#fff;
+  display:flex;align-items:center;justify-content:center
+}
+.hidden{display:none}
+
+.card{
+  width:420px;padding:30px;border-radius:20px;
+  background:rgba(10,20,50,.95);
+  box-shadow:0 0 40px #0ff3;
+  text-align:center
+}
+.card h1{color:#4deaff;margin-bottom:20px}
+
+input,textarea{
+  width:100%;padding:12px;border-radius:10px;
+  border:none;outline:none;margin-top:10px;font-size:15px
+}
+button{
+  margin-top:15px;padding:12px;width:100%;
+  border:none;border-radius:12px;font-size:16px;
+  cursor:pointer;font-weight:bold
+}
+.primary{background:#25d9f0;color:#000}
+.secondary{background:#ff77b7}
+
+.container{
+  width:1100px;padding:25px;border-radius:20px;
+  background:rgba(10,20,50,.95);
+  box-shadow:0 0 40px #0ff3
+}
+.header{
+  display:flex;justify-content:space-between;align-items:center;
+  margin-bottom:15px
+}
+.header h2{margin:0;color:#4deaff}
+
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:25px}
+
+.section h3{margin:10px 0;color:#ff9ad5}
+
+.layers{
+  display:grid;grid-template-columns:repeat(5,1fr);gap:10px
+}
+.layer{
+  padding:14px;border-radius:12px;
+  background:linear-gradient(135deg,#1e90ff,#00d4ff);
+  cursor:pointer;font-weight:600;
+  transition:.2s;text-align:center
+}
+.layer.active{
+  background:linear-gradient(135deg,#00ffd5,#00aaff);
+  box-shadow:0 0 15px #00ffd5aa
+}
+
+.messages{
+  margin-top:25px;padding:15px;
+  background:rgba(0,0,0,.4);
+  border-radius:15px;max-height:180px;overflow-y:auto
+}
+.footer{text-align:right;font-size:12px;opacity:.6;margin-top:10px}
+</style>
+</head>
+
+<body>
+
+<!-- LOGIN -->
+<div class="card" id="login">
+  <h1>🔐 Volktronic Crypto</h1>
+  <input id="username" placeholder="Kullanıcı adı">
+  <input id="room" placeholder="Oda adı">
+  <button class="primary" onclick="enterRoom()">Odaya Gir</button>
+</div>
+
+<!-- CHAT -->
+<div class="container hidden" id="chat">
+
+  <div class="header">
+    <h2>Oda: <span id="roomName"></span></h2>
+    <div>
+      👤 <span id="userName"></span> |
+      <button class="secondary" onclick="changeRoom()">Oda Değiştir</button>
+    </div>
+  </div>
+
+  <div class="grid">
+
+    <div class="section">
+      <h3>🔒 Şifrele</h3>
+      <div class="layers" id="encLayers"></div>
+      <textarea id="message" placeholder="Mesaj..."></textarea>
+      <button class="primary" onclick="encrypt()">Gönder</button>
+    </div>
+
+    <div class="section">
+      <h3>🔓 Şifre Çöz</h3>
+      <div class="layers" id="decLayers"></div>
+      <textarea id="cipher" placeholder="Şifreli mesaj"></textarea>
+      <button class="secondary" onclick="decrypt()">Çöz</button>
+      <div id="result" style="margin-top:8px;color:#7CFF9E"></div>
+    </div>
+
+  </div>
+
+  <div class="messages">
+    <b>📥 Gelen Mesajlar</b>
+    <div id="log"></div>
+  </div>
+
+  <div class="footer">Volkan Özdemir tarafından geliştirilmiştir</div>
+</div>
+
+<script>
+let USER="", ROOM="";
+const encSel=new Set(), decSel=new Set();
+
+function enterRoom(){
+  USER=username.value.trim();
+  ROOM=room.value.trim();
+  if(!USER||!ROOM) return alert("Kullanıcı adı ve oda gerekli");
+  userName.textContent=USER;
+  roomName.textContent=ROOM;
+  login.classList.add("hidden");
+  chat.classList.remove("hidden");
+}
+
+function changeRoom(){
+  chat.classList.add("hidden");
+  login.classList.remove("hidden");
+  room.value="";
+}
+
+function makeLayers(el,set){
+  for(let i=1;i<=10;i++){
+    const d=document.createElement("div");
+    d.className="layer";
+    d.textContent="Katman "+i;
+    d.onclick=()=>{
+      set.has(i)?set.delete(i):set.add(i);
+      d.classList.toggle("active");
+    };
+    el.appendChild(d);
+  }
+}
+makeLayers(encLayers,encSel);
+makeLayers(decLayers,decSel);
+
+function applyLayers(t,l){
+  let o=t;
+  [...l].sort((a,b)=>a-b).forEach(k=>{
+    o=[...o].map(c=>String.fromCharCode(c.charCodeAt(0)+k)).join("");
+  });
+  return o;
+}
+function removeLayers(t,l){
+  let o=t;
+  [...l].sort((a,b)=>b-a).forEach(k=>{
+    o=[...o].map(c=>String.fromCharCode(c.charCodeAt(0)-k)).join("");
+  });
+  return o;
+}
+
+function encrypt(){
+  if(!message.value)return;
+  const e=applyLayers(message.value,encSel);
+  log.innerHTML+=`<div><b>${USER}:</b> ${e}</div>`;
+  message.value="";
+}
+function decrypt(){
+  if(!cipher.value)return;
+  result.textContent="Çözüm: "+removeLayers(cipher.value,decSel);
+}
+</script>
+
+</body>
+</html>
