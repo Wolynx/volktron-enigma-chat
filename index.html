@@ -1,144 +1,147 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-<meta charset="UTF-8">
-<title>Volktronic Crypto</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Volktron Enigma Chat</title>
 
-<!-- FIREBASE -->
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getDatabase, ref, push, onChildAdded } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
 
-const firebaseConfig = {
-  databaseURL: "https://volktron-chat-default-rtdb.firebaseio.com/"
-};
+  <style>
+    body {
+      font-family: Inter, sans-serif;
+      background: #0f172a;
+      color: #e5e7eb;
+      margin: 0;
+      padding: 0;
+    }
 
-const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
+    .container {
+      max-width: 520px;
+      margin: auto;
+      padding: 16px;
+    }
 
-window.db = db;
-window.fbRef = ref;
-window.fbPush = push;
-window.fbOnAdd = onChildAdded;
-</script>
+    h2 {
+      text-align: center;
+      margin-bottom: 12px;
+    }
 
-<style>
-*{box-sizing:border-box;font-family:"Segoe UI",sans-serif}
-body{
-  margin:0;min-height:100vh;
-  background:
-    radial-gradient(circle at top,#0ff2,transparent 60%),
-    linear-gradient(135deg,#020617,#020b2e);
-  color:#fff;
-  display:flex;align-items:center;justify-content:center
-}
-.hidden{display:none}
-.card{
-  width:420px;padding:30px;border-radius:20px;
-  background:rgba(10,20,50,.95);
-  box-shadow:0 0 40px #0ff3;
-  text-align:center
-}
-.card h1{color:#4deaff;margin-bottom:20px}
-input,textarea{
-  width:100%;padding:12px;border-radius:10px;
-  border:none;outline:none;margin-top:10px;font-size:15px
-}
-button{
-  margin-top:15px;padding:12px;width:100%;
-  border:none;border-radius:12px;font-size:16px;
-  cursor:pointer;font-weight:bold
-}
-.primary{background:#25d9f0;color:#000}
-.secondary{background:#ff77b7}
-.container{
-  width:1100px;padding:25px;border-radius:20px;
-  background:rgba(10,20,50,.95);
-  box-shadow:0 0 40px #0ff3
-}
-.header{display:flex;justify-content:space-between;align-items:center;margin-bottom:15px}
-.header h2{margin:0;color:#4deaff}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:25px}
-.section h3{margin:10px 0;color:#ff9ad5}
-.layers{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
-.layer{
-  padding:14px;border-radius:12px;
-  background:linear-gradient(135deg,#1e90ff,#00d4ff);
-  cursor:pointer;font-weight:600;
-  transition:.2s;text-align:center
-}
-.layer.active{
-  background:linear-gradient(135deg,#00ffd5,#00aaff);
-  box-shadow:0 0 15px #00ffd5aa
-}
-.messages{
-  margin-top:25px;padding:15px;
-  background:rgba(0,0,0,.4);
-  border-radius:15px;max-height:180px;overflow-y:auto
-}
-.msg{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin-top:6px;
-  font-size:14px;
-}
-.copy{
-  cursor:pointer;
-  font-size:12px;
-  opacity:.6
-}
-.copy:hover{opacity:1;text-decoration:underline}
-.footer{text-align:right;font-size:12px;opacity:.6;margin-top:10px}
-</style>
+    textarea, input, select, button {
+      width: 100%;
+      margin-top: 8px;
+      padding: 10px;
+      border-radius: 10px;
+      border: none;
+      font-size: 15px;
+    }
+
+    textarea {
+      min-height: 90px;
+      resize: vertical;
+    }
+
+    button {
+      background: #2563eb;
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    button:active {
+      transform: scale(0.98);
+    }
+
+    .message {
+      background: #020617;
+      padding: 10px;
+      border-radius: 12px;
+      margin-top: 10px;
+      word-break: break-word;
+      position: relative;
+    }
+
+    .copy-btn {
+      position: absolute;
+      right: 8px;
+      top: 8px;
+      font-size: 13px;
+      background: #334155;
+      padding: 4px 8px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .copy-btn:active {
+      background: #475569;
+    }
+
+    .section {
+      margin-top: 18px;
+    }
+
+    .layers {
+      display: flex;
+      gap: 6px;
+    }
+
+    .layers select {
+      flex: 1;
+    }
+  </style>
 </head>
-
 <body>
 
-<!-- LOGIN -->
-<div class="card" id="login">
-  <h1>🔐 Volktronic Crypto</h1>
-  <input id="username" placeholder="Kullanıcı adı">
-  <input id="room" placeholder="Oda adı">
-  <button class="primary" onclick="enterRoom()">Odaya Gir</button>
-</div>
+<div class="container">
+  <h2>🔐 Enigma Chat</h2>
 
-<!-- CHAT -->
-<div class="container hidden" id="chat">
+  <!-- MESAJ GÖNDER -->
+  <div class="section">
+    <textarea id="plainText" placeholder="Mesajını yaz..."></textarea>
 
-  <div class="header">
-    <h2>Oda: <span id="roomName"></span></h2>
-    <div>
-      👤 <span id="userName"></span> |
-      <button class="secondary" onclick="changeRoom()">Oda Değiştir</button>
-    </div>
-  </div>
+    <div class="layers">
+      <select id="layer1">
+        <option value="caesar">Caesar</option>
+        <option value="base64">Base64</option>
+        <option value="reverse">Reverse</option>
+      </select>
 
-  <div class="grid">
-
-    <div class="section">
-      <h3>🔒 Şifrele</h3>
-      <div class="layers" id="encLayers"></div>
-      <textarea id="message" placeholder="Mesaj..."></textarea>
-      <button class="primary" onclick="encrypt()">Gönder</button>
+      <select id="layer2">
+        <option value="none">Yok</option>
+        <option value="caesar">Caesar</option>
+        <option value="base64">Base64</option>
+        <option value="reverse">Reverse</option>
+      </select>
     </div>
 
-    <div class="section">
-      <h3>🔓 Şifre Çöz</h3>
-      <div class="layers" id="decLayers"></div>
-      <textarea id="cipher" placeholder="Şifreli mesaj buraya otomatik gelir"></textarea>
-      <button class="secondary" onclick="decrypt()">Çöz</button>
-      <div id="result" style="margin-top:8px;color:#7CFF9E"></div>
+    <button onclick="sendEncrypted()">Şifrele & Gönder</button>
+  </div>
+
+  <!-- MESAJLAR -->
+  <div id="messages"></div>
+
+  <!-- ÇÖZÜCÜ -->
+  <div class="section">
+    <textarea id="decryptInput" placeholder="Şifreli mesaj buraya otomatik gelir..."></textarea>
+
+    <div class="layers">
+      <select id="dLayer1">
+        <option value="caesar">Caesar</option>
+        <option value="base64">Base64</option>
+        <option value="reverse">Reverse</option>
+      </select>
+
+      <select id="dLayer2">
+        <option value="none">Yok</option>
+        <option value="caesar">Caesar</option>
+        <option value="base64">Base64</option>
+        <option value="reverse">Reverse</option>
+      </select>
     </div>
 
+    <button onclick="decryptMessage()">Çöz</button>
+    <textarea id="decryptOutput" placeholder="Çözülmüş mesaj..." readonly></textarea>
   </div>
-
-  <div class="messages">
-    <b>📥 Gelen Mesajlar</b>
-    <div id="log"></div>
-  </div>
-
-  <div class="footer">Volkan Özdemir tarafından geliştirilmiştir</div>
 </div>
 
 <script src="crypto.js"></script>
