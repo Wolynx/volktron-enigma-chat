@@ -50,3 +50,7 @@ Herhangi bir kurulum gerekmez.
 1. Repository’i klonla:
    ```bash
    git clone https://github.com/Wolynx/volktron-enigma-chat.git
+
+Benim sitem üzerinden katılmak için:
+```bash   
+https://wolynx.github.io/Volktron-Enigma-Chat/
