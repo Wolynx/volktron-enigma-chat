@@ -1,40 +1,47 @@
-// 🔥 Firebase CDN
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getDatabase, ref, push, onChildAdded } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
-
-// 🔧 Firebase config (BURAYI KENDİ PROJENDEN ALDIN)
-const firebaseConfig = {
-  databaseURL: "https://volktron-chat-default-rtdb.firebaseio.com/"
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
-
-let USER="", ROOM="";
+let USER="", ROOM="", roomRef;
 const encSel=new Set(), decSel=new Set();
 
-// UI
-window.enterRoom = () => {
+function enterRoom(){
   USER=username.value.trim();
   ROOM=room.value.trim();
   if(!USER||!ROOM) return alert("Kullanıcı adı ve oda gerekli");
+
   userName.textContent=USER;
   roomName.textContent=ROOM;
   login.classList.add("hidden");
   chat.classList.remove("hidden");
 
-  const roomRef = ref(db, "rooms/"+ROOM);
-  onChildAdded(roomRef, snap=>{
-    const m=snap.val();
-    log.innerHTML+=`<div><b>${m.user}:</b> ${m.text}</div>`;
+  roomRef = fbRef(db,"rooms/"+ROOM);
+
+  fbOnAdd(roomRef,snap=>{
+    const d=snap.val();
+
+    const row=document.createElement("div");
+    row.className="msg";
+
+    const text=document.createElement("span");
+    text.innerHTML=`<b>${d.user}:</b> ${d.text}`;
+
+    const copy=document.createElement("span");
+    copy.className="copy";
+    copy.textContent="📋 kopyala";
+
+    copy.onclick=()=>{
+      navigator.clipboard.writeText(d.text);
+      cipher.value=d.text;
+      cipher.focus();
+    };
+
+    row.appendChild(text);
+    row.appendChild(copy);
+    log.appendChild(row);
   });
-};
+}
 
-window.changeRoom = () => {
+function changeRoom(){
   location.reload();
-};
+}
 
-// Katman butonları
 function makeLayers(el,set){
   for(let i=1;i<=10;i++){
     const d=document.createElement("div");
@@ -50,7 +57,6 @@ function makeLayers(el,set){
 makeLayers(encLayers,encSel);
 makeLayers(decLayers,decSel);
 
-// Şifreleme
 function applyLayers(t,l){
   let o=t;
   [...l].sort((a,b)=>a-b).forEach(k=>{
@@ -66,20 +72,14 @@ function removeLayers(t,l){
   return o;
 }
 
-// Mesaj gönder
-window.sendMessage = () => {
-  if(!message.value) return;
-  const enc = applyLayers(message.value, encSel);
-  push(ref(db,"rooms/"+ROOM),{
-    user:USER,
-    text:enc,
-    time:Date.now()
-  });
+function encrypt(){
+  if(!message.value)return;
+  const e=applyLayers(message.value,encSel);
+  fbPush(roomRef,{user:USER,text:e,time:Date.now()});
   message.value="";
-};
+}
 
-// Çöz
-window.decrypt = () => {
-  if(!cipher.value) return;
+function decrypt(){
+  if(!cipher.value)return;
   result.textContent="Çözüm: "+removeLayers(cipher.value,decSel);
-};
+}
