@@ -1,52 +1,56 @@
 const enc = new TextEncoder();
 const dec = new TextDecoder();
 
-const b64 = b => btoa(String.fromCharCode(...new Uint8Array(b)));
-const ub64 = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
-
-export async function genKeys(){
-  return crypto.subtle.generateKey(
-    {name:"ECDH", namedCurve:"P-256"},
-    false, ["deriveKey"]
+/* Gizli koddan anahtar üret */
+export async function deriveKey(secret) {
+  const baseKey = await crypto.subtle.importKey(
+    "raw",
+    enc.encode(secret),
+    "PBKDF2",
+    false,
+    ["deriveKey"]
   );
-}
 
-export async function pub(key){
-  return b64(await crypto.subtle.exportKey("raw", key));
-}
-
-export async function importPub(k){
-  return crypto.subtle.importKey(
-    "raw", ub64(k),
-    {name:"ECDH", namedCurve:"P-256"},
-    false, []
-  );
-}
-
-export async function derive(priv, pub, layers){
-  const salt = enc.encode([...layers].sort().join("-"));
   return crypto.subtle.deriveKey(
-    {name:"ECDH", public:pub},
-    priv,
-    {name:"AES-GCM", length:256},
-    false, ["encrypt","decrypt"]
+    {
+      name: "PBKDF2",
+      salt: enc.encode("volktronic-salt"),
+      iterations: 100000,
+      hash: "SHA-256"
+    },
+    baseKey,
+    { name: "AES-GCM", length: 256 },
+    false,
+    ["encrypt", "decrypt"]
   );
 }
 
-export async function encAES(key, txt){
+/* Şifrele */
+export async function encryptMessage(key, text) {
   const iv = crypto.getRandomValues(new Uint8Array(12));
-  const c = await crypto.subtle.encrypt(
-    {name:"AES-GCM", iv},
-    key, enc.encode(txt)
+
+  const cipher = await crypto.subtle.encrypt(
+    { name: "AES-GCM", iv },
+    key,
+    enc.encode(text)
   );
-  return JSON.stringify({iv:b64(iv), d:b64(c)});
+
+  return {
+    cipher: btoa(String.fromCharCode(...new Uint8Array(cipher))),
+    iv: btoa(String.fromCharCode(...iv))
+  };
 }
 
-export async function decAES(key, txt){
-  const o = JSON.parse(txt);
-  const p = await crypto.subtle.decrypt(
-    {name:"AES-GCM", iv:ub64(o.iv)},
-    key, ub64(o.d)
+/* Çöz */
+export async function decryptMessage(key, cipher, iv) {
+  const data = Uint8Array.from(atob(cipher), c => c.charCodeAt(0));
+  const ivArr = Uint8Array.from(atob(iv), c => c.charCodeAt(0));
+
+  const plain = await crypto.subtle.decrypt(
+    { name: "AES-GCM", iv: ivArr },
+    key,
+    data
   );
-  return dec.decode(p);
+
+  return dec.decode(plain);
 }
