@@ -6,21 +6,81 @@
 <title>Volktronic Crypto</title>
 
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getDatabase, ref, push, onChildAdded } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+import { genKeys, pub, importPub, derive, encAES, decAES } from "./crypto-e2ee.js";
 
-const firebaseConfig = {
-  databaseURL: "https://volktron-chat-default-rtdb.firebaseio.com/"
-};
+let USER="", ROOM="", roomRef;
+let myKeys, sharedKey;
+const encSel=new Set(), decSel=new Set();
 
-const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
+async function enterRoom(){
+  USER=username.value.trim();
+  ROOM=room.value.trim();
+  if(!USER||!ROOM) return alert("Bilgiler eksik");
 
-window.db = db;
-window.fbRef = ref;
-window.fbPush = push;
-window.fbOnAdd = onChildAdded;
+  userName.textContent=USER;
+  roomName.textContent=ROOM;
+  login.classList.add("hidden");
+  chat.classList.remove("hidden");
+
+  myKeys = await genKeys();
+  const myPub = await pub(myKeys.publicKey);
+
+  fbPush(fbRef(db,"keys/"+ROOM), {user:USER, key:myPub});
+
+  fbOnAdd(fbRef(db,"keys/"+ROOM), async s=>{
+    const d=s.val();
+    if(d.user!==USER && !sharedKey){
+      const other = await importPub(d.key);
+      sharedKey = await derive(myKeys.privateKey, other, encSel);
+    }
+  });
+
+  roomRef = fbRef(db,"rooms/"+ROOM);
+  fbOnAdd(roomRef,snap=>{
+    const d=snap.val();
+    const div=document.createElement("div");
+    div.className="msg "+(d.user===USER?"me":"other");
+    div.innerHTML=`<b>${d.user}</b><br>${d.text}`;
+    div.onclick=()=>cipher.value=d.text;
+    log.appendChild(div);
+  });
+}
+
+function makeLayers(el,set){
+  for(let i=1;i<=10;i++){
+    const d=document.createElement("div");
+    d.className="layer";
+    d.textContent="Katman "+i;
+    d.onclick=()=>{
+      d.classList.toggle("active");
+      d.classList.contains("active")?set.add(i):set.delete(i);
+    };
+    el.appendChild(d);
+  }
+}
+makeLayers(encLayers,encSel);
+makeLayers(decLayers,decSel);
+
+async function encrypt(){
+  if(!message.value || !sharedKey) return;
+  const c = await encAES(sharedKey, message.value);
+  fbPush(roomRef,{user:USER,text:c,time:Date.now()});
+  message.value="";
+}
+
+async function decrypt(){
+  try{
+    result.textContent="Çözüm: "+await decAES(sharedKey, cipher.value);
+  }catch{
+    result.textContent="❌ Çözülemedi (Yanlış katman / anahtar)";
+  }
+}
+
+window.enterRoom=enterRoom;
+window.encrypt=encrypt;
+window.decrypt=decrypt;
 </script>
+
 
 <style>
 *{box-sizing:border-box;font-family:"Segoe UI",sans-serif}
@@ -227,3 +287,4 @@ function decrypt(){
 
 </body>
 </html>
+
