@@ -25,474 +25,198 @@
             --text-dim: #aaaaaa;
         }
 
-        * {
-            box-sizing: border-box;
-            /* Yalnızca input ve textarealarda seçime izin veriyoruz */
-            user-select: none;
-        }
+        * { box-sizing: border-box; user-select: none; }
 
         body {
-            margin: 0;
-            min-height: 100vh;
-            background-color: var(--bg-dark);
-            color: var(--text-main);
+            margin: 0; min-height: 100vh;
+            background-color: var(--bg-dark); color: var(--text-main);
             font-family: 'Rajdhani', sans-serif;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow-x: hidden;
-            perspective: 1200px;
+            display: flex; align-items: center; justify-content: center;
+            overflow-x: hidden; perspective: 1200px;
         }
 
-        /* =========================================
-           2. ARKAPLAN ANİMASYONU (CANVAS)
-           ========================================= */
         #cyber-canvas {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-            background: radial-gradient(ellipse at bottom, #0d1d31 0%, #0c0d13 100%);
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1; background: radial-gradient(ellipse at bottom, #0d1d31 0%, #0c0d13 100%);
         }
 
-        /* =========================================
-           3. ORTAK KART TASARIMLARI (CAM EFEKTİ)
-           ========================================= */
         .cyber-card {
-            background: var(--glass-bg);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid var(--glass-border);
-            border-radius: 16px;
-            box-shadow: 0 0 40px rgba(0, 243, 255, 0.1);
-            padding: 40px;
+            background: var(--glass-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border); border-radius: 16px;
+            box-shadow: 0 0 40px rgba(0, 243, 255, 0.1); padding: 40px;
             transition: transform 0.1s ease, box-shadow 0.3s ease;
-            transform-style: preserve-3d;
-            animation: fadeIn 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
-            opacity: 0;
+            transform-style: preserve-3d; animation: fadeIn 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; opacity: 0;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(40px) scale(0.95); }
-            to { opacity: 1; transform: translateY(0) scale(1); }
-        }
-
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(40px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
         .hidden { display: none !important; }
 
         /* =========================================
-           4. GİRİŞ EKRANI (LOGIN)
+           2. ÜST MENÜ (KILAVUZ VE DESTEK İÇİN)
            ========================================= */
-        #login {
-            width: 450px;
-            text-align: center;
-            position: relative;
-            z-index: 10;
+        .top-nav {
+            position: fixed; top: 20px; left: 20px; z-index: 100;
+            display: flex; gap: 15px;
         }
-
-        h1 {
-            font-family: 'Orbitron', sans-serif;
-            color: var(--neon-blue);
-            text-shadow: 0 0 15px rgba(0, 243, 255, 0.6);
-            margin: 0 0 10px 0;
-            font-size: 34px;
-            letter-spacing: 2px;
+        .nav-btn {
+            background: rgba(0, 243, 255, 0.1); border: 1px solid var(--neon-blue);
+            color: var(--neon-blue); padding: 10px 20px; border-radius: 8px;
+            font-family: 'Orbitron'; font-size: 12px; cursor: pointer; transition: 0.3s;
+            text-transform: uppercase; font-weight: bold; letter-spacing: 1px;
         }
-
-        h2 {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 20px;
-            margin: 0;
-            color: #fff;
-        }
-
-        h3 {
-            font-family: 'Orbitron', sans-serif;
-            color: var(--neon-blue);
-            font-size: 16px;
-            margin-top: 0;
-            margin-bottom: 20px;
-            text-align: center;
-            border-bottom: 1px solid rgba(0, 243, 255, 0.15);
-            padding-bottom: 10px;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-        }
-
-        .subtitle {
-            color: var(--text-dim);
-            font-size: 14px;
-            letter-spacing: 3px;
-            margin-bottom: 30px;
-            display: block;
-            text-transform: uppercase;
-        }
+        .nav-btn:hover { background: var(--neon-blue); color: #000; box-shadow: 0 0 20px var(--neon-blue); }
 
         /* =========================================
-           5. FORM ELEMANLARI
+           3. MODAL (AÇILIR PENCERE) STİLLERİ
            ========================================= */
-        .input-group {
-            margin-bottom: 15px;
-            position: relative;
+        .modal-backdrop {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8); backdrop-filter: blur(10px);
+            z-index: 999; display: flex; align-items: center; justify-content: center;
+            opacity: 0; pointer-events: none; transition: 0.3s;
         }
+        .modal-backdrop.active { opacity: 1; pointer-events: auto; }
+        
+        .modal-box {
+            background: var(--glass-bg); border: 1px solid var(--neon-blue);
+            border-radius: 12px; width: 600px; max-width: 90%; max-height: 85vh;
+            overflow-y: auto; padding: 30px; box-shadow: 0 0 40px rgba(0,243,255,0.2);
+            transform: scale(0.9); transition: 0.3s; position: relative;
+        }
+        .modal-backdrop.active .modal-box { transform: scale(1); }
+        
+        .modal-box::-webkit-scrollbar { width: 6px; }
+        .modal-box::-webkit-scrollbar-thumb { background: var(--neon-blue); border-radius: 3px; }
 
-        input, textarea, select {
-            width: 100%;
-            padding: 15px;
-            background: rgba(0, 0, 0, 0.5);
-            border: 1px solid rgba(0, 243, 255, 0.3);
-            border-radius: 8px;
-            color: var(--neon-blue);
-            font-family: 'Rajdhani', sans-serif;
-            font-size: 16px;
-            font-weight: 600;
-            outline: none;
-            transition: all 0.3s ease;
-            user-select: text;
+        .close-btn {
+            position: absolute; top: 15px; right: 20px; font-size: 24px; color: var(--neon-pink);
+            cursor: pointer; transition: 0.3s; font-family: 'Orbitron';
         }
+        .close-btn:hover { color: #fff; text-shadow: 0 0 10px var(--neon-pink); }
 
-        input::placeholder, textarea::placeholder {
-            color: rgba(0, 243, 255, 0.3);
-            font-weight: 400;
-        }
-
-        input:focus, textarea:focus, select:focus {
-            border-color: var(--neon-blue);
-            box-shadow: 0 0 20px rgba(0, 243, 255, 0.2);
-            color: #fff;
-            background: rgba(0, 0, 0, 0.7);
-        }
-
-        textarea {
-            min-height: 100px;
-            max-height: 200px;
-            resize: vertical;
-        }
+        .modal-title { font-family: 'Orbitron'; color: var(--neon-blue); border-bottom: 1px solid rgba(0,243,255,0.3); padding-bottom: 10px; margin-top: 0; }
+        .modal-content-text { font-family: 'Rajdhani'; font-size: 15px; color: #ddd; line-height: 1.6; user-select: text; }
+        .modal-content-text h4 { color: var(--neon-green); font-family: 'Orbitron'; margin-bottom: 5px; margin-top: 20px;}
+        .legal-warning { background: rgba(255,0,0,0.1); border-left: 4px solid red; padding: 15px; margin-top: 25px; font-size: 13px; color: #ffaaaa; }
 
         /* =========================================
-           6. BUTON STİLLERİ
+           4. GİRİŞ VE SOHBET ARAYÜZÜ
            ========================================= */
-        button, .file-upload-label {
-            width: 100%;
-            padding: 15px;
-            margin-top: 15px;
-            border: none;
-            border-radius: 8px;
-            font-family: 'Orbitron', sans-serif;
-            font-size: 14px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            text-align: center;
-            display: block;
-        }
+        #login { width: 450px; text-align: center; position: relative; z-index: 10; }
+        h1 { font-family: 'Orbitron'; color: var(--neon-blue); text-shadow: 0 0 15px rgba(0,243,255,0.6); margin: 0 0 10px 0; font-size: 34px; letter-spacing: 2px; }
+        h2 { font-family: 'Orbitron'; font-size: 20px; margin: 0; color: #fff; }
+        h3 { font-family: 'Orbitron'; color: var(--neon-blue); font-size: 16px; margin-top: 0; margin-bottom: 20px; text-align: center; border-bottom: 1px solid rgba(0,243,255,0.15); padding-bottom: 10px; letter-spacing: 1px; text-transform: uppercase; }
+        .subtitle { color: var(--text-dim); font-size: 14px; letter-spacing: 3px; margin-bottom: 30px; display: block; text-transform: uppercase; }
 
-        .primary {
-            background: rgba(0, 243, 255, 0.1);
-            border: 1px solid var(--neon-blue);
-            color: var(--neon-blue);
-        }
+        .input-group { margin-bottom: 15px; position: relative; }
+        input, textarea, select { width: 100%; padding: 15px; background: rgba(0,0,0,0.5); border: 1px solid rgba(0,243,255,0.3); border-radius: 8px; color: var(--neon-blue); font-family: 'Rajdhani'; font-size: 16px; font-weight: 600; outline: none; transition: 0.3s; user-select: text; }
+        input::placeholder, textarea::placeholder { color: rgba(0,243,255,0.3); font-weight: 400; }
+        input:focus, textarea:focus, select:focus { border-color: var(--neon-blue); box-shadow: 0 0 20px rgba(0,243,255,0.2); color: #fff; background: rgba(0,0,0,0.7); }
+        textarea { min-height: 100px; max-height: 200px; resize: vertical; }
 
-        .primary:hover {
-            background: var(--neon-blue);
-            color: #000;
-            box-shadow: 0 0 30px rgba(0, 243, 255, 0.6);
-            transform: translateY(-2px);
-        }
+        button, .file-upload-label { width: 100%; padding: 15px; margin-top: 15px; border: none; border-radius: 8px; font-family: 'Orbitron'; font-size: 14px; font-weight: 700; cursor: pointer; transition: 0.3s; letter-spacing: 1px; text-transform: uppercase; text-align: center; display: block; }
+        .primary { background: rgba(0,243,255,0.1); border: 1px solid var(--neon-blue); color: var(--neon-blue); }
+        .primary:hover { background: var(--neon-blue); color: #000; box-shadow: 0 0 30px rgba(0,243,255,0.6); transform: translateY(-2px); }
+        .secondary { background: rgba(255,0,153,0.1); border: 1px solid var(--neon-pink); color: var(--neon-pink); }
+        .secondary:hover { background: var(--neon-pink); color: #000; box-shadow: 0 0 30px rgba(255,0,153,0.6); transform: translateY(-2px); }
 
-        .secondary {
-            background: rgba(255, 0, 153, 0.1);
-            border: 1px solid var(--neon-pink);
-            color: var(--neon-pink);
-        }
+        .panic-btn { background: rgba(255,0,0,0.1); border: 1px solid var(--neon-red); color: var(--neon-red); padding: 8px 16px; font-size: 12px; width: auto; margin: 0; display: inline-block; }
+        .panic-btn:hover { background: var(--neon-red); color: #fff; box-shadow: 0 0 30px rgba(255,0,0,0.8); }
 
-        .secondary:hover {
-            background: var(--neon-pink);
-            color: #000;
-            box-shadow: 0 0 30px rgba(255, 0, 153, 0.6);
-            transform: translateY(-2px);
-        }
+        .container { width: 1400px; max-width: 96%; height: 90vh; display: flex; flex-direction: column; z-index: 5; margin-top: 50px;}
+        .header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 20px; border-bottom: 1px solid rgba(0,243,255,0.2); margin-bottom: 20px; flex-shrink: 0; }
+        .user-info { font-family: 'Orbitron'; font-size: 14px; color: var(--text-dim); margin-right: 20px; }
+        .user-highlight { color: var(--neon-blue); text-shadow: 0 0 10px rgba(0,243,255,0.5); }
 
-        .panic-btn {
-            background: rgba(255, 0, 0, 0.1);
-            border: 1px solid var(--neon-red);
-            color: var(--neon-red);
-            padding: 8px 16px;
-            font-size: 12px;
-            width: auto;
-            margin: 0;
-            display: inline-block;
-        }
+        .main-grid { display: grid; grid-template-columns: 350px 1fr 350px; gap: 25px; flex: 1; overflow: hidden; }
+        .panel { background: rgba(0,0,0,0.3); border-radius: 12px; padding: 20px; border: 1px solid rgba(255,255,255,0.05); display: flex; flex-direction: column; overflow-y: auto; position: relative; }
+        .panel::-webkit-scrollbar { width: 6px; } .panel::-webkit-scrollbar-track { background: rgba(0,0,0,0.3); } .panel::-webkit-scrollbar-thumb { background: var(--neon-blue); border-radius: 3px; }
 
-        .panic-btn:hover {
-            background: var(--neon-red);
-            color: #fff;
-            box-shadow: 0 0 30px rgba(255, 0, 0, 0.8);
-            animation: shake 0.5s infinite;
-        }
+        .layers { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-bottom: 20px; }
+        .layer { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; background: rgba(0,243,255,0.05); border: 1px solid rgba(0,243,255,0.3); border-radius: 6px; cursor: pointer; font-family: 'Orbitron'; font-weight: bold; font-size: 13px; transition: 0.2s; }
+        .layer:hover { background: rgba(0,243,255,0.2); box-shadow: 0 0 10px rgba(0,243,255,0.3); }
+        .layer.active { background: var(--neon-blue); color: #000; border-color: #fff; box-shadow: 0 0 20px var(--neon-blue); transform: scale(1.05); }
 
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            20%, 60% { transform: translateX(-3px); }
-            40%, 80% { transform: translateX(3px); }
-        }
+        .tools-row { display: flex; gap: 10px; margin-top: 10px; }
+        .file-upload-label { margin-top: 0; background: rgba(255,0,153,0.1); color: var(--neon-pink); border: 1px solid var(--neon-pink); flex: 1; display: flex; align-items: center; justify-content: center; }
+        .file-upload-label:hover { background: var(--neon-pink); color: #000; }
 
-        /* =========================================
-           7. ANA SOHBET ARAYÜZÜ (GRID SİSTEMİ)
-           ========================================= */
-        .container {
-            width: 1400px;
-            max-width: 96%;
-            height: 90vh;
-            display: flex;
-            flex-direction: column;
-            z-index: 5;
-        }
+        .messages-panel { grid-column: 2; border: 1px solid rgba(0,243,255,0.2); }
+        #log { display: flex; flex-direction: column; gap: 20px; padding-bottom: 20px; }
+        .msg { padding: 15px; border-radius: 8px; background: rgba(0,0,0,0.7); border-left: 4px solid transparent; animation: slideIn 0.3s ease forwards; position: relative; }
+        @keyframes slideIn { from { opacity: 0; transform: translateX(-15px); } to { opacity: 1; transform: translateX(0); } }
+        .msg.me { border-left-color: var(--neon-blue); } .msg.other { border-left-color: var(--neon-pink); }
+        .msg-header { display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 13px; font-family: 'Orbitron'; }
+        .msg.me .msg-header b { color: var(--neon-blue); } .msg.other .msg-header b { color: var(--neon-pink); }
+        
+        .raw-cipher-box { width: 100%; height: 60px; background: #050505; color: rgba(0,243,255,0.5); border: 1px dashed rgba(0,243,255,0.3); border-radius: 6px; padding: 8px; font-family: 'Source Code Pro', monospace; font-size: 11px; resize: none; margin-bottom: 12px; user-select: all; }
+        .msg-action-row { display: flex; gap: 8px; flex-wrap: wrap; }
+        .action-btn { flex: 1; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); color: #fff; padding: 8px; font-size: 11px; border-radius: 4px; cursor: pointer; font-family: 'Orbitron'; transition: 0.2s; margin-top: 0; min-width: 100px; }
+        .btn-copy:hover { background: #fff; color: #000; } .btn-transfer:hover { background: var(--neon-blue); color: #000; border-color: var(--neon-blue); } .btn-decrypt:hover { background: var(--neon-green); color: #000; border-color: var(--neon-green); box-shadow: 0 0 10px var(--neon-green); }
+        .decrypted-content { margin-top: 15px; padding: 15px; background: rgba(0,255,157,0.05); border: 1px solid rgba(0,255,157,0.3); border-radius: 6px; color: #fff; font-family: 'Rajdhani', sans-serif; font-size: 15px; word-break: break-word; }
 
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding-bottom: 20px;
-            border-bottom: 1px solid rgba(0, 243, 255, 0.2);
-            margin-bottom: 20px;
-            flex-shrink: 0;
-        }
+        #result { margin-top: 20px; padding: 15px; background: rgba(0,0,0,0.6); border: 1px dashed var(--neon-green); border-radius: 8px; color: var(--neon-green); font-family: 'Source Code Pro', monospace; min-height: 80px; word-break: break-all; }
+        #typing-indicator { position: absolute; bottom: 10px; left: 20px; font-size: 12px; color: var(--neon-pink); font-style: italic; opacity: 0; transition: opacity 0.3s; }
 
-        .user-info {
-            font-family: 'Orbitron';
-            font-size: 14px;
-            color: var(--text-dim);
-            margin-right: 20px;
-        }
-
-        .user-highlight {
-            color: var(--neon-blue);
-            text-shadow: 0 0 10px rgba(0, 243, 255, 0.5);
-        }
-
-        .main-grid {
-            display: grid;
-            grid-template-columns: 350px 1fr 350px;
-            gap: 25px;
-            flex: 1;
-            overflow: hidden;
-        }
-
-        .panel {
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 12px;
-            padding: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            display: flex;
-            flex-direction: column;
-            overflow-y: auto;
-            position: relative;
-        }
-
-        .panel::-webkit-scrollbar { width: 6px; }
-        .panel::-webkit-scrollbar-track { background: rgba(0,0,0,0.3); }
-        .panel::-webkit-scrollbar-thumb { background: var(--neon-blue); border-radius: 3px; }
-
-        /* =========================================
-           8. KATMAN (LAYER) SEÇİCİLERİ
-           ========================================= */
-        .layers {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        .layer {
-            aspect-ratio: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: rgba(0, 243, 255, 0.05);
-            border: 1px solid rgba(0, 243, 255, 0.3);
-            border-radius: 6px;
-            cursor: pointer;
-            font-family: 'Orbitron';
-            font-weight: bold;
-            font-size: 13px;
-            transition: all 0.2s ease;
-        }
-
-        .layer:hover {
-            background: rgba(0, 243, 255, 0.2);
-            box-shadow: 0 0 10px rgba(0, 243, 255, 0.3);
-        }
-
-        .layer.active {
-            background: var(--neon-blue);
-            color: #000;
-            border-color: #fff;
-            box-shadow: 0 0 20px var(--neon-blue);
-            transform: scale(1.05);
-        }
-
-        /* =========================================
-           9. ARAÇ ÇUBUĞU (SÜRE VE DOSYA)
-           ========================================= */
-        .tools-row {
-            display: flex;
-            gap: 10px;
-            margin-top: 10px;
-        }
-
-        .file-upload-label {
-            margin-top: 0;
-            background: rgba(255, 0, 153, 0.1);
-            color: var(--neon-pink);
-            border: 1px solid var(--neon-pink);
-            flex: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .file-upload-label:hover {
-            background: var(--neon-pink);
-            color: #000;
-        }
-
-        /* =========================================
-           10. YENİLENMİŞ MESAJ ALANI VE BUTONLARI
-           ========================================= */
-        .messages-panel {
-            grid-column: 2;
-            border: 1px solid rgba(0, 243, 255, 0.2);
-        }
-
-        #log {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-            padding-bottom: 20px;
-        }
-
-        .msg {
-            padding: 15px;
-            border-radius: 8px;
-            background: rgba(0, 0, 0, 0.7);
-            border-left: 4px solid transparent;
-            animation: slideIn 0.3s ease forwards;
-            position: relative;
-        }
-
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateX(-15px); }
-            to { opacity: 1; transform: translateX(0); }
-        }
-
-        .msg.me { border-left-color: var(--neon-blue); }
-        .msg.other { border-left-color: var(--neon-pink); }
-
-        .msg-header {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 12px;
-            font-size: 13px;
-            font-family: 'Orbitron';
-        }
-
-        .msg.me .msg-header b { color: var(--neon-blue); }
-        .msg.other .msg-header b { color: var(--neon-pink); }
-
-        /* Yeni RAW (Ham) Şifreli Metin Kutusu */
-        .raw-cipher-box {
-            width: 100%;
-            height: 60px;
-            background: #050505;
-            color: rgba(0, 243, 255, 0.5);
-            border: 1px dashed rgba(0, 243, 255, 0.3);
-            border-radius: 6px;
-            padding: 8px;
-            font-family: 'Source Code Pro', monospace;
-            font-size: 11px;
-            resize: none;
-            margin-bottom: 12px;
-            user-select: all; /* Tek tıkla seçilebilmesi için */
-        }
-
-        .msg-action-row {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap; /* Mobilde alt alta inmesi için */
-        }
-
-        .action-btn {
-            flex: 1;
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.2);
-            color: #fff;
-            padding: 8px;
-            font-size: 11px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-family: 'Orbitron';
-            transition: 0.2s;
-            margin-top: 0;
-            min-width: 100px;
-        }
-
-        .btn-copy:hover { background: #fff; color: #000; }
-        .btn-transfer:hover { background: var(--neon-blue); color: #000; border-color: var(--neon-blue); }
-        .btn-decrypt:hover { background: var(--neon-green); color: #000; border-color: var(--neon-green); box-shadow: 0 0 10px var(--neon-green); }
-
-        .decrypted-content {
-            margin-top: 15px;
-            padding: 15px;
-            background: rgba(0, 255, 157, 0.05);
-            border: 1px solid rgba(0, 255, 157, 0.3);
-            border-radius: 6px;
-            color: #fff;
-            font-family: 'Rajdhani', sans-serif;
-            font-size: 15px;
-            word-break: break-word;
-        }
-
-        /* =========================================
-           11. HARİCİ ÇÖZÜCÜ SONUÇ EKRANI
-           ========================================= */
-        #result {
-            margin-top: 20px;
-            padding: 15px;
-            background: rgba(0, 0, 0, 0.6);
-            border: 1px dashed var(--neon-green);
-            border-radius: 8px;
-            color: var(--neon-green);
-            font-family: 'Source Code Pro', monospace;
-            min-height: 80px;
-            word-break: break-all;
-        }
-
-        #typing-indicator {
-            position: absolute;
-            bottom: 10px;
-            left: 20px;
-            font-size: 12px;
-            color: var(--neon-pink);
-            font-style: italic;
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-
-        @media (max-width: 1100px) {
-            .main-grid { grid-template-columns: 1fr; overflow-y: auto; }
-            .messages-panel { height: 500px; grid-column: 1; }
-            .container { height: auto; min-height: 95vh; }
-            .panel { overflow: visible; }
-        }
+        @media (max-width: 1100px) { .main-grid { grid-template-columns: 1fr; overflow-y: auto; } .messages-panel { height: 500px; grid-column: 1; } .container { height: auto; min-height: 95vh; } .panel { overflow: visible; } .top-nav{justify-content:center; width:100%; left:0;} }
     </style>
 </head>
 <body>
 
     <canvas id="cyber-canvas"></canvas>
+
+    <div class="top-nav">
+        <button class="nav-btn" onclick="openModal('guideModal')">📖 Sistem Kılavuzu</button>
+        <button class="nav-btn" style="border-color:var(--neon-pink); color:var(--neon-pink);" onclick="openModal('supportModal')">✉️ Destek & Talep</button>
+    </div>
+
+    <div class="modal-backdrop" id="guideModal">
+        <div class="modal-box">
+            <span class="close-btn" onclick="closeModal('guideModal')">✖</span>
+            <h2 class="modal-title">SİSTEM KILAVUZU & GÜNCELLEMELER</h2>
+            <div class="modal-content-text">
+                <h4>Nasıl Kullanılır?</h4>
+                <p>Volktronic Crypto Chat, AES-256 standartlarında uçtan uca şifreleme sağlar. Mesajı şifrelerken sol panelden (Örn: L-02 ve L-08) katmanları seçin. Karşı tarafın mesajı okuyabilmesi için sağdaki çözücü panelden <b>birebir aynı katmanları</b> seçmesi ve "Direkt Çöz" butonuna basması gerekir.</p>
+                
+                <h4>v3.1 Sürüm Notları</h4>
+                <ul style="padding-left: 20px;">
+                    <li><b>Askeri Şifreleme:</b> Çok Katmanlı AES-256 motoruna geçildi.</li>
+                    <li><b>İmha Protokolü:</b> Okunduktan sonra saniyeler içinde kendini veritabanından kalıcı olarak silen zamanlayıcı (Burn-Timer) eklendi.</li>
+                    <li><b>Görsel Aktarım:</b> Resimler Base64'e dönüştürülüp kriptolanarak aktarılabilir hale getirildi.</li>
+                    <li><b>Panik Butonu (Async):</b> Acil durumlarda odadaki tüm verileri anında ve geri dönüşsüz yok eden sistem geliştirildi.</li>
+                </ul>
+
+                <div class="legal-warning">
+                    <b>YASAL UYARI:</b> Bu platform sadece siber güvenlik araştırmaları, şifreleme eğitimleri ve güvenli iletişim demosu amacıyla Volkan Özdemir tarafından geliştirilmiştir. <br><br>
+                    Sistem üzerinden aktarılan verilerin içeriğinden, sistemin illegal/yasadışı amaçlarla kullanımından doğacak her türlü hukuki ve cezai sorumluluk <b>tamamen kullanıcıya aittir.</b> Geliştirici hiçbir sorumluluk kabul etmez. Tüm hakları saklıdır.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-backdrop" id="supportModal">
+        <div class="modal-box" style="border-color:var(--neon-pink); box-shadow: 0 0 40px rgba(255,0,153,0.2);">
+            <span class="close-btn" onclick="closeModal('supportModal')">✖</span>
+            <h2 class="modal-title" style="color:var(--neon-pink); border-color:rgba(255,0,153,0.3);">DESTEK / TALEP İLETİSİ</h2>
+            <div class="modal-content-text">
+                <p>Geliştirmeler, hata bildirimleri veya özel talepleriniz için aşağıdaki formu doldurarak doğrudan sisteme mail gönderebilirsiniz.</p>
+                
+                <form action="https://formspree.io/f/xdaldnap" method="POST">
+                    <div class="input-group">
+                        <input type="text" name="Konu" placeholder="İleti Konusu / Başlık" required>
+                    </div>
+                    <div class="input-group">
+                        <input type="email" name="Email" placeholder="Size Ulaşabileceğimiz E-posta Adresiniz" required>
+                    </div>
+                    <div class="input-group">
+                        <textarea name="Mesaj" placeholder="Mesajınızı veya talebinizi buraya detaylıca yazın..." required style="min-height:120px;"></textarea>
+                    </div>
+                    <button type="submit" class="secondary" style="width:100%; margin-top:10px;">ŞİFRELİ AĞ ÜZERİNDEN GÖNDER</button>
+                </form>
+
+            </div>
+        </div>
+    </div>
 
     <div class="cyber-card" id="login">
         <h1>VOLKTRONIC</h1>
@@ -525,12 +249,8 @@
             
             <div class="panel cyber-card" style="border:none; box-shadow:none; padding:0;">
                 <h3>🔒 ŞİFRELE & GÖNDER</h3>
-                
-                <div class="layers" id="encLayers">
-                    </div>
-
+                <div class="layers" id="encLayers"></div>
                 <textarea id="message" placeholder="Gizli mesajınızı buraya yazın..."></textarea>
-
                 <div class="tools-row">
                     <select id="burnTimer" style="margin-top:0; flex:1;">
                         <option value="0">⏳ İmha Yok (Kalıcı)</option>
@@ -538,35 +258,23 @@
                         <option value="30">🔥 30 Saniye Sonra İmha</option>
                         <option value="60">🔥 1 Dakika Sonra İmha</option>
                     </select>
-
-                    <label for="imageInput" class="file-upload-label upload-btn">
-                        📷 FOTOĞRAF
-                    </label>
+                    <label for="imageInput" class="file-upload-label upload-btn">📷 FOTOĞRAF</label>
                     <input type="file" id="imageInput" accept="image/*" style="display:none;">
                 </div>
-
                 <button class="primary" onclick="window.encryptAndSend()">VERİYİ ŞİFRELE VE GÖNDER</button>
             </div>
 
             <div class="panel messages-panel cyber-card" style="border:1px solid rgba(0,243,255,0.2); box-shadow:none; padding:15px;">
                 <h3 style="opacity:0.6; font-size:12px; border:none;">/// KRİPTOLU VERİ AKIŞI ///</h3>
-                
-                <div id="log">
-                    </div>
-
+                <div id="log"></div>
                 <div id="typing-indicator">Ajan yazıyor...</div>
             </div>
 
             <div class="panel cyber-card" style="border:none; box-shadow:none; padding:0;">
                 <h3>🔓 HARİCİ ÇÖZÜCÜ</h3>
-                
-                <div class="layers" id="decLayers">
-                    </div>
-
+                <div class="layers" id="decLayers"></div>
                 <textarea id="cipher" placeholder="Çözülecek RAW kodunu buraya yapıştırın..."></textarea>
-
                 <button class="secondary" onclick="window.decryptExternal()">MANUEL OLARAK ÇÖZ</button>
-
                 <div id="result">Sonuç bekleniyor...</div>
             </div>
 
@@ -574,6 +282,11 @@
     </div>
 
     <script>
+        // Modal (Açılır Pencere) Fonksiyonları
+        function openModal(id) { document.getElementById(id).classList.add('active'); }
+        function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+
+        // 3D Tilt Efekti
         const cards = document.querySelectorAll('.cyber-card');
         cards.forEach(card => {
             card.addEventListener('mousemove', (e) => {
@@ -587,6 +300,7 @@
             });
         });
 
+        // Arka Plan Parçacıkları
         const canvas = document.getElementById('cyber-canvas');
         const ctx = canvas.getContext('2d');
         let width, height, particles = [];
@@ -626,7 +340,7 @@
         animate();
     </script>
 
-    <script type="module" src="crypto.js?v=4"></script>
+    <script type="module" src="crypto.js?v=5"></script>
 
 </body>
 </html>
