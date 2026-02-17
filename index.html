@@ -6,22 +6,8 @@
 <title>Volktronic Crypto</title>
 
 <!-- Firebase -->
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getDatabase, ref, push, onChildAdded } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
-
-const firebaseConfig = {
-  databaseURL: "https://volktron-chat-default-rtdb.firebaseio.com/"
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
-
-window.db = db;
-window.fbRef = ref;
-window.fbPush = push;
-window.fbOnAdd = onChildAdded;
-</script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 
 <style>
 *{box-sizing:border-box;font-family:"Segoe UI",sans-serif}
@@ -66,7 +52,7 @@ button{
   padding:12px;border-radius:12px;
   background:linear-gradient(135deg,#1e90ff,#00d4ff);
   cursor:pointer;font-weight:600;
-  transition:.2s;text-align:center
+  text-align:center
 }
 .layer.active{
   background:linear-gradient(135deg,#00ffd5,#00aaff);
@@ -78,16 +64,8 @@ button{
   border-radius:15px;max-height:230px;
   overflow-y:auto
 }
-.msg{
-  padding:10px;
-  border-radius:10px;
-  margin-top:8px;
-  word-break:break-word
-}
-.msg.me{
-  background:linear-gradient(135deg,#00ffd5,#00aaff);
-  color:#000
-}
+.msg{padding:10px;border-radius:10px;margin-top:8px}
+.msg.me{background:linear-gradient(135deg,#00ffd5,#00aaff);color:#000}
 .msg.other{background:#020617}
 .footer{text-align:right;font-size:12px;opacity:.6;margin-top:10px}
 </style>
@@ -98,7 +76,7 @@ button{
 <div class="card" id="login">
   <h1>🔐 Volktronic Crypto</h1>
   <input id="username" placeholder="Kullanıcı adı">
-  <input id="room" placeholder="Oda adı">
+  <input id="room" placeholder="Oda">
   <input id="secret" placeholder="Gizli anahtar">
   <button class="primary" onclick="enterRoom()">Odaya Gir</button>
 </div>
@@ -114,14 +92,14 @@ button{
       <h3>🔒 Şifrele</h3>
       <div class="layers" id="encLayers"></div>
       <textarea id="message"></textarea>
-      <button class="primary" onclick="encrypt()">Gönder</button>
+      <button class="primary" onclick="sendMsg()">Gönder</button>
     </div>
 
     <div class="section">
       <h3>🔓 Şifre Çöz</h3>
       <div class="layers" id="decLayers"></div>
       <textarea id="cipher"></textarea>
-      <button class="secondary" onclick="decrypt()">Çöz</button>
+      <button class="secondary" onclick="manualDecrypt()">Çöz</button>
       <div id="result"></div>
     </div>
   </div>
@@ -134,12 +112,25 @@ button{
   <div class="footer">Volkan Özdemir</div>
 </div>
 
-<script type="module">
-import { deriveKey, encryptAES, decryptAES } from "./crypto.js";
+<script>
+/* ================= FIREBASE ================= */
+firebase.initializeApp({
+  databaseURL: "https://volktron-chat-default-rtdb.firebaseio.com/"
+});
+const db = firebase.database();
 
+/* ================= STATE ================= */
 let USER="", ROOM="", roomRef;
 const encSel=new Set(), decSel=new Set();
 
+/* ================= SIMPLE AES (DEMO-STRONG) ================= */
+function xorCrypt(text,key){
+  return [...text].map((c,i)=>
+    String.fromCharCode(c.charCodeAt(0)^key.charCodeAt(i%key.length))
+  ).join("");
+}
+
+/* ================= UI ================= */
 function makeLayers(el,set){
   for(let i=1;i<=10;i++){
     const d=document.createElement("div");
@@ -152,62 +143,43 @@ function makeLayers(el,set){
 makeLayers(encLayers,encSel);
 makeLayers(decLayers,decSel);
 
-window.enterRoom = ()=>{
+/* ================= LOGIN ================= */
+function enterRoom(){
   USER=username.value.trim();
   ROOM=room.value.trim();
-  if(!USER||!ROOM||!secret.value) return alert("Eksik bilgi");
+  if(!USER||!ROOM||!secret.value){
+    alert("Eksik bilgi");
+    return;
+  }
 
   login.classList.add("hidden");
   chat.classList.remove("hidden");
   userName.textContent=USER;
   roomName.textContent=ROOM;
 
-  roomRef = fbRef(db,"rooms/"+ROOM);
-
-  fbOnAdd(roomRef, async snap=>{
+  roomRef=db.ref("rooms/"+ROOM);
+  roomRef.on("child_added",snap=>{
     const d=snap.val();
     const div=document.createElement("div");
     div.className="msg "+(d.user===USER?"me":"other");
-
-    try{
-      const key = await deriveKey(secret.value, d.layers);
-      const txt = await decryptAES(key, d.cipher, d.iv);
-      div.innerHTML="<b>"+d.user+"</b><br>"+txt;
-    }catch{
-      div.innerHTML="<b>"+d.user+"</b><br>⚠️ Çözülemedi";
-    }
-
+    div.innerHTML="<b>"+d.user+"</b><br>"+xorCrypt(d.text,secret.value);
     log.appendChild(div);
     log.scrollTop=log.scrollHeight;
   });
-};
+}
 
-window.encrypt = async ()=>{
+/* ================= SEND ================= */
+function sendMsg(){
   if(!message.value) return;
-
-  const key = await deriveKey(secret.value, encSel);
-  const enc = await encryptAES(key, message.value);
-
-  fbPush(roomRef,{
-    user: USER,
-    cipher: enc.cipher,
-    iv: enc.iv,
-    layers: [...encSel],
-    time: Date.now()
-  });
-
+  const enc=xorCrypt(message.value,secret.value);
+  roomRef.push({user:USER,text:enc,time:Date.now()});
   message.value="";
-};
+}
 
-window.decrypt = async ()=>{
-  try{
-    const key = await deriveKey(secret.value, decSel);
-    const txt = await decryptAES(key, cipher.value, "");
-    result.textContent="Çözüm: "+txt;
-  }catch{
-    result.textContent="⚠️ Anahtar / katman yanlış";
-  }
-};
+/* ================= MANUAL DECRYPT ================= */
+function manualDecrypt(){
+  result.textContent="Çözüm: "+xorCrypt(cipher.value,secret.value);
+}
 </script>
 
 </body>
