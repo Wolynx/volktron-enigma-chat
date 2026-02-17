@@ -14,7 +14,6 @@ import {
     onValue 
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-// LÜTFEN KENDİ FIREBASE BİLGİLERİNİ KONTROL ET
 const firebaseConfig = {
   databaseURL: "https://volktron-chat-default-rtdb.firebaseio.com/"
 };
@@ -29,33 +28,26 @@ let SECRET = "";
 let roomMessagesRef;
 let selectedImageBase64 = null; 
 
-// Katmanları (Layer) Tutan Küme Yapıları
+// Katmanları Tutan Kümeler
 const encSel = new Set();
 const decSel = new Set();
 
-// --- 1. KATMAN (LAYER) BUTONLARINI OLUŞTURMA ---
+// --- 1. KATMAN (LAYER) OLUŞTURUCU ---
 function makeLayers(element, setObj) {
     if (!element) return;
-    
     for (let i = 1; i <= 10; i++) {
         const btn = document.createElement("div");
         btn.className = "layer";
-        const label = i < 10 ? '0' + i : i;
-        btn.innerHTML = `L-${label}`;
+        btn.innerHTML = `L-${i < 10 ? '0' + i : i}`;
         
         btn.onclick = () => {
-            if (setObj.has(i)) {
-                setObj.delete(i);
-            } else {
-                setObj.add(i);
-            }
+            if (setObj.has(i)) setObj.delete(i);
+            else setObj.add(i);
             btn.classList.toggle("active");
         };
-        
         element.appendChild(btn);
     }
 }
-
 makeLayers(document.getElementById("encLayers"), encSel);
 makeLayers(document.getElementById("decLayers"), decSel);
 
@@ -64,57 +56,43 @@ makeLayers(document.getElementById("decLayers"), decSel);
 document.getElementById("imageInput").addEventListener("change", function(e) {
     const file = e.target.files[0];
     const btn = document.querySelector(".file-upload-label");
-    
     if (!file) return;
 
-    // Maksimum 1.5MB limiti (Firebase'i yormamak için)
     if (file.size > 1.5 * 1024 * 1024) {
-        alert("GÜVENLİK UYARISI: Dosya boyutu çok büyük! Maksimum 1.5MB yükleyebilirsiniz.");
-        this.value = ""; 
-        return;
+        alert("UYARI: Maksimum 1.5MB yükleyebilirsiniz.");
+        this.value = ""; return;
     }
 
     const reader = new FileReader();
-    
     reader.onload = function(event) {
         selectedImageBase64 = event.target.result;
         btn.textContent = "✅ GÖRSEL HAZIR";
         btn.style.background = "var(--neon-blue)";
         btn.style.color = "#000";
     };
-    
-    reader.onerror = function() {
-        alert("Dosya okuma hatası!");
-    };
-
     reader.readAsDataURL(file);
 });
 
 
-// --- 3. YAZIYOR (TYPING) SENSÖRÜ ---
+// --- 3. YAZIYOR SENSÖRÜ ---
 let typingTimer;
 document.getElementById("message").addEventListener("input", () => {
     if(!ROOM || !USER) return;
-    
     const typingRef = ref(db, "rooms/" + ROOM + "/typing/" + USER);
     set(typingRef, Date.now()); 
-    
-    // 2 saniye klavyeye dokunulmazsa "yazıyor" bilgisini sil
     clearTimeout(typingTimer);
-    typingTimer = setTimeout(() => {
-        remove(typingRef);
-    }, 2000);
+    typingTimer = setTimeout(() => remove(typingRef), 2000);
 });
 
 
-// --- 4. ODAYA GİRİŞ İŞLEMİ ---
+// --- 4. ODAYA GİRİŞ ---
 function enterRoom() {
     USER = document.getElementById("username").value.trim();
     ROOM = document.getElementById("room").value.trim();
     SECRET = document.getElementById("secretKey").value.trim();
 
     if (!USER || !ROOM || !SECRET) {
-        alert("ERİŞİM REDDEDİLDİ: Lütfen tüm kimlik bilgilerini eksiksiz girin.");
+        alert("Lütfen tüm alanları (Kullanıcı Adı, Oda ve Şifreli Kod) doldurun.");
         return;
     }
 
@@ -126,7 +104,6 @@ function enterRoom() {
 
     loginDiv.style.opacity = "0";
     loginDiv.style.transform = "scale(0.9)";
-    
     setTimeout(() => {
         loginDiv.classList.add("hidden");
         chatDiv.classList.remove("hidden");
@@ -136,16 +113,14 @@ function enterRoom() {
 }
 
 
-// --- 5. FIREBASE DİNLEYİCİLERİ ---
+// --- 5. FIREBASE MESAJ DİNLEYİCİSİ ---
 function startFirebaseListeners() {
-    
-    // YAZIYOR DİNLEYİCİSİ
+    // Yazıyor kısmı dinleyicisi
     const typingListRef = ref(db, "rooms/" + ROOM + "/typing");
     onValue(typingListRef, (snap) => {
         const data = snap.val() || {};
         const activeWriters = Object.keys(data).filter(user => user !== USER);
         const indicator = document.getElementById("typing-indicator");
-
         if (activeWriters.length > 0) {
             indicator.textContent = `⚡ Ajan ${activeWriters.join(", ")} veri şifreliyor...`;
             indicator.style.opacity = "1";
@@ -154,15 +129,14 @@ function startFirebaseListeners() {
         }
     });
 
-    // MESAJ (VERİ) AKIŞI DİNLEYİCİSİ
+    // MESAJLAR
     roomMessagesRef = ref(db, "rooms/" + ROOM + "/messages");
     
     onChildAdded(roomMessagesRef, (snap) => {
         const data = snap.val() || {};
         const msgKey = snap.key;
         
-        // Hatalı/Eksik paketleri korumak için güvenlik önlemi
-        const safeUser = data.user || "BİLİNMEYEN_AJAN";
+        const safeUser = data.user || "BİLİNMEYEN";
         const safeText = data.text || "HATA_VERI_YOK";
         const time = data.time ? new Date(data.time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : "--:--";
 
@@ -170,7 +144,7 @@ function startFirebaseListeners() {
         div.id = "msg-" + msgKey; 
         div.className = "msg " + (safeUser === USER ? "me" : "other");
         
-        // Gelen mesaj ekrana daima ŞİFRELİ düşer
+        // YENİ TASARIM: Tamamen kopyalanabilir RAW veri alanı ve 3 buton
         div.innerHTML = `
             <div class="msg-header">
                 <b>[${safeUser}]</b> 
@@ -178,49 +152,77 @@ function startFirebaseListeners() {
             </div>
             
             <div class="msg-content">
-                <div class="encrypted-placeholder" style="color:#666; font-size:12px; letter-spacing:1px;">
-                    🔒 [AES-256 ŞİFRELİ VERİ PAKETİ] <br>
-                    ${safeText.substring(0, 40)}...
+                <textarea readonly class="raw-cipher-box">${safeText}</textarea>
+                
+                <div class="msg-action-row">
+                    <button class="action-btn btn-copy">📋 KOPYALA</button>
+                    <button class="action-btn btn-transfer">➡️ SAĞ PANELE AKTAR</button>
+                    <button class="action-btn btn-decrypt">🔓 DİREKT ÇÖZ</button>
                 </div>
+
                 <div class="decrypted-content" style="display:none;"></div>
             </div>
-
-            <button class="decrypt-btn-inline">🔐 ÇÖZ VE GÖSTER</button>
         `;
 
-        // INLINE ÇÖZME BUTONUNA TIKLANINCA
-        const btn = div.querySelector(".decrypt-btn-inline");
-        btn.onclick = () => {
+        // BUTON 1: KOPYALA İŞLEMİ
+        const copyBtn = div.querySelector(".btn-copy");
+        copyBtn.onclick = () => {
+            navigator.clipboard.writeText(safeText).then(() => {
+                copyBtn.textContent = "✅ KOPYALANDI";
+                copyBtn.style.background = "#fff";
+                copyBtn.style.color = "#000";
+                setTimeout(() => {
+                    copyBtn.textContent = "📋 KOPYALA";
+                    copyBtn.style.background = "";
+                    copyBtn.style.color = "";
+                }, 1500);
+            }).catch(() => alert("Kopyalama başarısız, metni manuel seçin."));
+        };
+
+        // BUTON 2: SAĞ PANELE AKTAR İŞLEMİ (Manuel Çözme için en kolayı)
+        const transferBtn = div.querySelector(".btn-transfer");
+        transferBtn.onclick = () => {
+            const rightPanelCipher = document.getElementById("cipher");
+            rightPanelCipher.value = safeText;
             
-            // DİKKAT: Cihazlar arası uyum için gelen mesaj "decSel" (Sağdaki Çözücü) katmanları referans alınarak çözülür.
+            // Kullanıcıya aktarıldığını hissettir
+            rightPanelCipher.style.boxShadow = "0 0 20px var(--neon-blue)";
+            setTimeout(() => { rightPanelCipher.style.boxShadow = "none"; }, 1000);
+            
+            transferBtn.textContent = "✅ AKTARILDI";
+            setTimeout(() => { transferBtn.textContent = "➡️ SAĞ PANELE AKTAR"; }, 1500);
+        };
+
+        // BUTON 3: DİREKT ÇÖZ (INLINE DECRYPT)
+        const decryptBtn = div.querySelector(".btn-decrypt");
+        decryptBtn.onclick = () => {
+            // Sağ paneldeki Katmanları (decSel) kullanarak çözer
             const decrypted = removeStrongLayers(safeText, SECRET, decSel);
             const contentDiv = div.querySelector(".decrypted-content");
-            const placeholder = div.querySelector(".encrypted-placeholder");
+            const rawBox = div.querySelector(".raw-cipher-box");
+            const actionRow = div.querySelector(".msg-action-row");
 
             if (typeof decrypted === "string" && decrypted.includes("HATA:")) {
-                placeholder.innerHTML = `<span style="color:red">⚠️ ŞİFRE ÇÖZME BAŞARISIZ! <br> Anahtar veya katmanlar yanlış.</span>`;
+                alert("ŞİFRE ÇÖZÜLEMEDİ!\n\nSağ paneldeki 'Harici Çözücü' bölümünden gönderenle AYNI KATMANLARI seçtiğinize emin olun.");
             } else {
                 let htmlContent = "";
-                
-                // Protokol Kontrolü (IMG vs TXT)
                 if (decrypted.startsWith("IMG||")) {
                     const parts = decrypted.split("||"); 
-                    htmlContent = `
-                        <img src="${parts[1]}" style="max-width:100%; border-radius:8px; border:1px solid var(--neon-blue); margin-bottom:10px;">
-                        <div>${parts[2] || ""}</div>
-                    `;
+                    htmlContent = `<img src="${parts[1]}" style="max-width:100%; border-radius:8px; margin-bottom:10px;"><br><div>${parts[2] || ""}</div>`;
                 } else if (decrypted.startsWith("TXT||")) {
                     htmlContent = decrypted.replace("TXT||", "");
                 } else {
-                    htmlContent = decrypted; // Geriye dönük uyumluluk
+                    htmlContent = decrypted;
                 }
 
                 contentDiv.innerHTML = htmlContent;
                 contentDiv.style.display = "block";
-                placeholder.style.display = "none";
-                btn.style.display = "none"; 
+                
+                // Şifreli görüntüyü gizle
+                rawBox.style.display = "none";
+                actionRow.style.display = "none";
 
-                // Kendini İmha Sistemi
+                // İmha sayacını başlat
                 if (data.burn && data.burn > 0) {
                     startBurnTimer(data.burn, msgKey, div);
                 }
@@ -232,71 +234,57 @@ function startFirebaseListeners() {
         logDiv.scrollTop = logDiv.scrollHeight; 
     });
 
-    // MESAJ SİLİNDİĞİNDE (Kalıcı Yok Etme)
     onChildRemoved(roomMessagesRef, (snap) => {
         const el = document.getElementById("msg-" + snap.key);
         if (el) {
-            el.innerHTML = `
-                <div style="color:red; text-align:center; font-weight:bold; padding:10px;">
-                    🚫 VERİ İMHA EDİLDİ
-                </div>
-            `;
-            setTimeout(() => el.remove(), 1500);
+            el.innerHTML = `<div style="color:red; text-align:center; font-weight:bold; padding:10px; border:1px solid red; border-radius:8px;">🚫 SİSTEM: VERİ İMHA EDİLDİ</div>`;
+            setTimeout(() => el.remove(), 2000);
         }
     });
 }
 
 
-// --- 6. KENDİNİ İMHA (BURN) SAYACI ---
+// --- 6. İMHA SAYACI (BURN TIMER) ---
 function startBurnTimer(seconds, msgKey, element) {
     let timeLeft = seconds;
-    
     const timerDisplay = document.createElement("div");
     timerDisplay.style.color = "var(--neon-pink)";
     timerDisplay.style.fontWeight = "bold";
-    timerDisplay.style.fontSize = "12px";
-    timerDisplay.style.marginTop = "10px";
+    timerDisplay.style.fontSize = "13px";
+    timerDisplay.style.marginTop = "15px";
     timerDisplay.style.textAlign = "right";
-    timerDisplay.style.borderTop = "1px dashed var(--neon-pink)";
-    timerDisplay.style.paddingTop = "5px";
     
     element.appendChild(timerDisplay);
 
     const interval = setInterval(() => {
-        timerDisplay.innerHTML = `🔥 İMHA: ${timeLeft}sn`;
+        timerDisplay.innerHTML = `🔥 KENDİNİ İMHA EDİYOR: ${timeLeft}sn`;
         timeLeft--;
 
         if (timeLeft < 0) {
             clearInterval(interval);
-            // Odayı ve anahtarı bulup veritabanından kalıcı olarak sil
             remove(ref(db, "rooms/" + ROOM + "/messages/" + msgKey));
         }
     }, 1000);
 }
 
 
-// --- 7. ŞİFRELEME (ENCRYPT) MATEMATİĞİ ---
+// --- 7. ŞİFRELEME (AES + LAYER) ---
 function applyStrongLayers(text, secret, selectedLayers) {
     let encrypted = text;
     let layers = [...selectedLayers].sort((a, b) => a - b);
-    
-    if (layers.length === 0) {
-        return CryptoJS.AES.encrypt(encrypted, secret).toString();
-    }
+    if (layers.length === 0) return CryptoJS.AES.encrypt(encrypted, secret).toString();
 
     layers.forEach(layer => {
         let layerSpecificKey = secret + "_LayerSalt_L" + layer;
         encrypted = CryptoJS.AES.encrypt(encrypted, layerSpecificKey).toString();
     });
-    
     return encrypted;
 }
 
 
-// --- 8. ŞİFRE ÇÖZME (DECRYPT) MATEMATİĞİ ---
+// --- 8. ŞİFRE ÇÖZME ---
 function removeStrongLayers(ciphertext, secret, selectedLayers) {
     let decrypted = ciphertext;
-    // Çözerken şifreleme sırasının tam tersi uygulanır
     let layers = [...selectedLayers].sort((a, b) => b - a);
     
     try {
@@ -313,7 +301,6 @@ function removeStrongLayers(ciphertext, secret, selectedLayers) {
             decrypted = bytes.toString(CryptoJS.enc.Utf8);
             if (!decrypted) throw new Error();
         });
-        
         return decrypted;
     } catch (error) {
         return "HATA: Çözülemedi";
@@ -321,31 +308,21 @@ function removeStrongLayers(ciphertext, secret, selectedLayers) {
 }
 
 
-// --- 9. VERİ GÖNDERME TETİKLEYİCİSİ ---
+// --- 9. MESAJ GÖNDERME ---
 function encryptAndSend() {
     const msgInput = document.getElementById("message");
     const burnSelect = document.getElementById("burnTimer");
-    
     const textVal = msgInput.value.trim();
     const burnTime = parseInt(burnSelect.value);
 
     if (!textVal && !selectedImageBase64) {
-        alert("SİSTEM UYARISI: Lütfen bir mesaj yazın veya resim seçin.");
+        alert("Lütfen gönderilecek bir mesaj veya resim ekleyin.");
         return;
     }
 
-    // Protokol Oluşturma
-    let payload = "";
-    if (selectedImageBase64) {
-        payload = "IMG||" + selectedImageBase64 + "||" + textVal;
-    } else {
-        payload = "TXT||" + textVal;
-    }
-
-    // Seçilen katmanlarla şifrele
+    let payload = selectedImageBase64 ? "IMG||" + selectedImageBase64 + "||" + textVal : "TXT||" + textVal;
     const encryptedPayload = applyStrongLayers(payload, SECRET, encSel);
 
-    // Veritabanına Yaz
     push(roomMessagesRef, {
         user: USER,
         text: encryptedPayload,
@@ -353,13 +330,11 @@ function encryptAndSend() {
         burn: burnTime 
     });
 
-    // Gönderim sonrası temizlik
     msgInput.value = "";
     selectedImageBase64 = null;
     const btn = document.querySelector(".file-upload-label");
     btn.textContent = "📷 FOTOĞRAF";
-    btn.style.background = ""; 
-    btn.style.color = "";
+    btn.style.background = ""; btn.style.color = "";
 }
 
 
@@ -369,7 +344,7 @@ function decryptExternal() {
     const resultDiv = document.getElementById("result");
 
     if (!cipherText) {
-        resultDiv.textContent = "Lütfen çözülecek şifreli bloğu yapıştırın.";
+        resultDiv.textContent = "Lütfen çözülecek RAW kodunu yukarıya yapıştırın.";
         resultDiv.style.color = "var(--neon-pink)";
         return;
     }
@@ -377,12 +352,12 @@ function decryptExternal() {
     const plainText = removeStrongLayers(cipherText, SECRET, decSel);
 
     if (plainText.includes("HATA:")) {
-        resultDiv.textContent = "BAŞARISIZ: Master Anahtar veya Katman Seçimi Hatalı.";
+        resultDiv.innerHTML = "<b>BAŞARISIZ!</b><br>Gizli şifre veya seçilen Katmanlar (L-01, L-02 vb.) gönderenle eşleşmiyor.";
         resultDiv.style.color = "var(--neon-red)";
         resultDiv.style.borderColor = "var(--neon-red)";
     } else {
         let cleanText = plainText;
-        if (cleanText.startsWith("IMG||")) cleanText = "[RESİM DOSYASI İÇERİYOR - Lütfen ana ekrandaki çözücüyü kullanın]";
+        if (cleanText.startsWith("IMG||")) cleanText = "[BU BİR GÖRSELDİR - Lütfen mesajın altındaki DİREKT ÇÖZ butonunu kullanın]";
         if (cleanText.startsWith("TXT||")) cleanText = cleanText.replace("TXT||", "");
         
         resultDiv.textContent = cleanText;
@@ -392,15 +367,13 @@ function decryptExternal() {
 }
 
 
-// --- 11. PANİK BUTONU (ASYNC DÜZELTMESİ YAPILDI) ---
-// Not: Masaüstünde sayfanın hızlı yenilenmesi Firebase silme işlemini yarıda kesiyordu.
-// Await kullanarak önce "Silme işlemi bitsin, ondan sonra sayfayı yenile" dedik.
+// --- 11. PANİK BUTONU (ASYNC PROTOKOLÜ) ---
 async function triggerPanic() {
-    const confirmPanic = confirm("⚠️ DİKKAT: KIRMIZI KOD!\n\nBu işlem odadaki TÜM MESAJLARI ve KAYITLARI kalıcı olarak silecektir. Geri dönüşü yoktur.\n\nOnaylıyor musun?");
+    const confirmPanic = confirm("⚠️ DİKKAT!\n\nBu işlem odadaki TÜM MESAJLARI kalıcı olarak silecektir. Geri dönüşü yoktur.\n\nOnaylıyor musun?");
     
     if (confirmPanic) {
         try {
-            // ASYNC KORUMASI: Silme emrinin bitmesini bekle
+            // Await: İşlem bitene kadar bekle
             await remove(ref(db, "rooms/" + ROOM));
             
             document.body.innerHTML = `
@@ -410,19 +383,16 @@ async function triggerPanic() {
                 </div>
             `;
             
-            // Veri kesin olarak silindikten sonra sayfayı yenile
-            setTimeout(() => {
-                location.reload();
-            }, 3000);
+            setTimeout(() => { location.reload(); }, 3000);
             
         } catch (error) {
-            console.error("İmha işlemi sırasında hata oluştu:", error);
-            alert("İmha işlemi tamamlanamadı! Bağlantınızı kontrol edin.");
+            console.error("Hata:", error);
+            alert("Silme işlemi başarısız oldu! İnternet bağlantınızı kontrol edin.");
         }
     }
 }
 
-// --- 12. FONKSİYONLARI HTML'E AKTARMA ---
+// Global olarak HTML'den erişim ver
 window.enterRoom = enterRoom;
 window.encryptAndSend = encryptAndSend;
 window.decryptExternal = decryptExternal;
