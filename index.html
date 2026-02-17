@@ -1,512 +1,663 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Volktronic Crypto | Güvenli Ağ</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Volktronic Crypto | Ultimate Security Net</title>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@400;600&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@400;600&display=swap" rel="stylesheet">
 
-<style>
-/* --- RENK PALETİ VE DEĞİŞKENLER --- */
-:root {
-    --neon-blue: #00f3ff;
-    --neon-pink: #ff0099;
-    --neon-green: #00ff9d;
-    --bg-dark: #020617;
-    --glass-bg: rgba(5, 10, 25, 0.85);
-    --glass-border: rgba(0, 243, 255, 0.2);
-}
+    <style>
+        /* --- TEMEL AYARLAR VE DEĞİŞKENLER --- */
+        :root {
+            --neon-blue: #00f3ff;
+            --neon-pink: #ff0099;
+            --neon-green: #00ff9d;
+            --neon-red: #ff0000;
+            --bg-dark: #020617;
+            --glass-bg: rgba(5, 12, 28, 0.85);
+            --glass-border: rgba(0, 243, 255, 0.25);
+            --text-main: #ffffff;
+            --text-dim: #aaaaaa;
+        }
 
-* { 
-    box-sizing: border-box; 
-}
+        * {
+            box-sizing: border-box;
+            user-select: none; /* Yazıların seçilmesini engeller (Uygulama hissi için) */
+        }
 
-body {
-    margin: 0; 
-    min-height: 100vh;
-    background-color: var(--bg-dark); 
-    color: #fff;
-    font-family: 'Rajdhani', sans-serif;
-    display: flex; 
-    align-items: center; 
-    justify-content: center;
-    overflow-x: hidden; 
-}
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: 'Rajdhani', sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow-x: hidden;
+            perspective: 1000px; /* 3D efekt için derinlik */
+        }
 
-/* --- ARKA PLAN CANVAS (Hareketli Ağ Animasyonu) --- */
-#cyber-canvas {
-    position: fixed; 
-    top: 0; 
-    left: 0;
-    width: 100%; 
-    height: 100%; 
-    z-index: -1;
-    background: radial-gradient(ellipse at bottom, #0d1d31 0%, #0c0d13 100%);
-}
+        /* --- ARKAPLAN CANVAS (AĞ ANİMASYONU) --- */
+        #cyber-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: radial-gradient(ellipse at bottom, #0d1d31 0%, #0c0d13 100%);
+        }
 
-/* --- ORTAK KART STİLLERİ (Cam Efekti) --- */
-.cyber-card {
-    background: var(--glass-bg); 
-    backdrop-filter: blur(15px);
-    -webkit-backdrop-filter: blur(15px);
-    border: 1px solid var(--glass-border); 
-    border-radius: 15px;
-    box-shadow: 0 0 25px rgba(0, 243, 255, 0.05);
-    padding: 35px; 
-    animation: cardEntrance 0.8s ease forwards; 
-    opacity: 0;
-}
+        /* --- ANA KART TASARIMI (GLASSMORPHISM) --- */
+        .cyber-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            box-shadow: 0 0 30px rgba(0, 243, 255, 0.08);
+            padding: 40px;
+            transition: transform 0.1s ease, box-shadow 0.3s ease;
+            transform-style: preserve-3d; /* 3D dönüşler için */
+            animation: fadeIn 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+            opacity: 0;
+        }
 
-@keyframes cardEntrance {
-    from { 
-        opacity: 0; 
-        transform: translateY(30px) scale(0.95); 
-    }
-    to { 
-        opacity: 1; 
-        transform: translateY(0) scale(1); 
-    }
-}
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(40px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
 
-.hidden { 
-    display: none !important; 
-}
+        .hidden {
+            display: none !important;
+        }
 
-/* --- GİRİŞ EKRANI ÖZEL --- */
-#login { 
-    width: 420px; 
-    text-align: center; 
-}
+        /* --- LOGIN EKRANI ÖZELLEŞTİRMELERİ --- */
+        #login {
+            width: 450px;
+            text-align: center;
+            position: relative;
+            z-index: 10;
+        }
 
-h1, h2, h3 { 
-    font-family: 'Orbitron', sans-serif; 
-    letter-spacing: 1px; 
-}
+        h1 {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--neon-blue);
+            text-shadow: 0 0 15px rgba(0, 243, 255, 0.6);
+            margin: 0 0 10px 0;
+            font-size: 32px;
+            letter-spacing: 2px;
+        }
 
-h1 { 
-    color: var(--neon-blue); 
-    text-shadow: 0 0 10px rgba(0, 243, 255, 0.5); 
-    margin: 0 0 5px 0; 
-}
+        h2 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 20px;
+            margin: 0;
+            color: #fff;
+        }
 
-.subtitle { 
-    color: #aaa; 
-    font-size: 13px; 
-    letter-spacing: 2px; 
-    margin-bottom: 25px; 
-    display: block; 
-}
+        h3 {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--neon-blue);
+            font-size: 16px;
+            margin-top: 0;
+            margin-bottom: 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(0, 243, 255, 0.15);
+            padding-bottom: 10px;
+            letter-spacing: 1px;
+        }
 
-/* --- GİRİŞ ALANLARI (INPUTLAR) --- */
-input, textarea {
-    width: 100%; 
-    padding: 15px; 
-    margin-top: 15px;
-    background: rgba(0,0,0,0.6); 
-    border: 1px solid rgba(0, 243, 255, 0.3);
-    border-radius: 8px; 
-    color: var(--neon-blue);
-    font-family: 'Rajdhani', sans-serif; 
-    font-size: 16px; 
-    font-weight: 600;
-    outline: none; 
-    transition: 0.3s;
-}
+        .subtitle {
+            color: var(--text-dim);
+            font-size: 14px;
+            letter-spacing: 3px;
+            margin-bottom: 30px;
+            display: block;
+            text-transform: uppercase;
+        }
 
-input::placeholder, textarea::placeholder { 
-    color: rgba(0, 243, 255, 0.3); 
-    font-weight: 400; 
-}
+        /* --- FORM ELEMANLARI (INPUT & TEXTAREA) --- */
+        .input-group {
+            margin-bottom: 15px;
+            position: relative;
+        }
 
-input:focus, textarea:focus { 
-    border-color: var(--neon-blue); 
-    box-shadow: 0 0 15px rgba(0, 243, 255, 0.3); 
-    color: #fff; 
-}
+        input, textarea, select {
+            width: 100%;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(0, 243, 255, 0.3);
+            border-radius: 8px;
+            color: var(--neon-blue);
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 16px;
+            font-weight: 600;
+            outline: none;
+            transition: all 0.3s ease;
+            user-select: text; /* Yazı yazılabilsin */
+        }
 
-textarea { 
-    min-height: 100px; 
-    max-height: 200px; 
-    resize: vertical; 
-}
+        input::placeholder, textarea::placeholder {
+            color: rgba(0, 243, 255, 0.3);
+            font-weight: 400;
+        }
 
-/* --- BUTONLAR --- */
-button {
-    width: 100%; 
-    margin-top: 20px; 
-    padding: 15px;
-    border: none; 
-    border-radius: 8px;
-    font-family: 'Orbitron', sans-serif; 
-    font-size: 15px; 
-    font-weight: bold;
-    cursor: pointer; 
-    transition: 0.3s; 
-    letter-spacing: 1px;
-}
+        input:focus, textarea:focus, select:focus {
+            border-color: var(--neon-blue);
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.2);
+            color: #fff;
+            background: rgba(0, 0, 0, 0.7);
+        }
 
-.primary { 
-    background: rgba(0,243,255,0.1); 
-    border: 1px solid var(--neon-blue); 
-    color: var(--neon-blue); 
-}
+        textarea {
+            min-height: 100px;
+            max-height: 200px;
+            resize: vertical;
+        }
 
-.primary:hover { 
-    background: var(--neon-blue); 
-    color: #000; 
-    box-shadow: 0 0 25px rgba(0, 243, 255, 0.5); 
-}
+        /* --- BUTON STİLLERİ --- */
+        button, .file-upload-label {
+            width: 100%;
+            padding: 15px;
+            margin-top: 15px;
+            border: none;
+            border-radius: 8px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            text-align: center;
+            display: block;
+        }
 
-.secondary { 
-    background: rgba(255,0,153,0.1); 
-    border: 1px solid var(--neon-pink); 
-    color: var(--neon-pink); 
-}
+        .primary {
+            background: rgba(0, 243, 255, 0.1);
+            border: 1px solid var(--neon-blue);
+            color: var(--neon-blue);
+        }
 
-.secondary:hover { 
-    background: var(--neon-pink); 
-    color: #000; 
-    box-shadow: 0 0 25px rgba(255,0,153,0.5); 
-}
+        .primary:hover {
+            background: var(--neon-blue);
+            color: #000;
+            box-shadow: 0 0 30px rgba(0, 243, 255, 0.6);
+            transform: translateY(-2px);
+        }
 
-/* --- SOHBET EKRANI GENEL YAPI (TAŞMA SORUNU ÇÖZÜMÜ) --- */
-.container {
-    width: 1200px; 
-    max-width: 95%; 
-    height: 85vh; /* Ekrana sığması için yüksekliği kısıtladık */
-    display: flex; 
-    flex-direction: column;
-}
+        .secondary {
+            background: rgba(255, 0, 153, 0.1);
+            border: 1px solid var(--neon-pink);
+            color: var(--neon-pink);
+        }
 
-.header {
-    display: flex; 
-    justify-content: space-between; 
-    align-items: center;
-    padding-bottom: 15px; 
-    border-bottom: 1px solid rgba(0, 243, 255, 0.2); 
-    margin-bottom: 20px;
-    flex-shrink: 0; /* Başlığın küçülmesini engeller */
-}
+        .secondary:hover {
+            background: var(--neon-pink);
+            color: #000;
+            box-shadow: 0 0 30px rgba(255, 0, 153, 0.6);
+            transform: translateY(-2px);
+        }
 
-.header h2 { 
-    margin: 0; 
-    font-size: 20px; 
-}
+        /* --- PANİK BUTONU (Kırmızı Acil Durum) --- */
+        .panic-btn {
+            background: rgba(255, 0, 0, 0.1);
+            border: 1px solid var(--neon-red);
+            color: var(--neon-red);
+            padding: 8px 16px;
+            font-size: 12px;
+            width: auto;
+            margin: 0;
+            display: inline-block;
+        }
 
-.header h2 span { 
-    color: var(--neon-green); 
-}
+        .panic-btn:hover {
+            background: var(--neon-red);
+            color: #fff;
+            box-shadow: 0 0 30px rgba(255, 0, 0, 0.8);
+            animation: shake 0.5s infinite;
+        }
 
-.user-badge {
-    background: rgba(0, 243, 255, 0.1); 
-    border: 1px solid var(--neon-blue);
-    padding: 8px 15px; 
-    border-radius: 20px; 
-    font-family: 'Orbitron'; 
-    font-size: 12px;
-}
+        @keyframes shake {
+            0% { transform: translate(1px, 1px) rotate(0deg); }
+            10% { transform: translate(-1px, -2px) rotate(-1deg); }
+            20% { transform: translate(-3px, 0px) rotate(1deg); }
+            30% { transform: translate(3px, 2px) rotate(0deg); }
+            40% { transform: translate(1px, -1px) rotate(1deg); }
+            50% { transform: translate(-1px, 2px) rotate(-1deg); }
+            60% { transform: translate(-3px, 1px) rotate(0deg); }
+            70% { transform: translate(3px, 1px) rotate(-1deg); }
+            80% { transform: translate(-1px, -1px) rotate(1deg); }
+            90% { transform: translate(1px, 2px) rotate(0deg); }
+            100% { transform: translate(1px, -2px) rotate(-1deg); }
+        }
 
-/* --- 3 SÜTUNLU GRID YAPISI --- */
-.main-grid {
-    display: grid; 
-    grid-template-columns: 350px 1fr 350px; 
-    gap: 20px;
-    flex: 1; /* Kalan tüm boşluğu kaplar */
-    overflow-y: hidden; /* Dış yapıda scroll yok */
-}
+        /* --- SOHBET ARAYÜZÜ DÜZENİ --- */
+        .container {
+            width: 1400px;
+            max-width: 96%;
+            height: 90vh;
+            display: flex;
+            flex-direction: column;
+            z-index: 5;
+        }
 
-.panel {
-    background: rgba(0,0,0,0.3); 
-    border-radius: 12px; 
-    padding: 20px;
-    border: 1px solid rgba(255,255,255,0.05); 
-    display: flex; 
-    flex-direction: column;
-    overflow-y: auto; /* İÇERİK TAŞARSA BURASI KAYDIRILACAK */
-}
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(0, 243, 255, 0.2);
+            margin-bottom: 20px;
+            flex-shrink: 0;
+        }
 
-/* Panel içindeki scroll bar'ı güzelleştirme */
-.panel::-webkit-scrollbar { width: 5px; }
-.panel::-webkit-scrollbar-thumb { background: rgba(0,243,255,0.3); border-radius: 5px; }
+        .user-info {
+            font-family: 'Orbitron';
+            font-size: 14px;
+            color: var(--text-dim);
+            margin-right: 20px;
+        }
 
-.panel h3 { 
-    color: var(--neon-blue); 
-    font-size: 16px; 
-    margin-top: 0; 
-    margin-bottom: 20px; 
-    text-align: center;
-    border-bottom: 1px solid rgba(0,243,255,0.1);
-    padding-bottom: 10px;
-}
+        .user-highlight {
+            color: var(--neon-blue);
+            text-shadow: 0 0 10px rgba(0, 243, 255, 0.5);
+        }
 
-/* --- KATMAN BUTONLARI (N-01 vb.) --- */
-.layers { 
-    display: grid; 
-    grid-template-columns: repeat(5, 1fr); 
-    gap: 8px; 
-    margin-bottom: 20px; 
-}
+        /* --- 3 SÜTUNLU GRID YAPISI --- */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 350px 1fr 350px;
+            gap: 25px;
+            flex: 1;
+            overflow: hidden; /* Taşmayı engeller */
+        }
 
-.layer {
-    aspect-ratio: 1; 
-    display: flex; 
-    align-items: center; 
-    justify-content: center;
-    background: rgba(0, 243, 255, 0.05); 
-    border: 1px solid rgba(0, 243, 255, 0.3);
-    border-radius: 6px; 
-    cursor: pointer; 
-    font-family: 'Orbitron'; 
-    font-weight: bold; 
-    font-size: 14px;
-    transition: 0.2s;
-}
+        .panel {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto; /* İçerik kaydırma */
+            position: relative;
+        }
 
-.layer:hover { 
-    background: rgba(0, 243, 255, 0.2); 
-}
+        /* Scrollbar Tasarımı */
+        .panel::-webkit-scrollbar { width: 6px; }
+        .panel::-webkit-scrollbar-track { background: rgba(0,0,0,0.3); }
+        .panel::-webkit-scrollbar-thumb { background: var(--neon-blue); border-radius: 3px; }
 
-.layer.active { 
-    background: var(--neon-blue); 
-    color: #000; 
-    border-color: #fff; 
-    box-shadow: 0 0 15px var(--neon-blue); 
-}
+        /* --- KATMAN SEÇİCİLER (L-01...L-10) --- */
+        .layers {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
 
-/* --- ORTA PANEL (MESAJLARIN GELDİĞİ YER) --- */
-.messages-panel { 
-    grid-column: 2; 
-    border: 1px solid rgba(0, 243, 255, 0.2); 
-}
+        .layer {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 243, 255, 0.05);
+            border: 1px solid rgba(0, 243, 255, 0.3);
+            border-radius: 6px;
+            cursor: pointer;
+            font-family: 'Orbitron';
+            font-weight: bold;
+            font-size: 13px;
+            transition: all 0.2s ease;
+        }
 
-#log { 
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
+        .layer:hover {
+            background: rgba(0, 243, 255, 0.2);
+            box-shadow: 0 0 10px rgba(0, 243, 255, 0.3);
+        }
 
-/* --- MESAJ KUTULARI TASARIMI --- */
-.msg {
-    padding: 15px; 
-    border-radius: 10px; 
-    background: rgba(0,0,0,0.6);
-    border-left: 3px solid transparent; 
-    animation: msgPop 0.3s ease backwards;
-    display: flex; 
-    flex-direction: column;
-}
+        .layer.active {
+            background: var(--neon-blue);
+            color: #000;
+            border-color: #fff;
+            box-shadow: 0 0 20px var(--neon-blue);
+            transform: scale(1.05);
+        }
 
-.msg.me { 
-    border-left-color: var(--neon-blue); 
-}
+        /* --- ARAÇ ÇUBUĞU (Süre ve Resim) --- */
+        .tools-row {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
 
-.msg.other { 
-    border-left-color: var(--neon-pink); 
-}
+        .file-upload-label {
+            margin-top: 0;
+            background: rgba(255, 0, 153, 0.1);
+            color: var(--neon-pink);
+            border: 1px solid var(--neon-pink);
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
 
-.msg-header { 
-    display: flex; 
-    justify-content: space-between; 
-    margin-bottom: 10px; 
-    font-size: 13px; 
-}
+        .file-upload-label:hover {
+            background: var(--neon-pink);
+            color: #000;
+        }
 
-.msg.me .msg-header b { color: var(--neon-blue); }
-.msg.other .msg-header b { color: var(--neon-pink); }
+        /* --- MESAJ ALANI --- */
+        .messages-panel {
+            grid-column: 2;
+            border: 1px solid rgba(0, 243, 255, 0.2);
+        }
 
-.msg-text { 
-    font-family: 'source code pro', monospace; 
-    font-size: 14px; 
-    word-break: break-all; 
-    margin-bottom: 15px; 
-    color: #ddd;
-}
+        #log {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            padding-bottom: 20px;
+        }
 
-/* --- YENİ DEVASA KOPYALA BUTONU --- */
-.copy-btn {
-    align-self: center; 
-    width: 100%; 
-    margin: 0; 
-    padding: 10px;
-    background: rgba(0, 255, 157, 0.1); 
-    border: 1px solid rgba(0, 255, 157, 0.5);
-    color: var(--neon-green); 
-    font-size: 13px; 
-    border-radius: 6px;
-}
+        .msg {
+            padding: 15px;
+            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.6);
+            border-left: 3px solid transparent;
+            animation: slideIn 0.3s ease forwards;
+            position: relative;
+        }
 
-.copy-btn:hover { 
-    background: var(--neon-green); 
-    color: #000; 
-    box-shadow: 0 0 15px rgba(0, 255, 157, 0.5); 
-}
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-10px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
 
-/* --- SONUÇ KUTUSU (ŞİFRE ÇÖZÜLEN YER) --- */
-#result {
-    margin-top: 15px; 
-    padding: 15px; 
-    background: rgba(0,0,0,0.5);
-    border: 1px dashed rgba(0, 255, 157, 0.4); 
-    border-radius: 8px;
-    min-height: 80px; 
-    word-break: break-all; 
-    font-family: 'source code pro', monospace;
-    color: var(--neon-green);
-}
+        .msg.me {
+            border-left-color: var(--neon-blue);
+            background: linear-gradient(90deg, rgba(0,243,255,0.05), transparent);
+        }
 
-@keyframes msgPop { 
-    from { opacity: 0; transform: translateY(10px); } 
-    to { opacity: 1; transform: translateY(0); } 
-}
+        .msg.other {
+            border-left-color: var(--neon-pink);
+            background: linear-gradient(90deg, rgba(255,0,153,0.05), transparent);
+        }
 
-/* --- MOBİL UYUM (Eğer küçük ekranda açılırsa) --- */
-@media (max-width: 1000px) {
-    .main-grid { 
-        grid-template-columns: 1fr; 
-        overflow-y: auto; 
-    }
-    .panel {
-        overflow-y: visible;
-    }
-    .messages-panel { 
-        height: 500px; 
-        grid-column: 1; 
-        overflow-y: auto;
-    }
-}
-</style>
+        .msg-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 12px;
+            opacity: 0.8;
+            font-family: 'Orbitron';
+        }
+
+        .msg-text {
+            font-family: 'Source Code Pro', monospace;
+            font-size: 14px;
+            line-height: 1.5;
+            word-break: break-all;
+            color: #ddd;
+        }
+
+        /* --- SOHBET İÇİ BUTONLAR --- */
+        .decrypt-btn-inline {
+            background: rgba(0, 255, 157, 0.1);
+            border: 1px solid var(--neon-green);
+            color: var(--neon-green);
+            padding: 8px;
+            border-radius: 4px;
+            width: 100%;
+            margin-top: 10px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .decrypt-btn-inline:hover {
+            background: var(--neon-green);
+            color: #000;
+            box-shadow: 0 0 15px var(--neon-green);
+        }
+
+        /* --- SONUÇ KUTUSU --- */
+        #result {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px dashed var(--neon-green);
+            border-radius: 8px;
+            color: var(--neon-green);
+            font-family: 'Source Code Pro', monospace;
+            min-height: 80px;
+            word-break: break-all;
+        }
+
+        /* --- YAZIYOR GÖSTERGESİ --- */
+        #typing-indicator {
+            position: absolute;
+            bottom: 10px;
+            left: 20px;
+            font-size: 12px;
+            color: var(--neon-pink);
+            font-style: italic;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        /* --- RESPONSIVE AYARLARI --- */
+        @media (max-width: 1100px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+                overflow-y: auto;
+            }
+            .messages-panel {
+                height: 500px;
+                grid-column: 1;
+            }
+            .container {
+                height: auto;
+                min-height: 95vh;
+            }
+            .panel {
+                overflow: visible;
+            }
+        }
+    </style>
 </head>
 <body>
 
-<canvas id="cyber-canvas"></canvas>
+    <canvas id="cyber-canvas"></canvas>
 
-<div class="cyber-card" id="login">
-    <h1>VOLKTRONIC</h1>
-    <span class="subtitle">GÜVENLİ AĞ BAĞLANTISI</span>
-    
-    <input id="username" placeholder="Kullanıcı Adı" autocomplete="off">
-    <input id="room" placeholder="Oda Adı" autocomplete="off">
-    <input id="secretKey" type="password" placeholder="Gizli Anahtar (Şifre)" autocomplete="off">
-    
-    <button class="primary" onclick="window.enterRoom()">SİSTEME GİRİŞ YAP</button>
-</div>
+    <div class="cyber-card" id="login">
+        <h1>VOLKTRONIC</h1>
+        <span class="subtitle">GÜVENLİ İSTİHBARAT AĞI v3.0</span>
 
-<div class="cyber-card container hidden" id="chat">
-    
-    <div class="header">
-        <h2>ODA: <span id="roomNameDisplay"></span></h2>
-        <div class="user-badge">KULLANICI: <span id="userNameDisplay" style="color:var(--neon-blue)"></span></div>
+        <div class="input-group">
+            <input id="username" type="text" placeholder="AJAN KOD ADI" autocomplete="off">
+        </div>
+        <div class="input-group">
+            <input id="room" type="text" placeholder="GÜVENLİ ODA ID" autocomplete="off">
+        </div>
+        <div class="input-group">
+            <input id="secretKey" type="password" placeholder="MASTER ŞİFRELEME ANAHTARI" autocomplete="off">
+        </div>
+
+        <button class="primary" onclick="window.enterRoom()">SİSTEME GİRİŞ YAP</button>
     </div>
 
-    <div class="main-grid">
+    <div class="container hidden" id="chat">
         
-        <div class="panel">
-            <h3>🔒 MESAJ ŞİFRELE</h3>
-            
-            <div class="layers" id="encLayers"></div>
-            
-            <textarea id="message" placeholder="Gönderilecek gizli mesajı yazın..."></textarea>
-            
-            <button class="primary" onclick="window.encryptAndSend()">ŞİFRELE VE GÖNDER</button>
+        <div class="header">
+            <h2>ODA: <span id="roomNameDisplay" style="color:var(--neon-green)">---</span></h2>
+            <div>
+                <span class="user-info">BAĞLI: <span id="userNameDisplay" class="user-highlight">---</span></span>
+                <button class="panic-btn" onclick="window.triggerPanic()">🚨 ACİL DURUM (PANİK)</button>
+            </div>
         </div>
 
-        <div class="panel messages-panel">
-            <h3 style="color: #fff; font-size: 12px; opacity: 0.5;">/// ŞİFRELİ VERİ AKIŞI ///</h3>
+        <div class="main-grid">
             
-            <div id="log"></div>
-        </div>
-
-        <div class="panel">
-            <h3>🔓 ŞİFRE ÇÖZÜCÜ</h3>
-            
-            <div class="layers" id="decLayers"></div>
-            
-            <textarea id="cipher" placeholder="Kopyalanan şifreli metni buraya yapıştırın..."></textarea>
-            
-            <button class="secondary" onclick="window.decryptMessage()">ŞİFREYİ ÇÖZ</button>
-            
-            <div id="result">Çözüm burada görünecek...</div>
-        </div>
-        
-    </div>
-</div>
-
-<script>
-    const canvas = document.getElementById('cyber-canvas');
-    const ctx = canvas.getContext('2d');
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-
-    let particlesArray = [];
-    
-    class Particle {
-        constructor() {
-            this.x = Math.random() * canvas.width; 
-            this.y = Math.random() * canvas.height;
-            this.size = Math.random() * 2 + 1;
-            this.speedX = Math.random() * 1 - 0.5; 
-            this.speedY = Math.random() * 1 - 0.5;
-            this.color = Math.random() > 0.5 ? '#00f3ff' : '#ff0099';
-        }
-        update() {
-            this.x += this.speedX; 
-            this.y += this.speedY;
-            if (this.x > canvas.width || this.x < 0) this.speedX = -this.speedX;
-            if (this.y > canvas.height || this.y < 0) this.speedY = -this.speedY;
-        }
-        draw() {
-            ctx.fillStyle = this.color; 
-            ctx.beginPath();
-            ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); 
-            ctx.fill();
-        }
-    }
-    
-    function initCanvas() {
-        particlesArray = [];
-        for (let i = 0; i < 100; i++) {
-            particlesArray.push(new Particle());
-        }
-    }
-    
-    function animateCanvas() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        
-        for (let i = 0; i < particlesArray.length; i++) {
-            particlesArray[i].update(); 
-            particlesArray[i].draw();
-            
-            for (let j = i; j < particlesArray.length; j++) {
-                const dx = particlesArray[i].x - particlesArray[j].x;
-                const dy = particlesArray[i].y - particlesArray[j].y;
-                const distance = Math.sqrt(dx * dx + dy * dy);
+            <div class="panel cyber-card" style="border:none; box-shadow:none; padding:0;">
+                <h3>🔒 ŞİFRELE & GÖNDER</h3>
                 
-                if (distance < 100) {
-                    ctx.beginPath();
-                    ctx.strokeStyle = `rgba(0, 243, 255, ${1 - distance/100})`;
-                    ctx.lineWidth = 0.5;
-                    ctx.moveTo(particlesArray[i].x, particlesArray[i].y);
-                    ctx.lineTo(particlesArray[j].x, particlesArray[j].y);
-                    ctx.stroke();
-                }
+                <div class="layers" id="encLayers">
+                    </div>
+
+                <textarea id="message" placeholder="Gizli mesajınızı buraya girin..."></textarea>
+
+                <div class="tools-row">
+                    <select id="burnTimer" style="margin-top:0; flex:1;">
+                        <option value="0">⏳ İmha Yok (Kalıcı)</option>
+                        <option value="10">🔥 10 Saniye Sonra İmha</option>
+                        <option value="30">🔥 30 Saniye Sonra İmha</option>
+                        <option value="60">🔥 1 Dakika Sonra İmha</option>
+                    </select>
+
+                    <label for="imageInput" class="file-upload-label upload-btn">
+                        📷 FOTOĞRAF
+                    </label>
+                    <input type="file" id="imageInput" accept="image/*" style="display:none;">
+                </div>
+
+                <button class="primary" onclick="window.encryptAndSend()">VERİYİ ŞİFRELE VE GÖNDER</button>
+            </div>
+
+            <div class="panel messages-panel cyber-card" style="border:1px solid rgba(0,243,255,0.2); box-shadow:none; padding:15px;">
+                <h3 style="opacity:0.6; font-size:12px; border:none;">/// KRİPTOLU VERİ AKIŞI ///</h3>
+                
+                <div id="log">
+                    </div>
+
+                <div id="typing-indicator">Ajan yazıyor...</div>
+            </div>
+
+            <div class="panel cyber-card" style="border:none; box-shadow:none; padding:0;">
+                <h3>🔓 HARİCİ ÇÖZÜCÜ</h3>
+                
+                <div class="layers" id="decLayers">
+                    </div>
+
+                <textarea id="cipher" placeholder="Başka yerden kopyalanan şifreyi buraya yapıştır..."></textarea>
+
+                <button class="secondary" onclick="window.decryptExternal()">MANUEL ÇÖZME</button>
+
+                <div id="result">Sonuç bekleniyor...</div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // --- 3D TILT EFEKTİ ---
+        // Kartların fare ile üzerine gelince 3 boyutlu eğilmesini sağlar
+        const cards = document.querySelectorAll('.cyber-card');
+
+        cards.forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                
+                // Dönüş derecesi hesaplama
+                const rotateX = ((y - centerY) / centerY) * -5; // Max 5 derece
+                const rotateY = ((x - centerX) / centerX) * 5;
+
+                card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.01, 1.01, 1.01)`;
+            });
+
+            card.addEventListener('mouseleave', () => {
+                // Fare çıkınca kartı düzelt
+                card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale3d(1, 1, 1)';
+            });
+        });
+
+        // --- ARKAPLAN PARÇACIK ANİMASYONU ---
+        const canvas = document.getElementById('cyber-canvas');
+        const ctx = canvas.getContext('2d');
+        
+        let width, height;
+        let particles = [];
+
+        function resize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * width;
+                this.y = Math.random() * height;
+                this.vx = (Math.random() - 0.5) * 0.5;
+                this.vy = (Math.random() - 0.5) * 0.5;
+                this.size = Math.random() * 2 + 1;
+                this.color = Math.random() > 0.5 ? '#00f3ff' : '#ff0099';
+            }
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                if(this.x < 0 || this.x > width) this.vx *= -1;
+                if(this.y < 0 || this.y > height) this.vy *= -1;
+            }
+            draw() {
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI*2);
+                ctx.fill();
             }
         }
-        requestAnimationFrame(animateCanvas);
-    }
-    
-    window.addEventListener('resize', () => { 
-        canvas.width = window.innerWidth; 
-        canvas.height = window.innerHeight; 
-        initCanvas(); 
-    });
-    
-    initCanvas(); 
-    animateCanvas();
-</script>
 
-<script type="module" src="crypto.js"></script>
+        // Parçacıkları oluştur
+        for(let i=0; i<100; i++) particles.push(new Particle());
+
+        function animate() {
+            ctx.clearRect(0, 0, width, height);
+            
+            // Parçacıkları ve çizgileri çiz
+            for(let i=0; i<particles.length; i++) {
+                particles[i].update();
+                particles[i].draw();
+                
+                // Yakın olanları birbirine bağla
+                for(let j=i; j<particles.length; j++) {
+                    const dx = particles[i].x - particles[j].x;
+                    const dy = particles[i].y - particles[j].y;
+                    const dist = Math.sqrt(dx*dx + dy*dy);
+                    
+                    if(dist < 100) {
+                        ctx.strokeStyle = `rgba(0, 243, 255, ${1 - dist/100})`;
+                        ctx.lineWidth = 0.5;
+                        ctx.beginPath();
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.stroke();
+                    }
+                }
+            }
+            requestAnimationFrame(animate);
+        }
+        animate();
+    </script>
+
+    <script type="module" src="crypto.js"></script>
 
 </body>
 </html>
