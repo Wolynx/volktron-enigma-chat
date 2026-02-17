@@ -1,124 +1,74 @@
-<!DOCTYPE html>
-<html lang="tr">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Volktronic Crypto</title>
+/* ================= STATE ================= */
+let USER="", ROOM="", roomRef;
+const encSel=new Set(), decSel=new Set();
+const db = firebase.database();
 
-<!-- Firebase compat (STABİL) -->
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
-
-<style>
-*{box-sizing:border-box;font-family:"Segoe UI",sans-serif}
-body{
-  margin:0;min-height:100vh;
-  background:
-    radial-gradient(circle at top,#0ff3,transparent 60%),
-    linear-gradient(135deg,#020617,#020b2e);
-  color:#fff;
-  display:flex;align-items:center;justify-content:center
+/* ================= SIMPLE CRYPTO =================
+   (Stabil, demo seviyesi – sonra AES'e yükseltiriz) */
+function xorCrypt(text,key){
+  return [...text].map((c,i)=>
+    String.fromCharCode(
+      c.charCodeAt(0) ^ key.charCodeAt(i % key.length)
+    )
+  ).join("");
 }
-.hidden{display:none}
-.card,.container{
-  background:rgba(10,20,50,.92);
-  backdrop-filter:blur(10px);
-  box-shadow:0 0 40px #0ff3;
-  border-radius:20px
+
+/* ================= UI ================= */
+function makeLayers(el,set){
+  for(let i=1;i<=10;i++){
+    const d=document.createElement("div");
+    d.className="layer";
+    d.textContent="Katman "+i;
+    d.onclick=()=>{
+      set.has(i)?set.delete(i):set.add(i);
+      d.classList.toggle("active");
+    };
+    el.appendChild(d);
+  }
 }
-.card{width:420px;padding:30px;text-align:center}
-.card h1{color:#4deaff}
-input,textarea{
-  width:100%;padding:12px;border-radius:10px;
-  border:none;outline:none;margin-top:10px;font-size:15px
+makeLayers(encLayers,encSel);
+makeLayers(decLayers,decSel);
+
+/* ================= LOGIN ================= */
+function enterRoom(){
+  USER = username.value.trim();
+  ROOM = room.value.trim();
+  if(!USER || !ROOM || !secret.value){
+    alert("Eksik bilgi");
+    return;
+  }
+
+  login.classList.add("hidden");
+  chat.classList.remove("hidden");
+  userName.textContent = USER;
+  roomName.textContent = ROOM;
+
+  roomRef = db.ref("rooms/" + ROOM);
+  roomRef.on("child_added", snap => {
+    const d = snap.val();
+    const div = document.createElement("div");
+    div.className = "msg " + (d.user === USER ? "me":"other");
+    div.innerHTML = "<b>"+d.user+"</b><br>" +
+      xorCrypt(d.text, secret.value);
+    log.appendChild(div);
+    log.scrollTop = log.scrollHeight;
+  });
 }
-button{
-  margin-top:15px;padding:12px;width:100%;
-  border:none;border-radius:12px;font-size:16px;
-  cursor:pointer;font-weight:bold
+
+/* ================= SEND ================= */
+function sendMsg(){
+  if(!message.value) return;
+  const enc = xorCrypt(message.value, secret.value);
+  roomRef.push({
+    user: USER,
+    text: enc,
+    time: Date.now()
+  });
+  message.value="";
 }
-.primary{background:#25d9f0;color:#000}
-.secondary{background:#ff77b7}
-.container{width:1100px;padding:25px}
-.header{display:flex;justify-content:space-between;align-items:center;margin-bottom:15px}
-.header h2{margin:0;color:#4deaff}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:25px}
-.section h3{color:#ff9ad5}
-.layers{
-  display:grid;grid-template-columns:repeat(5,1fr);
-  gap:10px;margin-bottom:10px
+
+/* ================= MANUAL DECRYPT ================= */
+function manualDecrypt(){
+  result.textContent =
+    "Çözüm: " + xorCrypt(cipher.value, secret.value);
 }
-.layer{
-  padding:12px;border-radius:12px;
-  background:linear-gradient(135deg,#1e90ff,#00d4ff);
-  cursor:pointer;font-weight:600;
-  text-align:center
-}
-.layer.active{
-  background:linear-gradient(135deg,#00ffd5,#00aaff);
-  box-shadow:0 0 15px #00ffd5aa
-}
-.messages{
-  margin-top:25px;padding:15px;
-  background:rgba(0,0,0,.4);
-  border-radius:15px;max-height:230px;
-  overflow-y:auto
-}
-.msg{padding:10px;border-radius:10px;margin-top:8px}
-.msg.me{background:linear-gradient(135deg,#00ffd5,#00aaff);color:#000}
-.msg.other{background:#020617}
-.footer{text-align:right;font-size:12px;opacity:.6;margin-top:10px}
-</style>
-</head>
-
-<body>
-
-<div class="card" id="login">
-  <h1>🔐 Volktronic Crypto</h1>
-  <input id="username" placeholder="Kullanıcı adı">
-  <input id="room" placeholder="Oda">
-  <input id="secret" placeholder="Gizli anahtar">
-  <button class="primary" onclick="enterRoom()">Odaya Gir</button>
-</div>
-
-<div class="container hidden" id="chat">
-  <div class="header">
-    <h2>Oda: <span id="roomName"></span></h2>
-    <div>👤 <span id="userName"></span></div>
-  </div>
-
-  <div class="grid">
-    <div class="section">
-      <h3>🔒 Şifrele</h3>
-      <div class="layers" id="encLayers"></div>
-      <textarea id="message"></textarea>
-      <button class="primary" onclick="sendMsg()">Gönder</button>
-    </div>
-
-    <div class="section">
-      <h3>🔓 Şifre Çöz</h3>
-      <div class="layers" id="decLayers"></div>
-      <textarea id="cipher"></textarea>
-      <button class="secondary" onclick="manualDecrypt()">Çöz</button>
-      <div id="result"></div>
-    </div>
-  </div>
-
-  <div class="messages">
-    <b>📥 Gelen Mesajlar</b>
-    <div id="log"></div>
-  </div>
-
-  <div class="footer">Volkan Özdemir</div>
-</div>
-
-<!-- Firebase init + App -->
-<script>
-firebase.initializeApp({
-  databaseURL: "https://volktron-chat-default-rtdb.firebaseio.com/"
-});
-</script>
-
-<script src="app.js"></script>
-</body>
-</html>
