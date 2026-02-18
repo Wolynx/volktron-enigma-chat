@@ -178,12 +178,13 @@
             padding: 22px 28px; border-bottom: 1px solid var(--border-light); 
             display: flex; justify-content: space-between; align-items: center;
             background: rgba(255,255,255,0.02);
+            flex-shrink: 0; /* Mobil güvenlik için */
         }
         .panel-title { font-size: 16px; font-weight: 700; color: var(--text-primary); letter-spacing: 0.5px; }
-        .panel-body { padding: 28px; overflow-y: auto; flex: 1; display: flex; flex-direction: column;}
+        .panel-body { padding: 28px; overflow-y: auto; flex: 1; display: flex; flex-direction: column; min-height: 0;} /* min-height 0 kritik */
         .panel-body::-webkit-scrollbar { width: 6px; } .panel-body::-webkit-scrollbar-thumb { background: rgba(16, 185, 129, 0.3); border-radius: 6px; }
 
-        .status-indicator { display: flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 600; color: var(--text-primary); background: rgba(16, 185, 129, 0.1); padding: 6px 12px; border-radius: 20px; border: 1px solid var(--accent-glow); }
+        .status-indicator { display: flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 600; color: var(--text-primary); background: rgba(16, 185, 129, 0.1); padding: 6px 12px; border-radius: 20px; border: 1px solid var(--accent-glow); flex-shrink: 0;}
         .status-dot { width: 10px; height: 10px; background: var(--accent-primary); border-radius: 50%; box-shadow: 0 0 15px var(--accent-primary); animation: pulseDot 2s infinite; }
         
         @keyframes pulseDot { 0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); } 70% { box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); } 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); } }
@@ -197,7 +198,7 @@
         /* =========================================
            6. ETKİLEŞİMLİ KATMAN SEÇİCİLER
            ========================================= */
-        .layers-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 24px; }
+        .layers-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 24px; flex-shrink:0;}
         .layer {
             aspect-ratio: 1; display: flex; align-items: center; justify-content: center;
             background: rgba(255,255,255,0.03); border: 2px solid var(--border-light);
@@ -221,12 +222,13 @@
         .layer.active::before { height: 100%; opacity: 0.8; }
 
         #message, #cipher {
-            min-height: 150px; resize: vertical;
+            min-height: 150px; resize: none; /* Mobilde layout bozmaması için none yapıldı */
             font-family: 'JetBrains Mono', monospace; font-size: 14px; line-height: 1.6;
             padding: 18px; margin-top: 10px; background: rgba(0,0,0,0.5);
+            flex-shrink: 0;
         }
 
-        .tools-row { display: flex; gap: 12px; margin-top: 20px; }
+        .tools-row { display: flex; gap: 12px; margin-top: 20px; flex-shrink: 0;}
         .tool-btn { 
             flex: 1; background: rgba(255,255,255,0.03); border: 2px solid var(--border-light); 
             color: var(--text-secondary); padding: 14px; font-size: 14px; font-weight: 600;
@@ -284,7 +286,7 @@
 
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        #result { margin-top: auto; padding: 24px; background: rgba(0,0,0,0.4); border: 2px solid var(--border-light); border-left: 6px solid var(--accent-primary); border-radius: var(--radius-md); color: var(--text-primary); font-size: 15px; word-break: break-word; min-height: 120px; font-family: 'JetBrains Mono', monospace; line-height: 1.6; box-shadow: inset 0 0 30px rgba(0,0,0,0.5); transition: var(--transition-smooth); }
+        #result { margin-top: auto; padding: 24px; background: rgba(0,0,0,0.4); border: 2px solid var(--border-light); border-left: 6px solid var(--accent-primary); border-radius: var(--radius-md); color: var(--text-primary); font-size: 15px; word-break: break-word; min-height: 120px; font-family: 'JetBrains Mono', monospace; line-height: 1.6; box-shadow: inset 0 0 30px rgba(0,0,0,0.5); transition: var(--transition-smooth); flex-shrink: 0;}
         #result:not(:empty) { border-color: var(--accent-primary); box-shadow: inset 0 0 30px rgba(16, 185, 129, 0.1), 0 0 20px var(--accent-glow); }
 
         #typing-indicator { font-size: 13px; color: var(--text-secondary); opacity: 0; transition: var(--transition-smooth); padding-top: 12px; font-weight: 600; display: flex; align-items: center; gap: 8px;}
@@ -293,7 +295,7 @@
         /* =========================================
            8. MODAL (AÇILIR PENCERELER)
            ========================================= */
-        .modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.75); backdrop-filter: blur(8px); z-index: 1000; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: var(--transition-smooth); }
+        .modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.75); backdrop-filter: blur(8px); z-index: 2000; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: var(--transition-smooth); }
         .modal-bg.active { opacity: 1; pointer-events: auto; }
         .modal-card { background: var(--bg-panel); border: 1px solid var(--border-light); border-radius: var(--radius-lg); width: 550px; max-width: 90%; padding: 36px; box-shadow: var(--shadow-soft), 0 0 40px rgba(16, 185, 129, 0.1) inset; transform: scale(0.95) translateY(20px); transition: var(--transition-smooth); }
         .modal-bg.active .modal-card { transform: scale(1) translateY(0); }
@@ -303,43 +305,75 @@
         .close-modal:hover { color: var(--danger); transform: rotate(90deg); }
 
         /* =========================================
-           9. MOBİL OPTİMİZASYONU
+           9. KESİN ÇÖZÜM: MOBİL NATIVE UYGULAMA MİMARİSİ
            ========================================= */
         @media (min-width: 1025px) {
             .workspace-panel { display: flex !important; }
         }
 
         @media (max-width: 1024px) {
-            body { align-items: flex-start; }
-            .app-container { margin-top: 15px; padding: 10px; height: 100dvh; overflow: hidden; }
-            .top-navbar { flex-direction: column; gap: 15px; padding: 15px; width: 100%; border-radius: var(--radius-md); }
-            .nav-links { width: 100%; justify-content: space-between; flex-wrap: wrap; gap: 10px;}
-            .nav-item { padding: 8px 12px; font-size: 12px; }
-            .main-grid { display: block; height: calc(100dvh - 200px); margin-top: 15px; }
-            .workspace-panel { display: none; height: 100%; margin-bottom: 0; } 
-            .workspace-panel.active-tab { display: flex; animation: fadeTab 0.3s ease forwards; }
+            /* Arka planın kaymasını ve layout'un çökmesini tamamen engeller */
+            body, html { 
+                position: fixed; 
+                width: 100%; height: 100%; 
+                overflow: hidden; 
+                margin: 0; padding: 0; 
+            }
+            
+            /* Ekranın tamamını güvenli bir kapsayıcıya alırız */
+            .app-container { 
+                position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+                width: 100vw; height: 100dvh; /* Klavye açılsa da çökmeyecek */
+                margin: 0; padding: 10px; padding-bottom: 75px; /* Alt menüye boşluk */
+                display: flex; flex-direction: column; gap: 10px;
+                overflow: hidden;
+                border-radius: 0;
+            }
+            
+            .top-navbar { 
+                flex-direction: column; gap: 10px; padding: 12px; width: 100%; 
+                border-radius: var(--radius-md); flex-shrink: 0; 
+            }
+            .nav-links { width: 100%; justify-content: center; gap: 8px;}
+            .nav-item, .btn-danger { flex: 1; padding: 8px 12px; font-size: 12px; text-align: center; }
+
+            /* Grid mantığını iptal edip tamamen Flexbox ile donduruyoruz */
+            .main-grid { display: flex; flex: 1; height: auto; min-height: 0; margin-top: 0; gap: 0;}
+            
+            .workspace-panel { display: none; width: 100%; height: 100%; flex-direction: column; border-radius: 12px; }
+            .workspace-panel.active-tab { display: flex; animation: fadeTab 0.2s ease-out forwards; }
             @keyframes fadeTab { from { opacity:0; transform:scale(0.98); } to { opacity:1; transform:scale(1); } }
 
+            .panel-header { padding: 15px; }
+            .panel-title { font-size: 14px; }
+            
+            /* İçerik sadece burada kayar, layout çökmez */
+            .panel-body { padding: 15px; padding-bottom: 20px !important; flex: 1; overflow-y: auto; min-height: 0; } 
+
             .mobile-nav {
-                display: flex; position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+                display: flex; position: absolute; /* Fixed yerine Absolute, container'ı taşmaz */
+                bottom: 15px; left: 50%; transform: translateX(-50%);
                 background: rgba(10, 15, 12, 0.95); border: 1px solid var(--border-light);
-                padding: 8px; border-radius: 50px; gap: 5px; width: 92%; max-width: 400px;
-                box-shadow: 0 10px 40px rgba(0,0,0,0.8); z-index: 100; backdrop-filter: blur(20px);
+                padding: 6px; border-radius: 50px; gap: 5px; width: 92%; max-width: 400px;
+                box-shadow: 0 10px 40px rgba(0,0,0,0.8); z-index: 1000; backdrop-filter: blur(20px);
             }
             .m-nav-btn {
                 flex: 1; background: transparent; border: none; color: var(--text-secondary);
-                padding: 14px 0; font-size: 13px; font-family: 'Plus Jakarta Sans'; font-weight: 700;
+                padding: 12px 0; font-size: 13px; font-family: 'Plus Jakarta Sans'; font-weight: 700;
                 border-radius: 40px; transition: 0.3s; cursor: pointer;
             }
             .m-nav-btn.active {
                 background: rgba(16, 185, 129, 0.15); color: var(--accent-primary);
                 box-shadow: inset 0 0 10px rgba(16, 185, 129, 0.2);
             }
-            .panel-body { padding: 15px; padding-bottom: 130px !important; } 
+            
             .layers-grid { gap: 6px; margin-bottom: 15px;}
-            .layer { font-size: 12px; }
-            #message, #cipher { min-height: 100px; }
-            #login { margin-top: 30px; width: 90%; padding: 30px 20px;}
+            .layer { font-size: 12px; height: 40px; }
+            
+            /* Metin alanının yüksekliğini kilitliyoruz ki klavye açılınca ezilmesin */
+            #message, #cipher { min-height: 80px; flex-shrink: 0; padding: 12px; font-size: 13px;}
+            
+            #login { margin-top: 5vh; width: 95%; max-height: 85vh; overflow-y: auto; padding: 25px 15px;}
         }
     </style>
 </head>
@@ -413,7 +447,7 @@
                     
                     <textarea id="message" placeholder="Güvenli ağa iletilecek mesajı buraya girin..."></textarea>
                     
-                    <div style="margin-top: 20px;">
+                    <div style="margin-top: 20px; flex-shrink: 0;">
                         <select id="burnTimer">
                             <option value="0">🛡️ Kalıcı Mesaj (İmha Yok)</option>
                             <option value="10">🔥 10 Saniye Sonra İmha Et</option>
@@ -428,7 +462,7 @@
                         <div class="tool-btn" id="micBtn" onclick="window.toggleAudioRecord()">🎤 Ses</div>
                     </div>
 
-                    <button class="btn-primary" style="margin-top: 28px; width: 100%;" onclick="window.encryptAndSend()"><span>Şifrele ve İlet 🚀</span></button>
+                    <button class="btn-primary" style="margin-top: 28px; width: 100%; flex-shrink:0;" onclick="window.encryptAndSend()"><span>Şifrele ve İlet 🚀</span></button>
                 </div>
             </div>
 
@@ -456,7 +490,7 @@
                     
                     <textarea id="cipher" placeholder="Çözülecek ham (RAW) şifreli veriyi buraya yapıştırın..."></textarea>
                     
-                    <button class="btn-secondary" style="width: 100%; margin-top: 20px; border-color: var(--accent-primary); color: var(--accent-primary);" onclick="window.decryptExternal()"><span>🔓 Veriyi Çöz</span></button>
+                    <button class="btn-secondary" style="width: 100%; margin-top: 20px; border-color: var(--accent-primary); color: var(--accent-primary); flex-shrink:0;" onclick="window.decryptExternal()"><span>🔓 Veriyi Çöz</span></button>
 
                     <div id="result">
                         <span style="color: var(--text-secondary); font-style: italic;">Çözüm sonucu burada görüntülenecek...</span>
@@ -515,10 +549,19 @@
             
             document.querySelectorAll('.m-nav-btn').forEach(b => b.classList.remove('active'));
             document.getElementById(btnId).classList.add('active');
+
+            if(panelId === 'chat-panel') {
+                setTimeout(() => {
+                    const scrollContainer = document.getElementById("chat-scroll-container");
+                    if(scrollContainer) {
+                        scrollContainer.scrollTop = scrollContainer.scrollHeight;
+                    }
+                }, 50);
+            }
         };
     </script>
 
-    <script src="crypto.js?v=17"></script>
+    <script src="crypto.js?v=20"></script>
 
 </body>
 </html>
