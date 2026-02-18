@@ -1,5 +1,5 @@
 /* =======================================================
-   VOLKTRONIC CRYPTO ENGINE v7.0 - SAAS EDITION & MOBILE TABS
+   VOLKTRONIC CRYPTO ENGINE v8.0 - MOBILE OPTIMIZED
    ======================================================= */
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
@@ -207,18 +207,20 @@ function startFirebaseListeners() {
             } else {
                 let htmlContent = "";
                 
+                // YENİ: Görseller artık yüksekliği sınırlandırılarak gösteriliyor, ekranı patlatmıyor!
                 if (decrypted.startsWith("IMG||")) {
                     const parts = decrypted.split("||"); 
-                    htmlContent = `<img src="${parts[1]}" style="max-width:100%; border-radius:8px; margin-bottom:8px;"><br>${parts[2] || ""}`;
+                    htmlContent = `<img src="${parts[1]}" style="max-width:100%; max-height:280px; object-fit:contain; border-radius:8px; margin-bottom:12px; box-shadow:0 0 15px rgba(16,185,129,0.1); display:block;">
+                                   <div style="font-size:15px; color:#fff; word-break:break-word;">${parts[2] || ""}</div>`;
                 } 
                 else if (decrypted.startsWith("AUDIO||")) {
                     const parts = decrypted.split("||");
                     htmlContent = `
-                        <div style="background:rgba(0,0,0,0.2); padding:12px; border-radius:8px; display:flex; align-items:center; gap:12px; margin-bottom:8px;">
+                        <div style="background:rgba(0,0,0,0.2); padding:12px; border-radius:8px; display:flex; align-items:center; gap:12px; margin-bottom:12px;">
                             <span style="font-size:20px;">🎧</span>
-                            <audio controls src="${parts[1]}" style="height:35px; outline:none;"></audio>
+                            <audio controls src="${parts[1]}" style="height:35px; outline:none; width:100%;"></audio>
                         </div>
-                        ${parts[2] || ""}
+                        <div style="font-size:15px; color:#fff; word-break:break-word;">${parts[2] || ""}</div>
                     `;
                 }
                 else if (decrypted.startsWith("TXT||")) {
@@ -325,7 +327,6 @@ function encryptAndSend() {
 
     push(roomMessagesRef, { user: USER, text: encryptedPayload, time: Date.now(), burn: burnTime });
 
-    // TEMİZLİK
     msgInput.value = "";
     selectedImageBase64 = null;
     selectedAudioBase64 = null;
@@ -338,7 +339,6 @@ function encryptAndSend() {
     micBtn.innerHTML = "🎤 Ses"; 
     micBtn.classList.remove("active-state");
 
-    // YENİ: MOBİLDE GÖNDERİLİNCE OTOMATİK SOHBET SEKMESİNE GEÇ
     if(window.innerWidth <= 1024 && typeof window.switchMobileTab === 'function') {
         window.switchMobileTab('chat-panel', 'm-btn-chat');
     }
