@@ -42,16 +42,14 @@
             --shadow-glow: 0 0 25px var(--accent-glow); 
             --radius-md: 14px;
             --radius-lg: 24px;
-            
-            --transition-smooth: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); 
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent;}
 
         html, body {
             width: 100%; height: 100%; margin: 0; padding: 0;
             background: var(--bg-base); color: var(--text-primary);
-            overflow: hidden; /* Dışarı taşmayı engeller */
+            overflow: hidden; 
         }
 
         body {
@@ -72,25 +70,23 @@
         .hidden { display: none !important; }
 
         /* =========================================
-           2. PREMIUM BUTONLAR
+           2. PREMIUM BUTONLAR (KASMA SORUNU ÇÖZÜLDÜ)
            ========================================= */
         button {
             padding: 16px 28px; border: none; border-radius: var(--radius-md);
             font-family: 'Plus Jakarta Sans', sans-serif; font-size: 15px; font-weight: 700;
-            cursor: pointer; transition: var(--transition-smooth);
+            cursor: pointer; 
+            /* GPU hızlandırması için all yerine sadece değişenleri yazdık */
+            transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
             display: flex; align-items: center; justify-content: center; gap: 10px;
             position: relative; overflow: hidden;
+            will-change: transform;
         }
-        button::after {
-            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(rgba(255,255,255,0.1), transparent); opacity: 0; transition: var(--transition-smooth);
-        }
-        button:hover::after { opacity: 1; }
 
         .btn-primary { background: linear-gradient(135deg, var(--accent-primary), var(--accent-hover)); color: #fff; box-shadow: 0 8px 25px -5px var(--accent-glow); }
-        .btn-primary:hover { transform: translateY(-2px) scale(1.02); box-shadow: 0 12px 35px -5px var(--accent-glow), 0 0 15px var(--accent-glow) inset; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 35px -5px var(--accent-glow), 0 0 15px var(--accent-glow) inset; }
         
-        .btn-secondary { background: rgba(255, 255, 255, 0.04); border: 1px solid var(--border-light); color: var(--text-primary); backdrop-filter: blur(10px); }
+        .btn-secondary { background: rgba(255, 255, 255, 0.04); border: 1px solid var(--border-light); color: var(--text-primary); backdrop-filter: blur(5px); }
         .btn-secondary:hover { background: rgba(255, 255, 255, 0.08); border-color: var(--border-focus); transform: translateY(-2px); }
         
         .btn-danger { background: var(--danger-bg); border: 1px solid rgba(239, 68, 68, 0.3); color: var(--danger); padding: 12px 20px; font-size: 13px; font-weight: 600; }
@@ -101,12 +97,12 @@
            ========================================= */
         #login {
             width: 100%; max-width: 440px; z-index: 10;
-            background: var(--bg-panel); backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
+            background: var(--bg-panel); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
             border: 1px solid rgba(255,255,255,0.1); border-radius: var(--radius-lg);
             padding: 45px; box-shadow: var(--shadow-soft), 0 0 40px rgba(16, 185, 129, 0.08) inset;
             animation: loginAppear 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
         }
-        @keyframes loginAppear { from { opacity: 0; transform: translateY(30px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
+        @keyframes loginAppear { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
 
         .brand-header { text-align: center; margin-bottom: 40px; }
         .brand-logo { font-size: 34px; font-weight: 800; color: #fff; letter-spacing: -0.5px; margin-bottom: 6px; text-shadow: 0 0 20px var(--accent-glow); }
@@ -120,7 +116,7 @@
             width: 100%; padding: 16px 18px; background: rgba(0,0,0,0.5); 
             border: 2px solid var(--border-light); border-radius: var(--radius-md); 
             color: var(--text-primary); font-size: 15px; font-family: 'Inter', sans-serif; font-weight: 500;
-            transition: var(--transition-smooth); outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s, background-color 0.2s; outline: none;
         }
         input:focus, textarea:focus, select:focus { 
             border-color: var(--accent-primary); background: rgba(0,0,0,0.7);
@@ -133,14 +129,14 @@
         .app-container {
             width: 100%; max-width: 1450px; height: 92vh;
             display: flex; flex-direction: column; padding: 20px; gap: 24px; z-index: 5;
-            animation: appAppear 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+            animation: appAppear 0.5s ease-out;
         }
-        @keyframes appAppear { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
+        @keyframes appAppear { from { opacity: 0; } to { opacity: 1; } }
 
         .top-navbar {
             display: flex; justify-content: space-between; align-items: center;
             background: var(--bg-panel); border: 1px solid var(--border-light);
-            padding: 18px 30px; border-radius: var(--radius-md); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+            padding: 18px 30px; border-radius: var(--radius-md); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
             box-shadow: 0 10px 30px -10px rgba(0,0,0,0.5); z-index: 10;
         }
         
@@ -148,7 +144,7 @@
         .nav-badge { background: rgba(16, 185, 129, 0.15); color: var(--accent-primary); padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 700; border: 1px solid var(--accent-glow); }
         
         .nav-links { display: flex; gap: 16px; align-items: center; }
-        .nav-item { color: var(--text-secondary); font-size: 14px; font-weight: 600; cursor: pointer; transition: var(--transition-smooth); background: rgba(255,255,255,0.03); border: 1px solid var(--border-light); padding: 10px 16px; border-radius: var(--radius-md);}
+        .nav-item { color: var(--text-secondary); font-size: 14px; font-weight: 600; cursor: pointer; transition: transform 0.2s, background-color 0.2s, border-color 0.2s; background: rgba(255,255,255,0.03); border: 1px solid var(--border-light); padding: 10px 16px; border-radius: var(--radius-md);}
         .nav-item:hover { color: var(--text-primary); background: rgba(255,255,255,0.08); border-color: var(--accent-primary); transform: translateY(-2px); }
 
         .main-grid { display: grid; grid-template-columns: 360px 1fr 360px; gap: 28px; flex: 1; min-height: 0; position: relative; }
@@ -156,9 +152,9 @@
         .workspace-panel {
             background: var(--bg-panel); border: 1px solid rgba(255,255,255,0.08);
             border-radius: var(--radius-lg); display: flex; flex-direction: column; overflow: hidden;
-            backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+            backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
             box-shadow: var(--shadow-soft), 0 0 30px rgba(16, 185, 129, 0.03) inset;
-            transition: var(--transition-smooth);
+            transition: border-color 0.3s, box-shadow 0.3s;
         }
         .workspace-panel:hover { border-color: rgba(16, 185, 129, 0.3); box-shadow: var(--shadow-soft), 0 0 50px rgba(16, 185, 129, 0.08) inset; }
         
@@ -174,7 +170,6 @@
         .status-indicator { display: flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 600; color: var(--text-primary); background: rgba(16, 185, 129, 0.1); padding: 6px 12px; border-radius: 20px; border: 1px solid var(--accent-glow); flex-shrink: 0;}
         .status-dot { width: 10px; height: 10px; background: var(--accent-primary); border-radius: 50%; box-shadow: 0 0 15px var(--accent-primary); animation: pulseDot 2s infinite; }
         @keyframes pulseDot { 0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); } 70% { box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); } 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); } }
-        @keyframes pulseDotBlue { 0% { box-shadow: 0 0 0 0 rgba(56, 189, 248, 0.7); } 70% { box-shadow: 0 0 0 8px rgba(56, 189, 248, 0); } 100% { box-shadow: 0 0 0 0 rgba(56, 189, 248, 0); } }
 
         /* =========================================
            5. KATMAN SEÇİCİLER & KUTULAR
@@ -184,75 +179,67 @@
             aspect-ratio: 1; display: flex; align-items: center; justify-content: center;
             background: rgba(255,255,255,0.03); border: 2px solid var(--border-light);
             border-radius: var(--radius-md); font-size: 14px; font-weight: 700; color: var(--text-secondary);
-            cursor: pointer; transition: var(--transition-smooth); position: relative; overflow: hidden;
+            cursor: pointer; transition: transform 0.2s, background-color 0.2s, border-color 0.2s, color 0.2s; position: relative; overflow: hidden;
         }
-        .layer::before { content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 0%; background: linear-gradient(to top, var(--accent-primary), transparent); opacity: 0.3; transition: height 0.3s ease; z-index: 0; }
-        .layer:hover::before { height: 100%; }
         .layer span { position: relative; z-index: 1; } 
-        .layer:hover { border-color: var(--accent-primary); color: var(--text-primary); transform: translateY(-3px); box-shadow: 0 5px 15px -5px var(--accent-glow); }
-        .layer.active { background: var(--accent-primary); color: #000; border-color: var(--accent-primary); box-shadow: 0 8px 25px -5px var(--accent-glow), 0 0 20px var(--accent-glow) inset; transform: translateY(-3px) scale(1.05); }
-        .layer.active::before { height: 100%; opacity: 0.8; }
+        .layer:hover { border-color: var(--accent-primary); color: var(--text-primary); transform: translateY(-2px); box-shadow: 0 5px 15px -5px var(--accent-glow); }
+        .layer.active { background: var(--accent-primary); color: #000; border-color: var(--accent-primary); box-shadow: 0 8px 25px -5px var(--accent-glow), 0 0 20px var(--accent-glow) inset; transform: translateY(-2px) scale(1.05); }
 
         #message, #cipher { min-height: 150px; resize: none; font-family: 'JetBrains Mono', monospace; font-size: 14px; line-height: 1.6; padding: 18px; margin-top: 10px; background: rgba(0,0,0,0.5); flex-shrink: 0; }
 
         .tools-row { display: flex; gap: 12px; margin-top: 20px; flex-shrink: 0;}
-        .tool-btn { flex: 1; background: rgba(255,255,255,0.03); border: 2px solid var(--border-light); color: var(--text-secondary); padding: 14px; font-size: 14px; font-weight: 600; border-radius: var(--radius-md); cursor: pointer; text-align: center; transition: var(--transition-smooth); display: flex; align-items: center; justify-content: center; gap: 8px; }
-        .tool-btn:hover { background: rgba(255,255,255,0.08); border-color: var(--accent-primary); color: var(--text-primary); transform: translateY(-2px); box-shadow: 0 5px 15px -5px var(--accent-glow); }
+        .tool-btn { flex: 1; background: rgba(255,255,255,0.03); border: 2px solid var(--border-light); color: var(--text-secondary); padding: 14px; font-size: 14px; font-weight: 600; border-radius: var(--radius-md); cursor: pointer; text-align: center; transition: transform 0.2s, background-color 0.2s, border-color 0.2s, color 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .tool-btn:hover { background: rgba(255,255,255,0.08); border-color: var(--accent-primary); color: var(--text-primary); transform: translateY(-2px); }
         .tool-btn.active-state { background: rgba(16, 185, 129, 0.15); border-color: var(--accent-primary); color: var(--accent-primary); box-shadow: 0 0 15px var(--accent-glow) inset; }
-        .tool-btn.recording { background: var(--danger-bg); border-color: var(--danger); color: var(--danger); animation: pulseRecord 1.5s infinite; box-shadow: 0 0 20px rgba(239,68,68,0.4) inset; }
-        @keyframes pulseRecord { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.7; transform: scale(0.98); } }
+        .tool-btn.recording { background: var(--danger-bg); border-color: var(--danger); color: var(--danger); animation: pulseRecord 1.5s infinite; }
+        @keyframes pulseRecord { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
 
         /* =========================================
            6. SOHBET ALANI
            ========================================= */
         #log { display: flex; flex-direction: column; gap: 18px; padding-bottom: 20px; }
-        .msg-box { background: rgba(0,0,0,0.3); border: 1px solid var(--border-light); border-radius: var(--radius-md); padding: 20px; animation: msgSlideUp 0.5s cubic-bezier(0.2, 0.8, 0.2, 1); position: relative; overflow: hidden; flex-shrink: 0; }
-        @keyframes msgSlideUp { from { opacity:0; transform:translateY(30px) scale(0.95); } to { opacity:1; transform:translateY(0) scale(1); } }
-        .msg.me { border-left: 4px solid var(--accent-primary); background: linear-gradient(to right, rgba(16, 185, 129, 0.05), rgba(0,0,0,0.3)); }
-        .msg.other { border-left: 4px solid #38bdf8; background: linear-gradient(to right, rgba(56, 189, 248, 0.05), rgba(0,0,0,0.3)); }
+        .msg-box { background: rgba(0,0,0,0.3); border: 1px solid var(--border-light); border-radius: var(--radius-md); padding: 20px; animation: msgSlideUp 0.3s ease-out; position: relative; overflow: hidden; flex-shrink: 0; }
+        @keyframes msgSlideUp { from { opacity:0; transform:translateY(15px); } to { opacity:1; transform:translateY(0); } }
+        .msg.me { border-left: 4px solid var(--accent-primary); }
+        .msg.other { border-left: 4px solid #38bdf8; }
         .msg-header { display: flex; justify-content: space-between; margin-bottom: 14px; font-size: 13px; color: var(--text-secondary); font-weight: 500; }
         .msg.me .msg-header strong { color: var(--accent-primary); font-weight: 700; font-size: 14px;}
         .msg.other .msg-header strong { color: #38bdf8; font-weight: 700; font-size: 14px;}
 
         .raw-data { background: #030504; border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 14px; font-size: 13px; color: #64748b; word-break: break-all; margin-bottom: 18px; max-height: 80px; overflow: hidden; font-family: 'JetBrains Mono', monospace; box-shadow: inset 0 0 15px rgba(0,0,0,0.5); user-select: all; }
         .action-row { display: flex; gap: 10px; }
-        .action-btn { background: rgba(255,255,255,0.05); color: var(--text-secondary); padding: 10px 14px; font-size: 13px; font-weight: 600; border-radius: 8px; border: 1px solid var(--border-light); cursor: pointer; flex: 1; transition: var(--transition-smooth); display: flex; align-items: center; justify-content: center; gap: 6px; }
-        .action-btn:hover { background: rgba(255,255,255,0.1); color: var(--text-primary); border-color: var(--border-light); transform: translateY(-2px);}
+        .action-btn { background: rgba(255,255,255,0.05); color: var(--text-secondary); padding: 10px 14px; font-size: 13px; font-weight: 600; border-radius: 8px; border: 1px solid var(--border-light); cursor: pointer; flex: 1; transition: background-color 0.2s, color 0.2s; display: flex; align-items: center; justify-content: center; gap: 6px; }
+        .action-btn:hover { background: rgba(255,255,255,0.1); color: var(--text-primary); border-color: var(--border-light); }
         .action-btn.solve { background: rgba(16, 185, 129, 0.15); color: var(--accent-primary); border-color: var(--accent-glow); }
-        .action-btn.solve:hover { background: var(--accent-primary); color: #000; box-shadow: 0 0 20px var(--accent-glow); }
+        .action-btn.solve:hover { background: var(--accent-primary); color: #000; }
 
-        .decrypted-view { margin-top: 20px; padding: 20px; border-top: 2px dashed var(--border-light); color: var(--text-primary); font-size: 15px; line-height: 1.7; background: rgba(16, 185, 129, 0.03); border-radius: 0 0 var(--radius-md) var(--radius-md); animation: fadeIn 0.5s ease; max-height: 400px; overflow-y: auto; }
+        .decrypted-view { margin-top: 20px; padding: 20px; border-top: 2px dashed var(--border-light); color: var(--text-primary); font-size: 15px; line-height: 1.7; background: rgba(16, 185, 129, 0.03); border-radius: 0 0 var(--radius-md) var(--radius-md); animation: fadeIn 0.3s ease; max-height: 400px; overflow-y: auto; }
         .decrypted-view::-webkit-scrollbar { width: 6px; } .decrypted-view::-webkit-scrollbar-thumb { background: rgba(16, 185, 129, 0.4); border-radius: 6px; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        #result { margin-top: auto; padding: 24px; background: rgba(0,0,0,0.4); border: 2px solid var(--border-light); border-left: 6px solid var(--accent-primary); border-radius: var(--radius-md); color: var(--text-primary); font-size: 15px; word-break: break-word; min-height: 120px; font-family: 'JetBrains Mono', monospace; line-height: 1.6; box-shadow: inset 0 0 30px rgba(0,0,0,0.5); transition: var(--transition-smooth); flex-shrink: 0;}
+        #result { margin-top: auto; padding: 24px; background: rgba(0,0,0,0.4); border: 2px solid var(--border-light); border-left: 6px solid var(--accent-primary); border-radius: var(--radius-md); color: var(--text-primary); font-size: 15px; word-break: break-word; min-height: 120px; font-family: 'JetBrains Mono', monospace; line-height: 1.6; box-shadow: inset 0 0 30px rgba(0,0,0,0.5); transition: border-color 0.3s; flex-shrink: 0;}
         #result:not(:empty) { border-color: var(--accent-primary); box-shadow: inset 0 0 30px rgba(16, 185, 129, 0.1), 0 0 20px var(--accent-glow); }
-        #typing-indicator { font-size: 13px; color: var(--text-secondary); opacity: 0; transition: var(--transition-smooth); padding-top: 12px; font-weight: 600; display: flex; align-items: center; gap: 8px;}
-        #typing-indicator::before { content: ''; display: inline-block; width: 8px; height: 8px; background: var(--text-secondary); border-radius: 50%; animation: pulse 1s infinite; }
+        #typing-indicator { font-size: 13px; color: var(--text-secondary); opacity: 0; transition: opacity 0.3s; padding-top: 12px; font-weight: 600; display: flex; align-items: center; gap: 8px;}
 
         /* =========================================
-           7. MOBİL UYGULAMA MİMARİSİ (KUSURSUZ YAPI)
+           7. MOBİL UYGULAMA MİMARİSİ (HAYALET KATMAN SİLİNDİ)
            ========================================= */
         .mobile-nav { display: none; }
 
         @media (min-width: 1025px) {
-            .workspace-panel { display: flex !important; opacity: 1 !important; visibility: visible !important; position: relative !important;}
+            .workspace-panel { display: flex !important; }
         }
 
         @media (max-width: 1024px) {
             body { 
-                /* Klavye açıldığında taşmayı ve sekmeyi engeller */
-                height: 100dvh; 
+                height: 100dvh; /* Klavyede daralan güvenli yükseklik */
                 width: 100vw;
-                position: fixed; 
-                top: 0; left: 0;
             }
             
             #login { width: 90%; max-height: 85vh; overflow-y: auto; padding: 30px 20px;}
             
             .app-container { 
-                position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-                width: 100%; height: 100%; 
+                width: 100%; height: 100dvh; 
                 margin: 0; padding: 10px; padding-bottom: 85px; /* Alt menü boşluğu */
                 display: flex; flex-direction: column; gap: 10px;
             }
@@ -261,54 +248,37 @@
             .nav-links { width: 100%; justify-content: center; gap: 8px;}
             .nav-item, .btn-danger { flex: 1; padding: 8px 12px; font-size: 12px; text-align: center; }
 
-            /* Grid konteyner esnemez bir sahneye dönüşüyor */
             .main-grid { 
                 display: block; 
-                position: relative; /* Çocuklar bunun içine hapsolacak */
                 flex: 1; 
                 width: 100%; 
                 margin: 0; 
+                position: relative;
             }
             
-            /* DİKKAT: Donmayı çözen sihirli yapı. Display none YOK! */
+            /* DİKKAT: MOBİL DONMA ÇÖZÜMÜ! Opacity yerine display kullanıldı. */
             .workspace-panel { 
-                position: absolute; /* Hepsi üst üste duruyor */
-                top: 0; left: 0; right: 0; bottom: 0;
-                display: flex; 
-                flex-direction: column; 
-                opacity: 0; 
-                pointer-events: none; /* Arkadakine tıklanmasın diye */
-                transform: scale(0.95);
-                transition: opacity 0.3s ease, transform 0.3s ease; /* GPU hızlandırmalı geçiş */
-                z-index: 1;
-                /* Tasarımını koruyoruz */
+                display: none; /* Arka plandaki sekmeler tamamen silinir, basmayı engellemez */
+                width: 100%; height: 100%;
                 border-radius: 16px;
-                background: rgba(16, 24, 20, 0.85); 
-                backdrop-filter: blur(20px); 
-                -webkit-backdrop-filter: blur(20px);
+                background: rgba(16, 24, 20, 0.95); /* Arkası görünmesin diye opaklaştırıldı */
             }
             
-            /* Aktif sekme sadece görünür oluyor */
             .workspace-panel.active-tab { 
-                opacity: 1; 
-                pointer-events: auto; 
-                transform: scale(1);
-                z-index: 5;
+                display: flex; /* Sadece basılan sekme var olur */
+                flex-direction: column;
             }
 
             .panel-header { padding: 14px 18px; }
             .panel-title { font-size: 14px; }
-            /* İç kaydırma çubuğu donanım ivmeli */
             .panel-body { padding: 15px; overflow-y: auto; flex: 1; -webkit-overflow-scrolling: touch;} 
 
-            /* Harika görünümlü Yüzen Alt Menü (iOS tarzı dock) */
             .mobile-nav {
                 display: flex; position: fixed; 
                 bottom: 15px; left: 50%; transform: translateX(-50%);
-                background: rgba(10, 15, 12, 0.85); border: 1px solid rgba(255,255,255,0.1); 
+                background: rgba(10, 15, 12, 0.95); border: 1px solid rgba(255,255,255,0.1); 
                 padding: 6px; border-radius: 50px; gap: 5px; width: 92%; max-width: 400px;
                 box-shadow: 0 15px 35px rgba(0,0,0,0.8); z-index: 1000; 
-                backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
             }
             .m-nav-btn {
                 flex: 1; background: transparent; border: none; color: var(--text-secondary);
@@ -323,13 +293,13 @@
         }
 
         /* MODALLAR */
-        .modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); z-index: 2000; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: var(--transition-smooth); }
+        .modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); z-index: 2000; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: 0.3s; }
         .modal-bg.active { opacity: 1; pointer-events: auto; }
-        .modal-card { background: var(--bg-panel); border: 1px solid var(--border-light); border-radius: var(--radius-lg); width: 550px; max-width: 90%; padding: 36px; box-shadow: var(--shadow-soft), 0 0 40px rgba(16, 185, 129, 0.1) inset; transform: scale(0.95) translateY(20px); transition: var(--transition-smooth); }
+        .modal-card { background: var(--bg-panel); border: 1px solid var(--border-light); border-radius: var(--radius-lg); width: 550px; max-width: 90%; padding: 36px; box-shadow: var(--shadow-soft), 0 0 40px rgba(16, 185, 129, 0.1) inset; transform: scale(0.95) translateY(20px); transition: 0.3s; }
         .modal-bg.active .modal-card { transform: scale(1) translateY(0); }
         .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 28px; padding-bottom: 15px; border-bottom: 1px solid var(--border-light); }
         .modal-header h3 { font-size: 22px; font-weight: 800; color: var(--text-primary); text-shadow: 0 0 15px var(--accent-glow); }
-        .close-modal { background: none; border: none; color: var(--text-secondary); font-size: 24px; cursor: pointer; padding: 0; transition: var(--transition-smooth); }
+        .close-modal { background: none; border: none; color: var(--text-secondary); font-size: 24px; cursor: pointer; padding: 0; transition: 0.2s; }
         .close-modal:hover { color: var(--danger); transform: rotate(90deg); }
     </style>
 </head>
@@ -429,7 +399,7 @@
                 </div>
                 <div class="panel-body" id="chat-scroll-container">
                     <div id="log"></div>
-                    <div id="typing-indicator" style="padding: 0 0 16px 0;">Veri işleniyor...</div>
+                    <div id="typing-indicator" style="padding: 0 0 16px 0;"></div>
                 </div>
             </div>
 
@@ -464,275 +434,6 @@
     <div class="modal-bg" id="guideModal"><div class="modal-card"><div class="modal-header"><h3 class="brand-font">Sistem Protokolleri</h3><button class="close-modal" onclick="closeModal('guideModal')">✖</button></div><div style="font-size: 14px; color: var(--text-secondary); line-height: 1.6;"><p><strong style="color:var(--text-primary)">Uçtan Uca Şifreleme:</strong> Mesaj göndermeden önce katmanlar seçin.</p><br><p><strong style="color:var(--text-primary)">Gelişmiş PIN Koruması:</strong> Yanlış PIN girenler odanızın loglarına erişemez.</p><br><p><strong style="color:var(--text-primary)">Kripto Medya:</strong> Fotoğraf ve ses kayıtlarınız cihazınızdan çıkmadan önce AES-256 ile şifrelenir.</p></div></div></div>
     <div class="modal-bg" id="supportModal"><div class="modal-card"><div class="modal-header"><h3 class="brand-font">Destek Birimi</h3><button class="close-modal" onclick="closeModal('supportModal')">✖</button></div><form action="https://formspree.io/f/xdaldnap" method="POST"><div class="input-group"><input type="text" name="Konu" placeholder="İleti Konusu" required></div><div class="input-group"><input type="email" name="Email" placeholder="İletişim E-posta Adresi" required></div><div class="input-group"><textarea name="Mesaj" placeholder="Talebinizi detaylıca belirtin..." required style="min-height: 100px;"></textarea></div><button type="submit" class="btn-primary" style="width: 100%;"><span>Talebi Gönder</span></button></form></div></div>
 
-
-    <script>
-        function openModal(id) { document.getElementById(id).classList.add('active'); }
-        function closeModal(id) { document.getElementById(id).classList.remove('active'); }
-
-        // DONMA KESİN ÇÖZÜMÜ: SEKME GEÇİŞİ
-        window.switchMobileTab = function(panelId, btnId) {
-            if(window.innerWidth > 1024) return; 
-
-            // 1. Klavyeyi yavaşça kapat
-            if (document.activeElement && typeof document.activeElement.blur === 'function') {
-                document.activeElement.blur(); 
-            }
-
-            // 2. CSS transform ile görsel geçişi sağla (GPU yorulmaz)
-            document.querySelectorAll('.workspace-panel').forEach(p => p.classList.remove('active-tab'));
-            document.getElementById(panelId).classList.add('active-tab');
-            
-            document.querySelectorAll('.m-nav-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById(btnId).classList.add('active');
-
-            // 3. Ağ akışı sekmesi için akıcı scroll
-            if(panelId === 'chat-panel') {
-                setTimeout(() => {
-                    const scrollContainer = document.getElementById("chat-scroll-container");
-                    if(scrollContainer) { scrollContainer.scrollTop = scrollContainer.scrollHeight; }
-                }, 300); // Animasyon bitmesini bekle
-            }
-        };
-
-        const firebaseConfig = { databaseURL: "https://volktron-chat-default-rtdb.firebaseio.com/" };
-        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
-
-        let USER = ""; let ROOM = ""; let SECRET = ""; let SECURE_ROOM_PATH = ""; 
-        let roomMessagesRef;
-        let selectedImageBase64 = null; let selectedAudioBase64 = null;
-        let isRecording = false; let mediaRecorder; let audioChunks = [];
-        const encSel = new Set(); const decSel = new Set();
-
-        function makeLayers(element, setObj) {
-            if (!element) return;
-            for (let i = 1; i <= 10; i++) {
-                const btn = document.createElement("div");
-                btn.className = "layer"; btn.innerHTML = `<span>${i < 10 ? '0'+i : i}</span>`;
-                btn.onclick = () => { if (setObj.has(i)) setObj.delete(i); else setObj.add(i); btn.classList.toggle("active"); };
-                element.appendChild(btn);
-            }
-        }
-        makeLayers(document.getElementById("encLayers"), encSel);
-        makeLayers(document.getElementById("decLayers"), decSel);
-
-        document.getElementById("imageInput").addEventListener("change", function(e) {
-            const file = e.target.files[0]; const label = document.getElementById("imgLabel");
-            if (!file) return;
-            if (file.size > 1.5 * 1024 * 1024) { alert("Maksimum 1.5MB yükleyebilirsiniz."); this.value = ""; return; }
-            const reader = new FileReader();
-            reader.onload = function(event) {
-                selectedImageBase64 = event.target.result; selectedAudioBase64 = null; 
-                label.innerHTML = "Görsel Eklendi ✓"; label.classList.add("active-state");
-            };
-            reader.readAsDataURL(file);
-        });
-
-        async function toggleAudioRecord() {
-            const micBtn = document.getElementById("micBtn");
-            if (!isRecording) {
-                try {
-                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                    mediaRecorder = new MediaRecorder(stream); audioChunks = [];
-                    mediaRecorder.ondataavailable = e => { if (e.data.size > 0) audioChunks.push(e.data); };
-                    mediaRecorder.onstop = () => {
-                        const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
-                        const reader = new FileReader(); reader.readAsDataURL(audioBlob);
-                        reader.onloadend = () => {
-                            selectedAudioBase64 = reader.result; selectedImageBase64 = null; 
-                            micBtn.innerHTML = "Ses Hazır ✓"; micBtn.classList.remove("recording"); micBtn.classList.add("active-state");
-                        };
-                    };
-                    mediaRecorder.start(); isRecording = true;
-                    micBtn.innerHTML = "Kaydediliyor... (Durdur)"; micBtn.classList.add("recording");
-                } catch (err) { alert("Mikrofon izni alınamadı."); }
-            } else { mediaRecorder.stop(); isRecording = false; }
-        }
-        window.toggleAudioRecord = toggleAudioRecord;
-
-        let typingTimer;
-        document.getElementById("message").addEventListener("input", () => {
-            if(!SECURE_ROOM_PATH || !USER) return;
-            const typingRef = db.ref("rooms/" + SECURE_ROOM_PATH + "/typing/" + USER);
-            typingRef.set(Date.now()); clearTimeout(typingTimer);
-            typingTimer = setTimeout(() => typingRef.remove(), 2000);
-        });
-
-        document.addEventListener('keypress', function (e) {
-            if (e.key === 'Enter' && !document.getElementById('login').classList.contains('hidden')) { window.enterRoom(); }
-        });
-
-        window.enterRoom = function() {
-            USER = document.getElementById("username").value.trim();
-            ROOM = document.getElementById("room").value.trim();
-            const PIN = document.getElementById("roomPin").value.trim();
-            SECRET = document.getElementById("secretKey").value.trim();
-
-            if (!USER || !ROOM || !SECRET || !PIN) { alert("Bağlantı reddedildi: Eksik parametreler mevcut."); return; }
-
-            const roomHash = CryptoJS.MD5(ROOM + "_" + PIN).toString();
-            SECURE_ROOM_PATH = ROOM + "_" + roomHash.substring(0, 10);
-
-            document.getElementById("userNameDisplay").textContent = USER;
-            document.getElementById("roomNameDisplay").textContent = ROOM;
-
-            document.getElementById("login").classList.add("hidden");
-            document.getElementById("chat").classList.remove("hidden");
-
-            if (!window.firebaseListenersActive) { startFirebaseListeners(); window.firebaseListenersActive = true; }
-        };
-
-        function startFirebaseListeners() {
-            const myPresenceRef = db.ref("rooms/" + SECURE_ROOM_PATH + "/presence").push();
-            myPresenceRef.set(USER); myPresenceRef.onDisconnect().remove();
-
-            db.ref("rooms/" + SECURE_ROOM_PATH + "/presence").on('value', (snap) => {
-                const data = snap.val() || {}; document.getElementById('onlineCountDisplay').innerText = Object.keys(data).length;
-            });
-
-            const globalPresenceRef = db.ref("global_presence").push();
-            globalPresenceRef.set(USER); globalPresenceRef.onDisconnect().remove();
-
-            db.ref("global_presence").on('value', (snap) => {
-                const data = snap.val() || {}; const platformDisplay = document.getElementById('platformCountDisplay');
-                if (platformDisplay) platformDisplay.innerText = Object.keys(data).length;
-            });
-
-            db.ref("rooms/" + SECURE_ROOM_PATH + "/typing").on('value', (snap) => {
-                const data = snap.val() || {}; const activeWriters = Object.keys(data).filter(user => user !== USER);
-                const indicator = document.getElementById("typing-indicator");
-                if (activeWriters.length > 0) { indicator.textContent = `${activeWriters.join(", ")} yazıyor...`; indicator.style.opacity = "1"; } 
-                else { indicator.style.opacity = "0"; }
-            });
-
-            roomMessagesRef = db.ref("rooms/" + SECURE_ROOM_PATH + "/messages");
-            
-            roomMessagesRef.on('child_added', (snap) => {
-                const data = snap.val() || {}; const msgKey = snap.key;
-                const safeUser = data.user || "Bilinmeyen"; const safeText = data.text || "";
-                const time = data.time ? new Date(data.time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : "--:--";
-
-                const div = document.createElement("div"); div.id = "msg-" + msgKey; 
-                div.className = "msg-box msg " + (safeUser === USER ? "me" : "other");
-                
-                div.innerHTML = `
-                    <div class="msg-header"><strong>${safeUser}</strong><span>${time}</span></div>
-                    <div class="raw-data mono-font">${safeText}</div>
-                    <div class="action-row">
-                        <button class="action-btn" onclick="navigator.clipboard.writeText('${safeText}')">Kopyala</button>
-                        <button class="action-btn" onclick="document.getElementById('cipher').value='${safeText}'; if(window.innerWidth<=1024) window.switchMobileTab('decoder-panel', 'm-btn-dec');">Aktar</button>
-                        <button class="action-btn solve inline-decrypt-btn">Şifreyi Çöz</button>
-                    </div>
-                    <div class="decrypted-view" style="display:none;"></div>
-                `;
-
-                div.querySelector(".inline-decrypt-btn").onclick = () => {
-                    const decrypted = removeStrongLayers(safeText, SECRET, decSel);
-                    const view = div.querySelector(".decrypted-view"); const raw = div.querySelector(".raw-data"); const actions = div.querySelector(".action-row");
-
-                    if (typeof decrypted === "string" && decrypted.includes("HATA:")) { alert("İşlem Başarısız: Katman dizilimi veya anahtar uyuşmazlığı."); } 
-                    else {
-                        let htmlContent = "";
-                        if (decrypted.startsWith("IMG||")) {
-                            const parts = decrypted.split("||"); 
-                            htmlContent = `<img src="${parts[1]}" style="max-width:100%; max-height:280px; object-fit:contain; border-radius:8px; margin-bottom:12px; box-shadow:0 0 15px rgba(16,185,129,0.1); display:block;"><div style="font-size:15px; color:#fff; word-break:break-word;">${parts[2] || ""}</div>`;
-                        } else if (decrypted.startsWith("AUDIO||")) {
-                            const parts = decrypted.split("||");
-                            htmlContent = `<div style="background:rgba(0,0,0,0.2); padding:12px; border-radius:8px; display:flex; align-items:center; gap:12px; margin-bottom:12px;"><span style="font-size:20px;">🎧</span><audio controls src="${parts[1]}" style="height:35px; outline:none; width:100%;"></audio></div><div style="font-size:15px; color:#fff; word-break:break-word;">${parts[2] || ""}</div>`;
-                        } else if (decrypted.startsWith("TXT||")) { htmlContent = decrypted.replace("TXT||", ""); } 
-                        else { htmlContent = decrypted; }
-
-                        view.innerHTML = htmlContent; view.style.display = "block"; raw.style.display = "none"; actions.style.display = "none";
-                        if (data.burn && data.burn > 0) startBurnTimer(data.burn, msgKey, div);
-                    }
-                };
-
-                document.getElementById("log").appendChild(div);
-                const scrollContainer = document.getElementById("chat-scroll-container");
-                if(scrollContainer) { setTimeout(() => { scrollContainer.scrollTop = scrollContainer.scrollHeight; }, 100); }
-            });
-
-            roomMessagesRef.on('child_removed', (snap) => {
-                const el = document.getElementById("msg-" + snap.key);
-                if (el) { el.innerHTML = `<div style="color:var(--text-secondary); text-align:center; font-size:13px; font-weight:500; border:1px dashed var(--border-light); padding:16px; border-radius:8px; background:rgba(0,0,0,0.2);">Mesaj imha edildi.</div>`; setTimeout(() => el.remove(), 2000); }
-            });
-        }
-
-        function startBurnTimer(seconds, msgKey, element) {
-            let timeLeft = seconds; const timerDisplay = document.createElement("div");
-            timerDisplay.style.color = "var(--danger)"; timerDisplay.style.fontSize = "12px"; timerDisplay.style.fontWeight = "600"; timerDisplay.style.marginTop = "16px"; timerDisplay.style.textAlign = "right";
-            element.appendChild(timerDisplay);
-            const interval = setInterval(() => {
-                timerDisplay.innerHTML = `Sistemden siliniyor: ${timeLeft}s`; timeLeft--;
-                if (timeLeft < 0) { clearInterval(interval); db.ref("rooms/" + SECURE_ROOM_PATH + "/messages/" + msgKey).remove(); }
-            }, 1000);
-        }
-
-        function applyStrongLayers(text, secret, selectedLayers) {
-            let encrypted = text; let layers = [...selectedLayers].sort((a, b) => a - b);
-            if (layers.length === 0) return CryptoJS.AES.encrypt(encrypted, secret).toString();
-            layers.forEach(layer => { encrypted = CryptoJS.AES.encrypt(encrypted, secret + "_Salt_L" + layer).toString(); });
-            return encrypted;
-        }
-
-        function removeStrongLayers(ciphertext, secret, selectedLayers) {
-            let decrypted = ciphertext; let layers = [...selectedLayers].sort((a, b) => b - a);
-            try {
-                if (layers.length === 0) {
-                    let bytes = CryptoJS.AES.decrypt(decrypted, secret);
-                    let result = bytes.toString(CryptoJS.enc.Utf8); if (!result) throw new Error(); return result;
-                }
-                layers.forEach(layer => {
-                    let bytes = CryptoJS.AES.decrypt(decrypted, secret + "_Salt_L" + layer);
-                    decrypted = bytes.toString(CryptoJS.enc.Utf8); if (!decrypted) throw new Error();
-                });
-                return decrypted;
-            } catch (error) { return "HATA: Çözülemedi"; }
-        }
-
-        window.encryptAndSend = function() {
-            const msgInput = document.getElementById("message"); const burnTime = parseInt(document.getElementById("burnTimer").value); const textVal = msgInput.value.trim();
-            if (!textVal && !selectedImageBase64 && !selectedAudioBase64) { alert("Lütfen iletilecek veriyi girin."); return; }
-
-            let payload = "";
-            if (selectedAudioBase64) payload = "AUDIO||" + selectedAudioBase64 + "||" + textVal;
-            else if (selectedImageBase64) payload = "IMG||" + selectedImageBase64 + "||" + textVal;
-            else payload = "TXT||" + textVal;
-
-            const encryptedPayload = applyStrongLayers(payload, SECRET, encSel);
-            roomMessagesRef.push({ user: USER, text: encryptedPayload, time: Date.now(), burn: burnTime });
-
-            msgInput.value = ""; selectedImageBase64 = null; selectedAudioBase64 = null;
-            document.getElementById("imgLabel").innerHTML = "🖼️ Dosya"; document.getElementById("imgLabel").classList.remove("active-state");
-            document.getElementById("micBtn").innerHTML = "🎤 Ses"; document.getElementById("micBtn").classList.remove("active-state");
-
-            if(window.innerWidth <= 1024) { window.switchMobileTab('chat-panel', 'm-btn-chat'); }
-        };
-
-        window.decryptExternal = function() {
-            const cipherText = document.getElementById("cipher").value.trim(); const resultDiv = document.getElementById("result");
-            if (!cipherText) { resultDiv.textContent = "RAW verisi bekleniyor..."; return; }
-            const plainText = removeStrongLayers(cipherText, SECRET, decSel);
-
-            if (plainText.includes("HATA:")) { resultDiv.innerHTML = "Veri Bütünlüğü Sağlanamadı.<br><br>Katman dizilimi veya Master Key hatalı."; resultDiv.style.color = "var(--danger)"; } 
-            else {
-                let cleanText = plainText;
-                if (cleanText.startsWith("IMG||")) cleanText = "[Görsel formatı algılandı - Ortadaki panelden çözünüz]";
-                else if (cleanText.startsWith("AUDIO||")) cleanText = "[Ses formatı algılandı - Ortadaki panelden çözünüz]";
-                else if (cleanText.startsWith("TXT||")) cleanText = cleanText.replace("TXT||", "");
-                resultDiv.textContent = cleanText; resultDiv.style.color = "var(--accent-primary)";
-            }
-        };
-
-        window.triggerPanic = async function() {
-            if (confirm("DİKKAT: Veri tabanı kalıcı olarak temizlenecek. Onaylıyor musunuz?")) {
-                try {
-                    await db.ref("rooms/" + SECURE_ROOM_PATH).remove();
-                    document.body.innerHTML = `<div style="display:flex; justify-content:center; align-items:center; height:100vh; background:var(--bg-base); color:var(--text-secondary); flex-direction:column; font-family:'Plus Jakarta Sans'; font-size:24px;">Çalışma Alanı İmha Edildi.</div>`;
-                    setTimeout(() => location.reload(), 3000);
-                } catch (e) { alert("Bağlantı kesintisi yaşandı."); }
-            }
-        };
-    </script>
+    <script src="crypto.js"></script>
 </body>
 </html>
