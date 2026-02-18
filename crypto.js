@@ -1,8 +1,7 @@
 /* =======================================================
-   VOLKTRONIC CRYPTO ENGINE v8.0 - FILE:// SAFE SÜRÜM
+   VOLKTRONIC CRYPTO ENGINE v8.0 - FILE:// SAFE & MOBILE JANK FIX
    ======================================================= */
 
-// Firebase Compat nesneleri HTML'den (window üzerinden) geliyor
 const firebaseConfig = {
   databaseURL: "https://volktron-chat-default-rtdb.firebaseio.com/"
 };
@@ -113,7 +112,6 @@ document.getElementById("message").addEventListener("input", () => {
     typingTimer = setTimeout(() => typingRef.remove(), 2000);
 });
 
-// YENİ EKLENDİ: Enter tuşu ile giriş yapabilme
 document.addEventListener('keypress', function (e) {
     if (e.key === 'Enter' && !document.getElementById('login').classList.contains('hidden')) {
         enterRoom();
@@ -255,8 +253,12 @@ function startFirebaseListeners() {
         const logDiv = document.getElementById("log");
         logDiv.appendChild(div);
         
+        // YENİ DÜZELTME: Gizli sekmedeyken mobil tarayıcıyı kitlemeyi önler
         const scrollContainer = document.getElementById("chat-scroll-container");
-        if(scrollContainer) {
+        const chatPanel = document.getElementById("chat-panel");
+        
+        // Yalnızca sekme açıksa (veya masaüstüyse) otomatik kaydır
+        if(scrollContainer && chatPanel && (chatPanel.classList.contains("active-tab") || window.innerWidth > 1024)) {
             setTimeout(() => {
                 scrollContainer.scrollTop = scrollContainer.scrollHeight;
             }, 50);
