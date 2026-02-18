@@ -2,7 +2,7 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
     <meta http-equiv="Pragma" content="no-cache" />
@@ -51,16 +51,14 @@
         html, body {
             width: 100%; height: 100%; margin: 0; padding: 0;
             background: var(--bg-base); color: var(--text-primary);
-        }
-
-        /* PC için ortalama ayarı */
-        body {
-            display: flex; align-items: center; justify-content: center;
-            background: radial-gradient(circle at top center, rgba(16, 185, 129, 0.15) 0%, var(--bg-base) 60%);
             overflow: hidden; 
         }
 
-        /* Arka plan siber ağ efekti */
+        body {
+            display: flex; align-items: center; justify-content: center;
+            background: radial-gradient(circle at top center, rgba(16, 185, 129, 0.15) 0%, var(--bg-base) 60%);
+        }
+
         body::before {
             content: ''; position: fixed; top: -20%; left: -20%; width: 140%; height: 140%;
             background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect fill="rgba(16,185,129,0.03)" width="1" height="1" x="50" y="50"/></svg>') repeat;
@@ -78,16 +76,13 @@
         button {
             padding: 16px 28px; border: none; border-radius: var(--radius-md);
             font-family: 'Plus Jakarta Sans', sans-serif; font-size: 15px; font-weight: 700;
-            cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer; transition: transform 0.2s, box-shadow 0.2s, background-color 0.2s;
             display: flex; align-items: center; justify-content: center; gap: 10px;
             position: relative; overflow: hidden;
         }
         .btn-primary { background: linear-gradient(135deg, var(--accent-primary), var(--accent-hover)); color: #fff; box-shadow: 0 8px 25px -5px var(--accent-glow); }
-        .btn-primary:active { transform: scale(0.97); }
-        
-        .btn-secondary { background: rgba(255, 255, 255, 0.04); border: 1px solid var(--border-light); color: var(--text-primary); }
-        .btn-secondary:active { transform: scale(0.97); }
-        
+        .btn-primary:active { transform: scale(0.96); }
+        .btn-secondary { background: rgba(255, 255, 255, 0.04); border: 1px solid var(--border-light); color: var(--text-primary); backdrop-filter: blur(10px); }
         .btn-danger { background: var(--danger-bg); border: 1px solid rgba(239, 68, 68, 0.3); color: var(--danger); padding: 12px 20px; font-size: 13px; font-weight: 600; }
 
         /* =========================================
@@ -95,10 +90,12 @@
            ========================================= */
         #login {
             width: 100%; max-width: 440px; z-index: 10;
-            background: var(--bg-panel); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+            background: var(--bg-panel); backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
             border: 1px solid rgba(255,255,255,0.1); border-radius: var(--radius-lg);
             padding: 45px; box-shadow: var(--shadow-soft), 0 0 40px rgba(16, 185, 129, 0.08) inset;
+            animation: loginAppear 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
         }
+        @keyframes loginAppear { from { opacity: 0; transform: translateY(30px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
 
         .brand-header { text-align: center; margin-bottom: 40px; }
         .brand-logo { font-size: 34px; font-weight: 800; color: #fff; letter-spacing: -0.5px; margin-bottom: 6px; text-shadow: 0 0 20px var(--accent-glow); }
@@ -120,7 +117,7 @@
         }
 
         /* =========================================
-           4. ANA ÇALIŞMA ALANI & ÜST MENÜ (PC İÇİN)
+           4. ANA ÇALIŞMA ALANI & ÜST MENÜ
            ========================================= */
         .app-container {
             width: 100%; max-width: 1450px; height: 92vh;
@@ -131,13 +128,14 @@
             display: flex; justify-content: space-between; align-items: center;
             background: var(--bg-panel); border: 1px solid var(--border-light);
             padding: 18px 30px; border-radius: var(--radius-md); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
-            box-shadow: 0 10px 30px -10px rgba(0,0,0,0.5); z-index: 10; flex-shrink: 0;
+            box-shadow: 0 10px 30px -10px rgba(0,0,0,0.5); z-index: 10;
         }
         
         .nav-brand { font-size: 20px; font-weight: 800; color: #fff; display: flex; align-items: center; gap: 12px; text-shadow: 0 0 10px var(--accent-glow); }
         .nav-badge { background: rgba(16, 185, 129, 0.15); color: var(--accent-primary); padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 700; border: 1px solid var(--accent-glow); }
+        
         .nav-links { display: flex; gap: 16px; align-items: center; }
-        .nav-item { color: var(--text-secondary); font-size: 14px; font-weight: 600; cursor: pointer; transition: 0.2s; background: rgba(255,255,255,0.03); border: 1px solid var(--border-light); padding: 10px 16px; border-radius: var(--radius-md);}
+        .nav-item { color: var(--text-secondary); font-size: 14px; font-weight: 600; cursor: pointer; transition: transform 0.2s; background: rgba(255,255,255,0.03); border: 1px solid var(--border-light); padding: 10px 16px; border-radius: var(--radius-md);}
         
         .main-grid { display: grid; grid-template-columns: 360px 1fr 360px; gap: 28px; flex: 1; min-height: 0; position: relative; }
 
@@ -169,30 +167,33 @@
             aspect-ratio: 1; display: flex; align-items: center; justify-content: center;
             background: rgba(255,255,255,0.03); border: 2px solid var(--border-light);
             border-radius: var(--radius-md); font-size: 14px; font-weight: 700; color: var(--text-secondary);
-            cursor: pointer; transition: 0.2s; position: relative; overflow: hidden;
-            user-select: none; /* Mobilde metin seçmeyi engeller */
+            cursor: pointer; position: relative; overflow: hidden; user-select: none;
         }
-        .layer span { position: relative; z-index: 1; pointer-events: none;} /* Tıklamayı engellememesi için */
-        .layer.active { background: var(--accent-primary); color: #000; border-color: var(--accent-primary); box-shadow: 0 8px 25px -5px var(--accent-glow), 0 0 20px var(--accent-glow) inset; transform: scale(1.05); }
+        .layer span { position: relative; z-index: 1; pointer-events: none; } 
+        .layer.active { background: var(--accent-primary); color: #000; border-color: var(--accent-primary); box-shadow: inset 0 0 15px rgba(0,0,0,0.5); }
 
         #message, #cipher { min-height: 150px; resize: none; font-family: 'JetBrains Mono', monospace; font-size: 14px; line-height: 1.6; padding: 18px; margin-top: 10px; background: rgba(0,0,0,0.5); flex-shrink: 0; }
 
         .tools-row { display: flex; gap: 12px; margin-top: 20px; flex-shrink: 0;}
         .tool-btn { flex: 1; background: rgba(255,255,255,0.03); border: 2px solid var(--border-light); color: var(--text-secondary); padding: 14px; font-size: 14px; font-weight: 600; border-radius: var(--radius-md); cursor: pointer; text-align: center; display: flex; align-items: center; justify-content: center; gap: 8px; }
         .tool-btn.active-state { background: rgba(16, 185, 129, 0.15); border-color: var(--accent-primary); color: var(--accent-primary); box-shadow: 0 0 15px var(--accent-glow) inset; }
+        .tool-btn.recording { background: var(--danger-bg); border-color: var(--danger); color: var(--danger); animation: pulseRecord 1.5s infinite; }
+        @keyframes pulseRecord { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
 
         /* =========================================
            6. SOHBET ALANI
            ========================================= */
         #log { display: flex; flex-direction: column; gap: 18px; padding-bottom: 20px; }
-        .msg-box { background: rgba(0,0,0,0.3); border: 1px solid var(--border-light); border-radius: var(--radius-md); padding: 20px; position: relative; flex-shrink: 0; }
+        .msg-box { background: rgba(0,0,0,0.3); border: 1px solid var(--border-light); border-radius: var(--radius-md); padding: 20px; animation: msgSlideUp 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); position: relative; overflow: hidden; flex-shrink: 0; }
+        @keyframes msgSlideUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+        
         .msg.me { border-left: 4px solid var(--accent-primary); background: linear-gradient(to right, rgba(16, 185, 129, 0.05), rgba(0,0,0,0.3)); }
         .msg.other { border-left: 4px solid #38bdf8; background: linear-gradient(to right, rgba(56, 189, 248, 0.05), rgba(0,0,0,0.3)); }
         .msg-header { display: flex; justify-content: space-between; margin-bottom: 14px; font-size: 13px; color: var(--text-secondary); font-weight: 500; }
-        .msg.me .msg-header strong { color: var(--accent-primary); }
-        .msg.other .msg-header strong { color: #38bdf8; }
+        .msg.me .msg-header strong { color: var(--accent-primary); font-weight: 700; font-size: 14px;}
+        .msg.other .msg-header strong { color: #38bdf8; font-weight: 700; font-size: 14px;}
 
-        .raw-data { background: #030504; border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 14px; font-size: 13px; color: #64748b; word-break: break-all; margin-bottom: 18px; max-height: 80px; overflow: hidden; font-family: 'JetBrains Mono', monospace; }
+        .raw-data { background: #030504; border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 14px; font-size: 13px; color: #64748b; word-break: break-all; margin-bottom: 18px; max-height: 80px; overflow-y: auto; font-family: 'JetBrains Mono', monospace; box-shadow: inset 0 0 15px rgba(0,0,0,0.5); user-select: all; }
         .action-row { display: flex; gap: 10px; }
         .action-btn { background: rgba(255,255,255,0.05); color: var(--text-secondary); padding: 10px 14px; font-size: 13px; font-weight: 600; border-radius: 8px; border: 1px solid var(--border-light); cursor: pointer; flex: 1; display: flex; align-items: center; justify-content: center; }
         .action-btn.solve { background: rgba(16, 185, 129, 0.15); color: var(--accent-primary); border-color: var(--accent-glow); }
@@ -200,11 +201,10 @@
         .decrypted-view { margin-top: 20px; padding: 20px; border-top: 2px dashed var(--border-light); color: var(--text-primary); font-size: 15px; line-height: 1.7; background: rgba(16, 185, 129, 0.03); border-radius: 0 0 var(--radius-md) var(--radius-md); max-height: 400px; overflow-y: auto; }
 
         #result { margin-top: auto; padding: 24px; background: rgba(0,0,0,0.4); border: 2px solid var(--border-light); border-left: 6px solid var(--accent-primary); border-radius: var(--radius-md); color: var(--text-primary); font-size: 15px; word-break: break-word; min-height: 120px; font-family: 'JetBrains Mono', monospace; line-height: 1.6; }
-        #result:not(:empty) { border-color: var(--accent-primary); box-shadow: inset 0 0 30px rgba(16, 185, 129, 0.1); }
-        #typing-indicator { font-size: 13px; color: var(--text-secondary); padding-top: 12px; font-weight: 600; min-height: 25px; }
+        #typing-indicator { font-size: 13px; color: var(--text-secondary); opacity: 0; padding-top: 12px; font-weight: 600; display: flex; align-items: center; gap: 8px;}
 
         /* =========================================
-           7. MOBİL UYGULAMA MİMARİSİ (YEPYENİ KUSURSUZ MANTIK)
+           7. MOBİL UYGULAMA MİMARİSİ (ÇÖKME ENGELLENDİ)
            ========================================= */
         .mobile-nav { display: none; }
 
@@ -213,48 +213,49 @@
         }
 
         @media (max-width: 1024px) {
-            html, body { 
-                /* HAYAT KURTARAN DÜZELTME: Fixed silindi. Klavye donması bitti. */
-                height: 100%; 
-                position: relative;
-                overflow: hidden; /* Sadece body'nin taşmasını engelleriz, paneller kendi içinde kayar */
+            body { 
+                height: 100dvh; 
+                width: 100vw;
+                overflow: hidden;
             }
             
-            /* DİKKAT: iOS oto-zoom kilitlenmesini engellemek için mobilde fontlar kesinlikle 16px olmalı */
+            /* DİKKAT: iOS oto-zoom hatasını engeller */
             input, textarea, select { font-size: 16px !important; }
-
-            #login { 
-                width: 95%; max-height: 90vh; overflow-y: auto; padding: 30px 20px;
-                position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-                backdrop-filter: none; background: #0c120f; /* Mobilde bluru kapattık GPU rahatlasın */
-            }
+            
+            #login { width: 90%; max-height: 85vh; overflow-y: auto; padding: 30px 20px;}
             
             .app-container { 
-                position: relative; width: 100%; height: 100%; 
-                margin: 0; padding: 10px; padding-bottom: 75px; /* Alt menü için güvenli boşluk */
+                position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+                width: 100%; height: 100%; 
+                margin: 0; padding: 10px; padding-bottom: 85px; 
                 display: flex; flex-direction: column; gap: 10px;
             }
             
-            .top-navbar { flex-direction: column; gap: 10px; padding: 12px; border-radius: var(--radius-md); backdrop-filter: none; background: #0c120f;}
+            .top-navbar { flex-direction: column; gap: 10px; padding: 12px; width: 100%; border-radius: var(--radius-md); flex-shrink: 0; }
             .nav-links { width: 100%; justify-content: center; gap: 8px;}
-            .nav-item, .btn-danger { flex: 1; padding: 8px 12px; font-size: 12px; }
+            .nav-item, .btn-danger { flex: 1; padding: 8px 12px; font-size: 12px; text-align: center; }
 
             .main-grid { 
-                display: flex; /* Block yerine Flex, esnekliği artırır */
+                display: flex; 
+                position: relative; 
                 flex: 1; 
                 width: 100%; 
-                min-height: 0; /* İçeriğin kayması için çok kritik */
+                margin: 0; 
+                min-height: 0;
             }
             
-            /* TIKLANAMAMA SORUNUNUN ÇÖZÜMÜ: DISPLAY NONE */
+            /* MOBİLDE PANELLER ARASI KUSURSUZ DISPLAY:NONE GEÇİŞİ */
             .workspace-panel { 
-                display: none !important; /* Seçili olmayan sekmeler sistemden GİZLENİR, dokunmayı engellemez */
-                width: 100%; border-radius: 16px;
-                backdrop-filter: none; background: #0a0f0c; /* Lag engellendi */
+                display: none !important; 
+                width: 100%; height: 100%; margin: 0;
+                border-radius: 16px;
+                background: rgba(16, 24, 20, 0.95); 
+                backdrop-filter: none; /* GPU'yu rahatlattık */
+                -webkit-backdrop-filter: none;
             }
             
             .workspace-panel.active-tab { 
-                display: flex !important; /* Sadece aktif olan sekme görünür */
+                display: flex !important; 
                 flex-direction: column;
             }
 
@@ -262,32 +263,40 @@
             .panel-title { font-size: 14px; }
             .panel-body { padding: 15px; overflow-y: auto; flex: 1; -webkit-overflow-scrolling: touch;} 
 
-            /* YENİ ALT MENÜ - Ekrana sabit (Fixed) */
+            /* MOBİL MESAJ PERFORMANS YAMASI (Çökmeyi Önler) */
+            .msg-box { 
+                animation: none !important; /* Animasyonu kaldırdık */
+                background: rgba(0,0,0,0.6) !important; /* Degrade silindi, düz renk */
+                padding: 15px; 
+            }
+            .raw-data { box-shadow: none !important; background: rgba(0,0,0,0.8); }
+
             .mobile-nav {
                 display: flex; position: fixed; 
-                bottom: 0; left: 0; width: 100%;
-                background: #080c0a; border-top: 1px solid rgba(255,255,255,0.1); 
-                padding: 10px 5px 25px 5px; /* iOS barı için ekstra alt boşluk */
-                z-index: 1000; justify-content: space-around;
+                bottom: 15px; left: 50%; transform: translateX(-50%);
+                background: rgba(10, 15, 12, 0.95); border: 1px solid rgba(255,255,255,0.1); 
+                padding: 6px; border-radius: 50px; gap: 5px; width: 92%; max-width: 400px;
+                box-shadow: 0 15px 35px rgba(0,0,0,0.8); z-index: 1000; 
             }
             .m-nav-btn {
-                background: transparent; border: none; color: var(--text-secondary);
-                padding: 10px 20px; font-size: 13px; font-family: 'Plus Jakarta Sans'; font-weight: 700;
-                border-radius: 20px; transition: 0.2s; cursor: pointer;
+                flex: 1; background: transparent; border: none; color: var(--text-secondary);
+                padding: 12px 0; font-size: 13px; font-family: 'Plus Jakarta Sans'; font-weight: 700;
+                border-radius: 40px; transition: 0.3s; cursor: pointer;
             }
-            .m-nav-btn.active { background: rgba(16, 185, 129, 0.15); color: var(--accent-primary); }
+            .m-nav-btn.active { background: rgba(16, 185, 129, 0.15); color: var(--accent-primary); box-shadow: inset 0 0 10px rgba(16, 185, 129, 0.2); }
             
             .layers-grid { gap: 6px; margin-bottom: 15px;}
             .layer { font-size: 12px; height: 42px; aspect-ratio: auto; }
-            #message, #cipher { min-height: 80px; padding: 12px; }
+            #message, #cipher { min-height: 80px; flex-shrink: 0; padding: 12px; font-size: 16px;}
         }
 
         /* MODALLAR */
-        .modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 2000; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: 0.2s; }
+        .modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); z-index: 2000; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: 0.3s; }
         .modal-bg.active { opacity: 1; pointer-events: auto; }
-        .modal-card { background: var(--bg-panel); border: 1px solid var(--border-light); border-radius: var(--radius-lg); width: 90%; max-width: 450px; padding: 30px; }
+        .modal-card { background: var(--bg-panel); border: 1px solid var(--border-light); border-radius: var(--radius-lg); width: 550px; max-width: 90%; padding: 36px; box-shadow: var(--shadow-soft); transform: scale(0.95); transition: 0.3s; }
         .modal-bg.active .modal-card { transform: scale(1); }
-        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--border-light); padding-bottom: 15px;}
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 28px; padding-bottom: 15px; border-bottom: 1px solid var(--border-light); }
+        .modal-header h3 { font-size: 22px; font-weight: 800; color: var(--text-primary); text-shadow: 0 0 15px var(--accent-glow); }
         .close-modal { background: none; border: none; color: var(--text-secondary); font-size: 24px; padding: 0; }
     </style>
 </head>
@@ -333,14 +342,14 @@
                     <div>Oda: <span id="roomNameDisplay" style="color:var(--accent-primary); font-weight:700;">-</span></div>
                     <div>Ajan: <span id="userNameDisplay" style="color:var(--accent-primary); font-weight:700;">-</span></div>
                     
-                    <div class="status-indicator">
-                        <div class="status-dot"></div>
+                    <div class="status-indicator" style="background: rgba(56, 189, 248, 0.1); border-color: rgba(56, 189, 248, 0.4); padding: 4px 10px; font-size: 12px; margin-left: 5px;">
+                        <div class="status-dot" style="background: #38bdf8; box-shadow: 0 0 10px #38bdf8; animation: pulseDotBlue 2s infinite;"></div>
                         <span id="platformCountDisplay">0</span> Platformda
                     </div>
                 </div>
                 <div class="nav-links">
-                    <button class="nav-item" onclick="openModal('guideModal')">📘 Kılavuz</button>
-                    <button class="nav-item" onclick="openModal('supportModal')">📨 Destek</button>
+                    <button class="nav-item" onclick="window.openModal('guideModal')">📘 Kılavuz</button>
+                    <button class="nav-item" onclick="window.openModal('supportModal')">📨 Destek</button>
                     <button class="btn-danger" id="btn-panic-trigger">🚨 İmha Et</button>
                 </div>
             </div>
@@ -387,7 +396,7 @@
                 </div>
                 <div class="panel-body" id="chat-scroll-container">
                     <div id="log"></div>
-                    <div id="typing-indicator"></div>
+                    <div id="typing-indicator" style="padding: 0 0 16px 0;"></div>
                 </div>
             </div>
 
@@ -403,7 +412,9 @@
                     
                     <button class="btn-secondary" style="width: 100%; margin-top: 20px; border-color: var(--accent-primary); color: var(--accent-primary); flex-shrink:0;" id="btn-decrypt-trigger"><span>🔓 Veriyi Çöz</span></button>
 
-                    <div id="result"></div>
+                    <div id="result">
+                        <span style="color: var(--text-secondary); font-style: italic;">Çözüm sonucu burada görüntülenecek...</span>
+                    </div>
                 </div>
             </div>
 
@@ -417,8 +428,8 @@
 
     </div>
 
-    <div class="modal-bg" id="guideModal"><div class="modal-card"><div class="modal-header"><h3 class="brand-font">Protokoller</h3><button class="close-modal" onclick="closeModal('guideModal')">✖</button></div><div style="font-size: 14px; color: var(--text-secondary); line-height: 1.6;"><p>Uçtan Uca Şifreleme aktiftir.</p></div></div></div>
-    <div class="modal-bg" id="supportModal"><div class="modal-card"><div class="modal-header"><h3 class="brand-font">Destek Birimi</h3><button class="close-modal" onclick="closeModal('supportModal')">✖</button></div><div style="font-size: 14px; color: var(--text-secondary);">Destek sistemine bağlandı.</div></div></div>
+    <div class="modal-bg" id="guideModal"><div class="modal-card"><div class="modal-header"><h3 class="brand-font">Sistem Protokolleri</h3><button class="close-modal" onclick="window.closeModal('guideModal')">✖</button></div><div style="font-size: 14px; color: var(--text-secondary); line-height: 1.6;"><p><strong style="color:var(--text-primary)">Uçtan Uca Şifreleme:</strong> Mesaj göndermeden önce katmanlar seçin.</p><br><p><strong style="color:var(--text-primary)">Gelişmiş PIN Koruması:</strong> Yanlış PIN girenler odanızın loglarına erişemez.</p><br><p><strong style="color:var(--text-primary)">Kripto Medya:</strong> Fotoğraf ve ses kayıtlarınız cihazınızdan çıkmadan önce AES-256 ile şifrelenir.</p></div></div></div>
+    <div class="modal-bg" id="supportModal"><div class="modal-card"><div class="modal-header"><h3 class="brand-font">Destek Birimi</h3><button class="close-modal" onclick="window.closeModal('supportModal')">✖</button></div><form action="https://formspree.io/f/xdaldnap" method="POST"><div class="input-group"><input type="text" name="Konu" placeholder="İleti Konusu" required></div><div class="input-group"><input type="email" name="Email" placeholder="İletişim E-posta Adresi" required></div><div class="input-group"><textarea name="Mesaj" placeholder="Talebinizi detaylıca belirtin..." required style="min-height: 100px;"></textarea></div><button type="submit" class="btn-primary" style="width: 100%;"><span>Talebi Gönder</span></button></form></div></div>
 
     <script src="crypto.js"></script>
 </body>
