@@ -2,186 +2,263 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+
     <title>Volktronic | Premium Secure Workspace</title>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
     
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Plus+Jakarta+Sans:wght@700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
     <style>
         /* =========================================
-           1. ORIJINAL YEŞİL-SİYAH PREMİUM TEMA
+           1. PREMIUM RENK PALETİ VE EFEKTLER
            ========================================= */
         :root {
             --bg-base: #080c0a;       
-            --bg-panel: #0d1210; 
-            --border-light: rgba(16, 185, 129, 0.2);
-            --accent-primary: #10b981; 
-            --accent-hover: #059669;
+            --bg-panel: rgba(16, 24, 20, 0.75); 
+            --border-light: rgba(255, 255, 255, 0.08);
+            --border-focus: rgba(16, 185, 129, 0.5);
+            
             --text-primary: #ffffff;
             --text-secondary: #94a3b8;
-            --radius-md: 12px;
-            --glow: 0 0 15px rgba(16, 185, 129, 0.2);
+            
+            --accent-primary: #10b981; 
+            --accent-hover: #059669;
+            --accent-glow: rgba(16, 185, 129, 0.4); 
+            
+            --danger: #ef4444;
+            --danger-bg: rgba(239, 68, 68, 0.15);
+            
+            --shadow-soft: 0 20px 40px -10px rgba(0,0,0,0.7);
+            --shadow-glow: 0 0 25px var(--accent-glow); 
+            --radius-md: 14px;
+            --radius-lg: 24px;
+            
+            --transition-smooth: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); 
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
 
         html, body {
-            width: 100%; height: 100%;
+            width: 100%; height: 100%; margin: 0; padding: 0;
             background: var(--bg-base); color: var(--text-primary);
-            background-image: radial-gradient(circle at top center, #103323 0%, var(--bg-base) 80%);
         }
 
-        .hidden { display: none !important; }
-        .mono { font-family: 'JetBrains Mono', monospace; }
+        body {
+            display: flex; align-items: center; justify-content: center;
+            background: radial-gradient(circle at top center, rgba(16, 185, 129, 0.15) 0%, var(--bg-base) 60%);
+            overflow: hidden; /* PC için sabit tutar */
+        }
 
-        /* BUTONLAR (Glow Efektli) */
+        body::before {
+            content: ''; position: fixed; top: -20%; left: -20%; width: 140%; height: 140%;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect fill="rgba(16,185,129,0.03)" width="1" height="1" x="50" y="50"/></svg>') repeat;
+            opacity: 0.4; animation: bgMove 60s linear infinite; z-index: -2; pointer-events: none;
+        }
+        @keyframes bgMove { from { background-position: 0 0; } to { background-position: 100px 100px; } }
+
+        h1, h2, h3, h4, h5, .brand-font { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .mono-font { font-family: 'JetBrains Mono', monospace; }
+        .hidden { display: none !important; }
+
+        /* =========================================
+           2. PREMIUM BUTONLAR
+           ========================================= */
         button {
-            padding: 14px 20px; border: none; border-radius: var(--radius-md);
-            font-family: 'Plus Jakarta Sans', sans-serif; font-size: 14px; font-weight: 800;
+            padding: 16px 28px; border: none; border-radius: var(--radius-md);
+            font-family: 'Plus Jakarta Sans', sans-serif; font-size: 15px; font-weight: 700;
+            cursor: pointer; transition: var(--transition-smooth);
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+            position: relative; overflow: hidden;
+        }
+        button::after {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(rgba(255,255,255,0.1), transparent); opacity: 0; transition: var(--transition-smooth);
+        }
+        button:hover::after { opacity: 1; }
+
+        .btn-primary { background: linear-gradient(135deg, var(--accent-primary), var(--accent-hover)); color: #fff; box-shadow: 0 8px 25px -5px var(--accent-glow); }
+        .btn-primary:hover { transform: translateY(-2px) scale(1.02); box-shadow: 0 12px 35px -5px var(--accent-glow); }
+        
+        .btn-secondary { background: rgba(255, 255, 255, 0.04); border: 1px solid var(--border-light); color: var(--text-primary); backdrop-filter: blur(10px); }
+        .btn-secondary:hover { border-color: var(--border-focus); transform: translateY(-2px); }
+        
+        .btn-danger { background: var(--danger-bg); border: 1px solid rgba(239, 68, 68, 0.3); color: var(--danger); padding: 12px 20px; font-size: 13px; font-weight: 600; }
+
+        /* =========================================
+           3. GİRİŞ EKRANI
+           ========================================= */
+        #login {
+            width: 100%; max-width: 440px; z-index: 10;
+            background: var(--bg-panel); backdrop-filter: blur(30px);
+            border: 1px solid rgba(255,255,255,0.1); border-radius: var(--radius-lg);
+            padding: 45px; box-shadow: var(--shadow-soft);
+            animation: loginAppear 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+        @keyframes loginAppear { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+
+        .input-group { margin-bottom: 24px; position: relative; text-align: left;}
+        .input-label { display: block; font-size: 13px; color: var(--text-secondary); margin-bottom: 10px; font-weight: 600; letter-spacing: 0.5px; }
+        
+        input, textarea, select {
+            width: 100%; padding: 16px 18px; background: rgba(0,0,0,0.5); 
+            border: 2px solid var(--border-light); border-radius: var(--radius-md); 
+            color: var(--text-primary); font-size: 15px; outline: none; transition: 0.3s;
+        }
+        input:focus { border-color: var(--accent-primary); box-shadow: 0 0 10px var(--accent-glow); }
+
+        /* =========================================
+           4. ANA ÇALIŞMA ALANI & ÜST MENÜ
+           ========================================= */
+        .app-container {
+            width: 100%; max-width: 1450px; height: 92vh;
+            display: flex; flex-direction: column; padding: 20px; gap: 24px; z-index: 5;
+            animation: appAppear 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+        @keyframes appAppear { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
+
+        .top-navbar {
+            display: flex; justify-content: space-between; align-items: center;
+            background: var(--bg-panel); border: 1px solid var(--border-light);
+            padding: 18px 30px; border-radius: var(--radius-md); backdrop-filter: blur(25px);
+            box-shadow: 0 10px 30px -10px rgba(0,0,0,0.5); z-index: 10;
+        }
+        
+        .main-grid { display: grid; grid-template-columns: 360px 1fr 360px; gap: 28px; flex: 1; min-height: 0; }
+
+        .workspace-panel {
+            background: var(--bg-panel); border: 1px solid rgba(255,255,255,0.08);
+            border-radius: var(--radius-lg); display: flex; flex-direction: column; overflow: hidden;
+            backdrop-filter: blur(25px); box-shadow: var(--shadow-soft); transition: 0.3s;
+        }
+        
+        .panel-header { padding: 22px 28px; border-bottom: 1px solid var(--border-light); background: rgba(255,255,255,0.02); }
+        .panel-body { padding: 28px; overflow-y: auto; flex: 1; display: flex; flex-direction: column; }
+
+        /* =========================================
+           5. KATMAN SEÇİCİLER & MESAJLAR
+           ========================================= */
+        .layers-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 24px; }
+        .layer {
+            aspect-ratio: 1; display: flex; align-items: center; justify-content: center;
+            background: rgba(255,255,255,0.03); border: 2px solid var(--border-light);
+            border-radius: var(--radius-md); font-size: 14px; font-weight: 700; color: var(--text-secondary);
             cursor: pointer; transition: 0.2s;
         }
-        button:active { transform: scale(0.96); }
-        .btn-primary { 
-            background: var(--accent-primary); color: #000; 
-            box-shadow: 0 4px 20px rgba(16, 185, 129, 0.3);
-        }
-        .btn-secondary { 
-            background: rgba(255,255,255,0.03); border: 1px solid var(--border-light); 
-            color: var(--accent-primary); 
-        }
+        .layer.active { background: var(--accent-primary); color: #000; border-color: var(--accent-primary); box-shadow: 0 0 15px var(--accent-glow); }
 
-        input, textarea, select {
-            width: 100%; padding: 14px; background: rgba(0,0,0,0.7); 
-            border: 1px solid var(--border-light); border-radius: var(--radius-md); 
-            color: var(--text-primary); font-size: 16px; outline: none;
-        }
-        input:focus, textarea:focus { border-color: var(--accent-primary); box-shadow: var(--glow); }
+        #log { display: flex; flex-direction: column; gap: 18px; }
+        .msg-box { background: rgba(0,0,0,0.3); border: 1px solid var(--border-light); border-radius: var(--radius-md); padding: 20px; transition: 0.3s; }
+        .msg.me { border-right: 4px solid var(--accent-primary); }
+        .msg.other { border-left: 4px solid #38bdf8; }
+
+        .raw-data { background: #030504; border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 14px; font-size: 11px; word-break: break-all; margin-bottom: 15px; opacity: 0.7; }
+        .decrypted-view { margin-top: 15px; padding: 15px; background: rgba(16, 185, 129, 0.05); border-radius: 10px; font-size: 14px; display: none; }
 
         /* =========================================
-           2. PC ARAYÜZÜ (GELİŞMİŞ GRID)
-           ========================================= */
-        @media (min-width: 1025px) {
-            body { display: flex; align-items: center; justify-content: center; overflow: hidden; }
-            #login-screen { width: 420px; background: var(--bg-panel); border: 1px solid var(--border-light); border-radius: 24px; padding: 40px; box-shadow: 0 30px 60px rgba(0,0,0,0.7); }
-            #app-screen { width: 95%; max-width: 1500px; height: 92vh; display: flex; flex-direction: column; gap: 20px; }
-            .main-grid { display: grid; grid-template-columns: 360px 1fr 360px; gap: 20px; flex: 1; min-height: 0; }
-            .panel { background: var(--bg-panel); border: 1px solid var(--border-light); border-radius: 18px; display: flex; flex-direction: column; overflow: hidden; }
-            .panel-header { padding: 18px; border-bottom: 1px solid var(--border-light); font-weight: 800; font-family: 'Plus Jakarta Sans'; color: var(--accent-primary); font-size: 14px; text-transform: uppercase; letter-spacing: 1px; }
-            .panel-body { padding: 20px; overflow-y: auto; flex: 1; }
-        }
-
-        /* =========================================
-           3. MOBİL ARAYÜZ (HAMMAL İŞİ AMA ŞIK)
+           6. MOBİL UYGULAMA MİMARİSİ (DÜZELTİLMİŞ)
            ========================================= */
         @media (max-width: 1024px) {
-            html, body { height: auto; overflow-y: auto; }
-            #login-screen { width: 100%; height: 100vh; padding: 30px; display: flex; flex-direction: column; justify-content: center; }
-            #app-screen { display: flex; flex-direction: column; padding: 12px; gap: 15px; }
+            body { overflow-y: auto; height: auto; display: block; }
+            #login { margin: 10vh auto; width: 92%; }
+            .app-container { height: auto; padding: 10px; gap: 15px; }
+            .top-navbar { flex-direction: column; gap: 12px; padding: 15px; }
             .main-grid { display: flex; flex-direction: column; gap: 15px; }
-            .panel { background: #0a0f0d; border: 1px solid var(--border-light); border-radius: 14px; }
-            #panel-chat { order: 1; } /* En üstte sohbet */
-            #panel-encoder { order: 2; }
-            #panel-decoder { order: 3; }
-            .panel-header { padding: 15px; font-size: 13px; font-weight: 800; border-bottom: 1px solid var(--border-light); }
-            .panel-body { padding: 15px; }
-            #chat-scroll-container { height: 55vh; overflow-y: auto; }
+            
+            /* Mobilde sekmeli yapıyı 'düz hammal' listeye çeviriyoruz ki donmasın */
+            .workspace-panel { display: flex !important; width: 100%; height: auto; backdrop-filter: none; background: #0a0f0d;}
+            #chat-panel { order: 1; height: 60vh; } /* Önce Chat */
+            #encoder-panel { order: 2; }
+            #decoder-panel { order: 3; }
+            
+            input, textarea, select { font-size: 16px !important; } /* iOS Zoom Fix */
         }
-
-        /* ORTAK BİLEŞENLER */
-        .top-navbar { display: flex; justify-content: space-between; align-items: center; background: var(--bg-panel); border: 1px solid var(--border-light); padding: 15px 20px; border-radius: var(--radius-md); margin-bottom: 5px;}
-        .layer-btn { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; background: rgba(16, 185, 129, 0.05); border: 1px solid var(--border-light); border-radius: 10px; font-size: 13px; font-weight: bold; cursor: pointer; color: var(--accent-primary);}
-        .layer-btn.active { background: var(--accent-primary); color: #000; box-shadow: var(--glow); }
-
-        #chat-log { display: flex; flex-direction: column; gap: 12px; }
-        .msg-box { background: rgba(255,255,255,0.02); border: 1px solid var(--border-light); border-radius: 14px; padding: 15px; }
-        .msg-me { border-right: 4px solid var(--accent-primary); background: linear-gradient(to left, rgba(16, 185, 129, 0.05), transparent); }
-        .msg-other { border-left: 4px solid #38bdf8; background: linear-gradient(to right, rgba(56, 189, 248, 0.05), transparent); }
-        .msg-header { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 12px; color: var(--text-secondary); font-weight: 600; }
-        
-        .raw-data { background: #000; padding: 10px; border-radius: 8px; font-size: 11px; word-break: break-all; margin-bottom: 10px; border: 1px solid rgba(255,255,255,0.05); opacity: 0.7;}
-        .decrypted-view { margin-top: 10px; padding: 12px; background: rgba(16, 185, 129, 0.08); border-radius: 8px; font-size: 14px; display: none; border-left: 3px solid var(--accent-primary); }
-
-        #result-box { margin-top: 15px; padding: 15px; background: #000; border: 1px dashed var(--accent-primary); border-radius: var(--radius-md); min-height: 60px; font-size: 14px; color: var(--accent-primary); }
     </style>
 </head>
 <body>
 
-    <div id="login-screen">
+    <div id="login">
         <div style="text-align: center; margin-bottom: 40px;">
-            <div style="font-size: 36px; font-weight: 800; font-family: 'Plus Jakarta Sans'; color: #fff;">VOLKTRONIC<span style="color:var(--accent-primary)">.</span></div>
-            <div style="font-size: 12px; color: var(--accent-primary); letter-spacing: 2px; font-weight: 600;">PREMIUM SECURE NETWORK</div>
+            <div class="brand-font" style="font-size: 34px; font-weight: 800;">Volktronic<span>.</span></div>
+            <div style="font-size: 14px; color: var(--text-secondary);">Premium Secure Workspace</div>
         </div>
 
         <div class="input-group">
             <label class="input-label">Kullanıcı Kimliği</label>
-            <input id="username" type="text" placeholder="Ajan Adı" autocomplete="off">
+            <input id="username" type="text" placeholder="Ajan Adı">
         </div>
         
-        <div style="display: flex; gap:10px; margin-bottom: 15px;">
-            <div style="flex:2;"><input id="room" type="text" placeholder="Oda Kodu" autocomplete="off"></div>
-            <div style="flex:1;"><input id="roomPin" type="password" placeholder="PIN" maxlength="4" style="text-align: center;"></div>
+        <div style="display: flex; gap:16px; margin-bottom: 24px;">
+            <div style="flex:2;"><input id="room" type="text" placeholder="Oda Kodu"></div>
+            <div style="flex:1;"><input id="roomPin" type="password" placeholder="PIN" maxlength="4"></div>
         </div>
 
-        <div class="input-group" style="margin-bottom: 30px;">
-            <input id="secretKey" type="password" placeholder="Master Key" autocomplete="off">
+        <div class="input-group" style="margin-bottom: 35px;">
+            <input id="secretKey" type="password" placeholder="Master Şifreleme Anahtarı">
         </div>
 
-        <button class="btn-primary" style="width: 100%;" onclick="enterRoom()">SİSTEME BAĞLAN</button>
+        <button class="btn-primary" style="width: 100%;" onclick="enterRoom()">Güvenli Ağa Bağlan</button>
     </div>
 
-    <div id="app-screen" class="hidden">
+    <div id="chat" class="app-container hidden">
         <header class="top-navbar">
-            <div style="font-size: 14px; font-weight: 800; color: #fff;">
-                <span style="color:var(--accent-primary);">[</span> <span id="roomNameDisplay">-</span> <span style="color:var(--accent-primary);">]</span> 
-                <span style="margin: 0 10px; opacity: 0.3;">|</span> 
+            <div class="brand-font" style="font-size: 20px; font-weight: 800;">Volktronic <span class="nav-badge" style="font-size: 10px;">SECURE</span></div>
+            <div style="display: flex; gap: 15px; font-size: 13px;">
+                <span id="roomNameDisplay" style="color:var(--accent-primary)">-</span>
                 <span id="userNameDisplay">-</span>
+                <button class="btn-danger" style="padding: 5px 10px; font-size: 10px;" onclick="triggerPanic()">İMHÂ</button>
             </div>
-            <button class="btn-danger" style="padding: 6px 12px; font-size: 10px; background: transparent; border: 1px solid var(--danger); color: var(--danger);" onclick="triggerPanic()">SİSTEMİ SİL</button>
         </header>
 
         <div class="main-grid">
-            <div class="panel" id="panel-chat">
-                <div class="panel-header">AĞ AKIŞI // CANLI</div>
+            <div class="workspace-panel" id="chat-panel">
+                <div class="panel-header"><span class="panel-title">AĞ AKIŞI</span></div>
                 <div class="panel-body" id="chat-scroll-container">
-                    <div id="chat-log"></div>
-                    <div id="typing-indicator" style="font-size: 11px; color: var(--accent-primary); margin-top:8px; font-weight: bold;"></div>
+                    <div id="log"></div>
+                    <div id="typing-indicator" style="font-size: 11px; color: var(--accent-primary); margin-top: 10px;"></div>
                 </div>
             </div>
 
-            <div class="panel" id="panel-encoder">
-                <div class="panel-header">VERİ ŞİFRELEME</div>
+            <div class="workspace-panel" id="encoder-panel">
+                <div class="panel-header"><span class="panel-title">ŞİFRELEME</span></div>
                 <div class="panel-body">
-                    <div class="layers-grid" id="encLayers" style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: 15px;"></div>
-                    <textarea id="message" placeholder="Mesajınızı buraya girin..."></textarea>
-                    <div style="display: flex; gap: 10px; margin-bottom: 15px;">
-                        <label for="imageInput" class="btn-secondary" style="flex:1; text-align: center; display: flex; align-items: center; justify-content: center;" id="imgLabel">GÖRSEL EKLE</label>
+                    <div class="layers-grid" id="encLayers"></div>
+                    <textarea id="message" placeholder="Mesajınızı girin..."></textarea>
+                    <div style="display: flex; gap: 10px; margin-top: 15px;">
+                        <label for="imageInput" class="btn-secondary" style="flex:1; font-size: 12px;" id="imgLabel">GÖRSEL</label>
                         <input type="file" id="imageInput" accept="image/*" class="hidden">
+                        <select id="burnTimer" style="flex:1; padding: 10px; font-size: 12px;">
+                            <option value="0">KALICI</option>
+                            <option value="15">15 SN</option>
+                        </select>
                     </div>
-                    <select id="burnTimer" style="margin-bottom: 15px; border-color: var(--danger); color: var(--danger);">
-                        <option value="0">KALICI VERİ</option>
-                        <option value="15">15 SN SONRA İMHA</option>
-                    </select>
-                    <button class="btn-primary" style="width: 100%;" onclick="encryptAndSend()">ŞİFRELE VE GÖNDER</button>
+                    <button class="btn-primary" style="width: 100%; margin-top: 20px;" onclick="encryptAndSend()">GÖNDER 🚀</button>
                 </div>
             </div>
 
-            <div class="panel" id="panel-decoder">
-                <div class="panel-header">MANUEL ÇÖZÜCÜ</div>
+            <div class="workspace-panel" id="decoder-panel">
+                <div class="panel-header"><span class="panel-title">ÇÖZÜCÜ</span></div>
                 <div class="panel-body">
-                    <div class="layers-grid" id="decLayers" style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: 15px;"></div>
-                    <textarea id="cipher" placeholder="RAW veriyi buraya yapıştırın..."></textarea>
-                    <button class="btn-secondary" style="width: 100%;" onclick="decryptExternal()">ŞİFREYİ ÇÖZ</button>
-                    <div id="result-box">Sonuç bekleniyor...</div>
+                    <div class="layers-grid" id="decLayers"></div>
+                    <textarea id="cipher" placeholder="RAW veriyi yapıştırın..."></textarea>
+                    <button class="btn-secondary" style="width: 100%; margin-top: 15px;" onclick="decryptExternal()">ŞİFREYİ ÇÖZ</button>
+                    <div id="result" style="margin-top: 20px; color: var(--accent-primary); font-size: 14px;"></div>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
+        // FIREBASE VE KRİPTO MANTIĞI (600 SATIRLIK ORİJİNAL AKIŞIN OPTİMİZE HALİ)
         let db;
         try {
             const firebaseConfig = { databaseURL: "https://volktron-chat-default-rtdb.firebaseio.com/" };
@@ -193,30 +270,27 @@
         let roomMessagesRef;
         let selectedImageBase64 = null; 
         const encSel = new Set(), decSel = new Set();
-        let listenersActive = false;
 
-        function buildLayers(containerId, setObj) {
-            const container = document.getElementById(containerId);
+        function buildLayers(id, setObj) {
+            const cont = document.getElementById(id);
             for (let i = 1; i <= 10; i++) {
-                const btn = document.createElement("div");
-                btn.className = "layer-btn"; 
-                btn.innerHTML = i < 10 ? '0'+i : i;
-                btn.onclick = function() { 
-                    if (setObj.has(i)) setObj.delete(i); else setObj.add(i); 
-                    this.classList.toggle("active"); 
+                const b = document.createElement("div");
+                b.className = "layer"; b.innerHTML = i;
+                b.onclick = function() {
+                    if (setObj.has(i)) setObj.delete(i); else setObj.add(i);
+                    this.classList.toggle("active");
                 };
-                container.appendChild(btn);
+                cont.appendChild(b);
             }
         }
         buildLayers("encLayers", encSel);
         buildLayers("decLayers", decSel);
 
         document.getElementById("imageInput").addEventListener("change", function(e) {
-            const file = e.target.files[0]; const label = document.getElementById("imgLabel");
-            if (!file) return;
+            const f = e.target.files[0];
             const reader = new FileReader();
-            reader.onload = e => { selectedImageBase64 = e.target.result; label.innerHTML = "GÖRSEL HAZIR ✓"; label.style.borderColor = "#10b981"; };
-            reader.readAsDataURL(file);
+            reader.onload = e => { selectedImageBase64 = e.target.result; document.getElementById("imgLabel").innerHTML = "HAZIR ✓"; };
+            reader.readAsDataURL(f);
         });
 
         function enterRoom() {
@@ -228,94 +302,86 @@
 
             const roomHash = CryptoJS.MD5(ROOM + "_" + PIN).toString();
             SECURE_ROOM_PATH = ROOM + "_" + roomHash.substring(0, 10);
+            
             document.getElementById("userNameDisplay").textContent = USER;
             document.getElementById("roomNameDisplay").textContent = ROOM;
-            document.getElementById("login-screen").classList.add("hidden");
-            document.getElementById("app-screen").classList.remove("hidden");
-            if (!listenersActive) { startFirebaseListeners(); listenersActive = true; }
+            document.getElementById("login").classList.add("hidden");
+            document.getElementById("chat").classList.remove("hidden");
+            startFirebaseListeners();
         }
 
         function startFirebaseListeners() {
             db.ref("rooms/" + SECURE_ROOM_PATH + "/typing").on('value', snap => {
                 const writers = Object.keys(snap.val() || {}).filter(u => u !== USER);
-                document.getElementById("typing-indicator").textContent = writers.length > 0 ? writers.join(", ") + " veri işliyor..." : "";
+                document.getElementById("typing-indicator").textContent = writers.length > 0 ? writers.join(", ") + " yazıyor..." : "";
             });
 
             roomMessagesRef = db.ref("rooms/" + SECURE_ROOM_PATH + "/messages");
             roomMessagesRef.on('child_added', snap => {
                 const d = snap.val(); const key = snap.key;
                 const time = d.time ? new Date(d.time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : "--:--";
-
+                
                 const div = document.createElement("div");
                 div.id = "msg-" + key;
-                div.className = "msg-box " + (d.user === USER ? "msg-me" : "msg-other");
-                
+                div.className = "msg-box msg " + (d.user === USER ? "me" : "other");
                 div.innerHTML = `
                     <div class="msg-header"><strong>${d.user}</strong><span>${time}</span></div>
                     <div class="raw-data mono">${d.text.substring(0, 60)}...</div>
-                    <div style="display:flex; gap:5px;">
-                        <button class="btn-secondary" style="flex:1; padding:8px; font-size:11px;" onclick="navigator.clipboard.writeText('${d.text}')">KOPYALA</button>
-                        <button class="btn-primary" style="flex:1; padding:8px; font-size:11px;" id="dec-btn-${key}">ÇÖZ</button>
-                    </div>
+                    <button class="btn-primary" style="width:100%; padding:8px; font-size:11px;" id="dec-btn-${key}">ŞİFREYİ ÇÖZ</button>
                     <div class="decrypted-view" id="view-${key}"></div>
                 `;
 
                 div.querySelector(`#dec-btn-${key}`).onclick = () => {
-                    const decrypted = removeStrongLayers(d.text, SECRET, decSel);
-                    const view = div.querySelector(`#view-${key}`);
-                    if (decrypted.includes("HATA")) return alert("Hatalı anahtar/katman!");
-                    
-                    if (decrypted.startsWith("IMG||")) {
-                        view.innerHTML = `<img src="${decrypted.split("||")[1]}" style="width:100%; border-radius:8px; margin-bottom:5px;"><p>${decrypted.split("||")[2]||""}</p>`;
+                    const dec = removeStrongLayers(d.text, SECRET, decSel);
+                    const v = div.querySelector(`#view-${key}`);
+                    if (dec.includes("HATA")) return alert("Hatalı Parola/Katman!");
+                    if (dec.startsWith("IMG||")) {
+                        v.innerHTML = `<img src="${dec.split("||")[1]}" style="width:100%; border-radius:8px; margin-bottom:5px;"><p>${dec.split("||")[2]||""}</p>`;
                     } else {
-                        view.innerHTML = decrypted.replace("TXT||", "");
+                        v.innerHTML = dec.replace("TXT||", "");
                     }
-                    view.style.display = "block";
+                    v.style.display = "block";
                     if (d.burn > 0) startBurnTimer(d.burn, key, div);
                 };
 
-                document.getElementById("chat-log").appendChild(div);
+                document.getElementById("log").appendChild(div);
                 const sc = document.getElementById("chat-scroll-container");
                 sc.scrollTop = sc.scrollHeight;
             });
 
             roomMessagesRef.on('child_removed', snap => {
                 const el = document.getElementById("msg-" + snap.key);
-                if(el) { el.style.opacity = "0.3"; el.innerHTML = "<p style='text-align:center; font-size:11px;'>VERİ İMHA EDİLDİ</p>"; setTimeout(() => el.remove(), 2000); }
+                if(el) el.remove();
             });
         }
 
         function encryptAndSend() {
             const msgInput = document.getElementById("message"); const t = msgInput.value.trim();
             if (!t && !selectedImageBase64) return;
-            const burn = parseInt(document.getElementById("burnTimer").value);
             const payload = selectedImageBase64 ? ("IMG||" + selectedImageBase64 + "||" + t) : ("TXT||" + t);
             const encrypted = applyStrongLayers(payload, SECRET, encSel);
-            roomMessagesRef.push({ user: USER, text: encrypted, time: Date.now(), burn: burn });
-            msgInput.value = ""; selectedImageBase64 = null; document.getElementById("imgLabel").innerHTML = "GÖRSEL EKLE";
-            if(window.innerWidth <= 1024) document.getElementById('panel-chat').scrollIntoView({behavior: "smooth"});
+            roomMessagesRef.push({ user: USER, text: encrypted, time: Date.now(), burn: parseInt(document.getElementById("burnTimer").value) });
+            msgInput.value = ""; selectedImageBase64 = null; document.getElementById("imgLabel").innerHTML = "GÖRSEL";
         }
 
         function decryptExternal() {
             const raw = document.getElementById("cipher").value.trim();
-            const res = document.getElementById("result-box");
             const p = removeStrongLayers(raw, SECRET, decSel);
-            if (p.includes("HATA")) { res.innerHTML = "HATA!"; res.style.color = "red"; }
-            else { res.innerHTML = p.startsWith("IMG||") ? "[GÖRSEL VERİ]" : p.replace("TXT||", ""); res.style.color = "#10b981"; }
+            document.getElementById("result").innerHTML = p.includes("HATA") ? "HATA!" : p.replace("TXT||", "");
         }
 
-        function applyStrongLayers(text, secret, layers) {
-            let enc = text; let arr = [...layers].sort((a, b) => a - b);
-            if (arr.length === 0) return CryptoJS.AES.encrypt(enc, secret).toString();
-            arr.forEach(l => { enc = CryptoJS.AES.encrypt(enc, secret + "_L" + l).toString(); });
+        function applyStrongLayers(t, s, l) {
+            let enc = t; let arr = [...l].sort((a,b) => a-b);
+            if (arr.length === 0) return CryptoJS.AES.encrypt(enc, s).toString();
+            arr.forEach(i => { enc = CryptoJS.AES.encrypt(enc, s + "_L" + i).toString(); });
             return enc;
         }
 
-        function removeStrongLayers(text, secret, layers) {
-            let dec = text; let arr = [...layers].sort((a, b) => b - a);
+        function removeStrongLayers(t, s, l) {
+            let dec = t; let arr = [...l].sort((a,b) => b-a);
             try {
-                if (arr.length === 0) return CryptoJS.AES.decrypt(dec, secret).toString(CryptoJS.enc.Utf8);
-                arr.forEach(l => { dec = CryptoJS.AES.decrypt(dec, secret + "_L" + l).toString(CryptoJS.enc.Utf8); });
+                if (arr.length === 0) return CryptoJS.AES.decrypt(dec, s).toString(CryptoJS.enc.Utf8);
+                arr.forEach(i => { dec = CryptoJS.AES.decrypt(dec, s + "_L" + i).toString(CryptoJS.enc.Utf8); });
                 return dec;
             } catch (e) { return "HATA"; }
         }
@@ -329,9 +395,7 @@
             }, 1000);
         }
 
-        function triggerPanic() {
-            if (confirm("Tüm odayı temizle?")) db.ref("rooms/" + SECURE_ROOM_PATH).remove();
-        }
+        function triggerPanic() { if (confirm("Odayı sil?")) db.ref("rooms/" + SECURE_ROOM_PATH).remove(); }
     </script>
 </body>
 </html>
