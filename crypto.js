@@ -3,10 +3,13 @@
    ======================================================= */
 
 const firebaseConfig = {
-  databaseURL: "https://volktron-chat-default-rtdb.firebaseio.com/"
+    databaseURL: "https://volktron-chat-default-rtdb.firebaseio.com/"
 };
 
-const app = firebase.initializeApp(firebaseConfig);
+// Çoklu başlatmayı (Multiple Init) engelleyerek çökmeleri önler
+if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+}
 const db = firebase.database();
 
 let USER = "";
@@ -24,6 +27,33 @@ let audioChunks = [];
 const encSel = new Set();
 const decSel = new Set();
 
+// Modal İşlemleri
+window.openModal = function(id) { document.getElementById(id).classList.add('active'); };
+window.closeModal = function(id) { document.getElementById(id).classList.remove('active'); };
+
+// Mobil Menü Geçişleri (Klavye çökme hatası giderildi)
+window.switchMobileTab = function(panelId, btnId) {
+    if(window.innerWidth > 1024) return; 
+
+    // Mobil cihazda klavye açıkken sekme değiştirilirse yavaşça focus'u bırak
+    if (document.activeElement && (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA')) {
+        document.activeElement.blur(); 
+    }
+
+    document.querySelectorAll('.workspace-panel').forEach(p => p.classList.remove('active-tab'));
+    document.getElementById(panelId).classList.add('active-tab');
+    
+    document.querySelectorAll('.m-nav-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById(btnId).classList.add('active');
+
+    if(panelId === 'chat-panel') {
+        setTimeout(() => {
+            const scrollContainer = document.getElementById("chat-scroll-container");
+            if(scrollContainer) { scrollContainer.scrollTop = scrollContainer.scrollHeight; }
+        }, 300); 
+    }
+};
+
 function makeLayers(element, setObj) {
     if (!element) return;
     for (let i = 1; i <= 10; i++) {
@@ -39,6 +69,7 @@ function makeLayers(element, setObj) {
         element.appendChild(btn);
     }
 }
+
 makeLayers(document.getElementById("encLayers"), encSel);
 makeLayers(document.getElementById("decLayers"), decSel);
 
@@ -62,7 +93,7 @@ document.getElementById("imageInput").addEventListener("change", function(e) {
     reader.readAsDataURL(file);
 });
 
-async function toggleAudioRecord() {
+window.toggleAudioRecord = async function() {
     const micBtn = document.getElementById("micBtn");
     
     if (!isRecording) {
@@ -100,8 +131,7 @@ async function toggleAudioRecord() {
         mediaRecorder.stop();
         isRecording = false;
     }
-}
-window.toggleAudioRecord = toggleAudioRecord;
+};
 
 let typingTimer;
 document.getElementById("message").addEventListener("input", () => {
@@ -114,11 +144,11 @@ document.getElementById("message").addEventListener("input", () => {
 
 document.addEventListener('keypress', function (e) {
     if (e.key === 'Enter' && !document.getElementById('login').classList.contains('hidden')) {
-        enterRoom();
+        window.enterRoom();
     }
 });
 
-function enterRoom() {
+window.enterRoom = function() {
     USER = document.getElementById("username").value.trim();
     ROOM = document.getElementById("room").value.trim();
     const PIN = document.getElementById("roomPin").value.trim();
@@ -142,7 +172,7 @@ function enterRoom() {
         startFirebaseListeners();
         window.firebaseListenersActive = true;
     }
-}
+};
 
 function startFirebaseListeners() {
     const myPresenceRef = db.ref("rooms/" + SECURE_ROOM_PATH + "/presence").push();
@@ -332,7 +362,7 @@ function removeStrongLayers(ciphertext, secret, selectedLayers) {
     }
 }
 
-function encryptAndSend() {
+window.encryptAndSend = function() {
     const msgInput = document.getElementById("message");
     const burnTime = parseInt(document.getElementById("burnTimer").value);
     const textVal = msgInput.value.trim();
@@ -365,9 +395,9 @@ function encryptAndSend() {
     if(window.innerWidth <= 1024 && typeof window.switchMobileTab === 'function') {
         window.switchMobileTab('chat-panel', 'm-btn-chat');
     }
-}
+};
 
-function decryptExternal() {
+window.decryptExternal = function() {
     const cipherText = document.getElementById("cipher").value.trim();
     const resultDiv = document.getElementById("result");
 
@@ -387,9 +417,9 @@ function decryptExternal() {
         resultDiv.textContent = cleanText;
         resultDiv.style.color = "var(--accent-primary)";
     }
-}
+};
 
-async function triggerPanic() {
+window.triggerPanic = async function() {
     if (confirm("DİKKAT: Veri tabanı kalıcı olarak temizlenecek. Onaylıyor musunuz?")) {
         try {
             await db.ref("rooms/" + SECURE_ROOM_PATH).remove();
@@ -399,9 +429,4 @@ async function triggerPanic() {
             alert("Bağlantı kesintisi yaşandı.");
         }
     }
-}
-
-window.enterRoom = enterRoom;
-window.encryptAndSend = encryptAndSend;
-window.decryptExternal = decryptExternal;
-window.triggerPanic = triggerPanic;
+};
