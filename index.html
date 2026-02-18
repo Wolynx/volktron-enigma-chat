@@ -3,469 +3,371 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Volktronic Crypto | Kriptolu Ağ Sistemi</title>
+    <title>Volktronic Security | Enterprise Chat</title>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
     
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
 
     <style>
-        /* =========================================
-           1. RENK PALETİ VE TEMEL AYARLAR
-           ========================================= */
+        /* --- 1. MODERN KURUMSAL RENK PALETİ --- */
         :root {
-            --neon-blue: #00f3ff;
-            --neon-pink: #ff0099;
-            --neon-green: #00ff9d;
-            --neon-red: #ff3333;
-            --bg-dark: #020510;
-            --glass-bg: linear-gradient(180deg, rgba(8, 15, 30, 0.8) 0%, rgba(3, 7, 15, 0.9) 100%);
-            --glass-border: rgba(0, 243, 255, 0.2);
-            --text-main: #ffffff;
-            --text-dim: #8b9bb4;
+            --bg-base: #09090b; /* Çok koyu gri/siyah */
+            --bg-panel: #18181b; /* Panel arkaplanı */
+            --border-subtle: #27272a;
+            --text-primary: #f4f4f5;
+            --text-muted: #a1a1aa;
+            
+            --accent-blue: #0ea5e9;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --accent-indigo: #6366f1;
+            
+            --shadow-sm: 0 4px 6px -1px rgba(0,0,0,0.5);
+            --shadow-md: 0 10px 15px -3px rgba(0,0,0,0.5);
         }
 
-        * { box-sizing: border-box; user-select: none; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
 
         body {
-            margin: 0; min-height: 100vh;
-            background-color: var(--bg-dark); color: var(--text-main);
-            font-family: 'Rajdhani', sans-serif;
-            display: flex; align-items: center; justify-content: center;
-            overflow-x: hidden; perspective: 1200px;
+            background-color: var(--bg-base);
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            /* Arka plan ızgara (grid) deseni - Klas ve yormayan görünüm */
+            background-image: linear-gradient(var(--border-subtle) 1px, transparent 1px), linear-gradient(90deg, var(--border-subtle) 1px, transparent 1px);
+            background-size: 50px 50px;
+            background-position: center center;
         }
 
-        #cyber-canvas {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: -1; background: radial-gradient(ellipse at bottom, #0a1526 0%, #05080f 100%);
+        /* Izgaranın ortasını aydınlatıp kenarlarını karartan maske */
+        body::before {
+            content: ''; position: fixed; inset: 0; z-index: -1;
+            background: radial-gradient(circle at center, transparent 0%, var(--bg-base) 80%);
         }
 
-        .cyber-card {
-            background: var(--glass-bg); 
-            backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
-            border: 1px solid var(--glass-border); border-radius: 16px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6), inset 0 0 20px rgba(0, 243, 255, 0.05); 
-            padding: 40px;
-            transition: transform 0.1s ease, box-shadow 0.3s ease;
-            transform-style: preserve-3d; animation: fadeIn 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; opacity: 0;
-        }
-
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(30px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
         .hidden { display: none !important; }
 
-        /* =========================================
-           2. ÜST MENÜ (YENİ HAP TASARIM & TAM ORTALAMA)
-           ========================================= */
-        .top-nav {
-            position: fixed; 
-            top: 25px; 
-            left: 50%; 
-            transform: translateX(-50%); /* Matematiksel olarak kusursuz orta */
-            z-index: 100;
-            display: flex; 
-            gap: 20px;
-            background: rgba(3, 7, 15, 0.7);
-            padding: 12px 30px;
-            border-radius: 50px; /* Hap (Pill) görünümü */
-            border: 1px solid rgba(0, 243, 255, 0.15);
-            backdrop-filter: blur(15px);
-            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.6), inset 0 -2px 10px rgba(0, 243, 255, 0.05);
-            align-items: center;
+        /* --- 2. ORTAK PANEL (KART) TASARIMI --- */
+        .card {
+            background: var(--bg-panel);
+            border: 1px solid var(--border-subtle);
+            border-radius: 16px;
+            box-shadow: var(--shadow-md);
+            padding: 32px;
         }
+
+        h1, h2, h3, .layer { font-family: 'Space Grotesk', sans-serif; }
+
+        /* --- 3. GİRİŞ EKRANI --- */
+        #login { width: 100%; max-width: 400px; text-align: center; z-index: 10; }
+        .logo-text { font-size: 28px; font-weight: 700; color: var(--text-primary); margin-bottom: 4px; letter-spacing: -0.5px;}
+        .logo-sub { font-size: 13px; color: var(--text-muted); margin-bottom: 30px; letter-spacing: 1px; text-transform: uppercase; font-weight: 500;}
+
+        .input-group { margin-bottom: 16px; text-align: left; }
+        .input-label { display: block; font-size: 12px; color: var(--text-muted); margin-bottom: 6px; font-weight: 500; text-transform: uppercase;}
         
-        .nav-btn {
-            background: transparent; 
-            border: 1px solid var(--neon-blue);
-            color: var(--neon-blue); 
-            padding: 10px 25px; 
-            border-radius: 30px;
-            font-family: 'Orbitron'; font-size: 13px; cursor: pointer; transition: all 0.3s ease;
-            text-transform: uppercase; font-weight: bold; letter-spacing: 1.5px;
+        input, textarea, select {
+            width: 100%; padding: 12px 16px;
+            background: var(--bg-base); border: 1px solid var(--border-subtle);
+            border-radius: 8px; color: var(--text-primary); font-size: 14px;
+            transition: all 0.2s ease; outline: none;
+        }
+        input:focus, textarea:focus, select:focus {
+            border-color: var(--accent-blue); box-shadow: 0 0 0 2px rgba(14, 165, 233, 0.2);
+        }
+        textarea { resize: vertical; min-height: 80px; }
+
+        button {
+            width: 100%; padding: 12px 20px; border: none; border-radius: 8px;
+            font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s;
             display: flex; align-items: center; justify-content: center; gap: 8px;
         }
+        .btn-primary { background: var(--text-primary); color: var(--bg-base); }
+        .btn-primary:hover { background: #e4e4e7; transform: translateY(-1px); }
         
-        .nav-btn:hover { 
-            background: var(--neon-blue); 
-            color: #000; 
-            box-shadow: 0 0 20px var(--neon-blue); 
-            transform: translateY(-2px);
+        .btn-danger { background: rgba(239, 68, 68, 0.1); color: var(--accent-red); border: 1px solid rgba(239, 68, 68, 0.2); }
+        .btn-danger:hover { background: var(--accent-red); color: #fff; }
+
+        /* --- 4. ANA SOHBET (APP) ARAYÜZÜ --- */
+        .app-container {
+            width: 100%; max-width: 1400px; height: 95vh;
+            display: flex; flex-direction: column; padding: 20px; gap: 20px; z-index: 5;
         }
 
-        /* =========================================
-           3. MODAL (AÇILIR PENCERE) STİLLERİ
-           ========================================= */
-        .modal-backdrop {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.85); backdrop-filter: blur(10px);
-            z-index: 999; display: flex; align-items: center; justify-content: center;
-            opacity: 0; pointer-events: none; transition: 0.4s ease;
-        }
-        .modal-backdrop.active { opacity: 1; pointer-events: auto; }
-        
-        .modal-box {
-            background: var(--glass-bg); border: 1px solid var(--neon-blue);
-            border-radius: 16px; width: 600px; max-width: 90%; max-height: 85vh;
-            overflow-y: auto; padding: 35px; box-shadow: 0 10px 50px rgba(0,243,255,0.2);
-            transform: scale(0.95) translateY(20px); transition: 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); position: relative;
-        }
-        .modal-backdrop.active .modal-box { transform: scale(1) translateY(0); }
-        
-        .modal-box::-webkit-scrollbar { width: 6px; }
-        .modal-box::-webkit-scrollbar-thumb { background: var(--neon-blue); border-radius: 3px; }
-
-        .close-btn {
-            position: absolute; top: 20px; right: 25px; font-size: 24px; color: var(--text-dim);
-            cursor: pointer; transition: 0.3s; font-family: 'Orbitron';
-        }
-        .close-btn:hover { color: var(--neon-pink); text-shadow: 0 0 10px var(--neon-pink); transform: rotate(90deg); }
-
-        .modal-title { font-family: 'Orbitron'; color: var(--neon-blue); border-bottom: 1px solid rgba(0,243,255,0.2); padding-bottom: 15px; margin-top: 0; letter-spacing: 2px;}
-        .modal-content-text { font-family: 'Rajdhani'; font-size: 16px; color: #cbd5e1; line-height: 1.6; user-select: text; }
-        .modal-content-text h4 { color: var(--neon-green); font-family: 'Orbitron'; margin-bottom: 8px; margin-top: 25px; letter-spacing: 1px;}
-        .legal-warning { background: rgba(255,0,0,0.05); border-left: 3px solid var(--neon-red); padding: 15px; margin-top: 30px; font-size: 14px; color: #ffaaaa; border-radius: 0 8px 8px 0;}
-
-        /* =========================================
-           4. GİRİŞ (LOGIN) EKRANI
-           ========================================= */
-        #login { width: 450px; text-align: center; position: relative; z-index: 10; margin-top: 50px; }
-        h1 { font-family: 'Orbitron'; color: var(--neon-blue); text-shadow: 0 0 20px rgba(0,243,255,0.6); margin: 0 0 10px 0; font-size: 36px; letter-spacing: 3px; }
-        h2 { font-family: 'Orbitron'; font-size: 20px; margin: 0; color: #fff; letter-spacing: 1px;}
-        h3 { font-family: 'Orbitron'; color: var(--neon-blue); font-size: 16px; margin-top: 0; margin-bottom: 25px; text-align: center; border-bottom: 1px solid rgba(0,243,255,0.1); padding-bottom: 12px; letter-spacing: 2px; text-transform: uppercase; }
-        
-        .subtitle { color: var(--text-dim); font-size: 14px; letter-spacing: 4px; margin-bottom: 35px; display: block; text-transform: uppercase; }
-
-        .input-group { margin-bottom: 18px; position: relative; }
-        input, textarea, select { 
-            width: 100%; padding: 16px; 
-            background: rgba(0,0,0,0.6); 
-            border: 1px solid rgba(0,243,255,0.2); 
-            border-radius: 10px; color: var(--neon-blue); 
-            font-family: 'Rajdhani'; font-size: 16px; font-weight: 600; 
-            outline: none; transition: all 0.3s ease; user-select: text; 
-            box-shadow: inset 0 2px 10px rgba(0,0,0,0.5);
-        }
-        input::placeholder, textarea::placeholder { color: rgba(0,243,255,0.25); font-weight: 500; }
-        input:focus, textarea:focus, select:focus { 
-            border-color: var(--neon-blue); 
-            box-shadow: 0 0 20px rgba(0,243,255,0.2), inset 0 2px 10px rgba(0,0,0,0.5); 
-            color: #fff; background: rgba(0,0,0,0.8); 
-        }
-        textarea { min-height: 110px; max-height: 200px; resize: vertical; }
-
-        button, .file-upload-label { 
-            width: 100%; padding: 16px; margin-top: 15px; 
-            border: none; border-radius: 10px; 
-            font-family: 'Orbitron'; font-size: 15px; font-weight: 700; 
-            cursor: pointer; transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); 
-            letter-spacing: 1.5px; text-transform: uppercase; text-align: center; display: block; 
+        /* YENİ ÜST MENÜ TASARIMI (Üst üste binmeyi engeller) */
+        .top-navbar {
+            display: flex; justify-content: space-between; align-items: center;
+            background: var(--bg-panel); border: 1px solid var(--border-subtle);
+            padding: 16px 24px; border-radius: 12px; box-shadow: var(--shadow-sm);
+            flex-wrap: wrap; gap: 15px;
         }
         
-        .primary { background: rgba(0,243,255,0.05); border: 1px solid var(--neon-blue); color: var(--neon-blue); }
-        .primary:hover { background: var(--neon-blue); color: #000; box-shadow: 0 0 30px rgba(0,243,255,0.5); transform: translateY(-3px); }
+        .nav-left { display: flex; align-items: center; gap: 20px; }
+        .nav-brand { font-family: 'Space Grotesk'; font-size: 18px; font-weight: 700; display: flex; align-items: center; gap: 10px;}
+        .nav-brand span { font-size: 12px; padding: 4px 8px; background: rgba(16, 185, 129, 0.1); color: var(--accent-green); border-radius: 6px; font-family: 'Inter'; font-weight: 600;}
         
-        .secondary { background: rgba(255,0,153,0.05); border: 1px solid var(--neon-pink); color: var(--neon-pink); }
-        .secondary:hover { background: var(--neon-pink); color: #000; box-shadow: 0 0 30px rgba(255,0,153,0.5); transform: translateY(-3px); }
-
-        .panic-btn { 
-            background: rgba(255,0,0,0.05); border: 1px solid var(--neon-red); color: var(--neon-red); 
-            padding: 8px 18px; font-size: 13px; width: auto; margin: 0; display: inline-block; border-radius: 8px;
+        .nav-right { display: flex; align-items: center; gap: 12px; }
+        .menu-btn { 
+            background: transparent; border: 1px solid var(--border-subtle); color: var(--text-muted); 
+            padding: 8px 16px; width: auto; font-size: 13px; font-weight: 500; border-radius: 6px; 
         }
-        .panic-btn:hover { background: var(--neon-red); color: #fff; box-shadow: 0 0 30px rgba(255,0,0,0.8); }
+        .menu-btn:hover { background: var(--bg-base); color: var(--text-primary); border-color: var(--text-muted); }
 
-        /* =========================================
-           5. SOHBET ANA EKRANI (HUD TASARIMI)
-           ========================================= */
-        /* Menü ile çakışmayı önlemek için margin-top artırıldı */
-        .container { width: 1450px; max-width: 98%; height: 82vh; display: flex; flex-direction: column; z-index: 5; margin-top: 90px;}
-        
-        .header { 
-            display: flex; justify-content: space-between; align-items: center; 
-            padding-bottom: 20px; border-bottom: 1px solid rgba(0,243,255,0.15); margin-bottom: 25px; flex-shrink: 0; 
-        }
-        .user-info { font-family: 'Orbitron'; font-size: 15px; color: var(--text-dim); margin-right: 25px; }
-        .user-highlight { color: var(--neon-blue); text-shadow: 0 0 10px rgba(0,243,255,0.5); letter-spacing: 1px;}
-
-        .main-grid { display: grid; grid-template-columns: 360px 1fr 360px; gap: 30px; flex: 1; overflow: hidden; }
-        
-        .panel { 
-            background: linear-gradient(180deg, rgba(8, 15, 30, 0.4) 0%, rgba(3, 7, 15, 0.6) 100%); 
-            border-radius: 16px; padding: 25px; 
-            border: 1px solid rgba(255,255,255,0.03); 
-            display: flex; flex-direction: column; overflow-y: auto; position: relative; 
-            box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
-        }
-        .panel::-webkit-scrollbar { width: 6px; } .panel::-webkit-scrollbar-track { background: transparent; } .panel::-webkit-scrollbar-thumb { background: rgba(0,243,255,0.3); border-radius: 3px; }
-
-        /* =========================================
-           6. KATMAN (LAYER) BUTONLARI
-           ========================================= */
-        .layers { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-bottom: 25px; }
-        .layer { 
-            aspect-ratio: 1; display: flex; align-items: center; justify-content: center; 
-            background: rgba(0,243,255,0.03); border: 1px solid rgba(0,243,255,0.2); border-radius: 8px; 
-            cursor: pointer; font-family: 'Orbitron'; font-weight: bold; font-size: 13px; transition: all 0.2s ease; 
-        }
-        .layer:hover { background: rgba(0,243,255,0.1); box-shadow: 0 0 15px rgba(0,243,255,0.2); }
-        .layer.active { 
-            background: var(--neon-blue); color: #000; border-color: #fff; 
-            box-shadow: 0 0 20px var(--neon-blue); transform: scale(1.08); 
+        /* ANA IZGARA */
+        .main-grid {
+            display: grid; grid-template-columns: 320px 1fr 320px; gap: 20px; flex: 1; min-height: 0;
         }
 
-        .tools-row { display: flex; gap: 12px; margin-top: 15px; }
-        .file-upload-label { margin-top: 0; background: rgba(255,0,153,0.05); color: var(--neon-pink); border: 1px solid rgba(255,0,153,0.3); flex: 1; display: flex; align-items: center; justify-content: center; padding: 12px;}
-        .file-upload-label:hover { background: var(--neon-pink); color: #000; border-color: var(--neon-pink); box-shadow: 0 0 20px rgba(255,0,153,0.4); }
+        .workspace-panel {
+            background: var(--bg-panel); border: 1px solid var(--border-subtle);
+            border-radius: 12px; display: flex; flex-direction: column; overflow: hidden;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .panel-header { padding: 16px 20px; border-bottom: 1px solid var(--border-subtle); font-size: 13px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;}
+        .panel-body { padding: 20px; overflow-y: auto; flex: 1; }
+        .panel-body::-webkit-scrollbar { width: 4px; } .panel-body::-webkit-scrollbar-thumb { background: var(--border-subtle); border-radius: 4px; }
 
-        /* =========================================
-           7. ORTA PANEL (MESAJ AKIŞI)
-           ========================================= */
-        .messages-panel { grid-column: 2; border: 1px solid rgba(0,243,255,0.15); box-shadow: 0 0 30px rgba(0,243,255,0.05); }
-        #log { display: flex; flex-direction: column; gap: 20px; padding-bottom: 20px; }
-        
-        .msg { 
-            padding: 18px; border-radius: 12px; background: rgba(0,0,0,0.6); 
-            border-left: 4px solid transparent; animation: slideIn 0.35s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; position: relative; 
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        /* KATMANLAR */
+        .layers-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: 20px; }
+        .layer {
+            aspect-ratio: 1; display: flex; align-items: center; justify-content: center;
+            background: var(--bg-base); border: 1px solid var(--border-subtle);
+            border-radius: 6px; font-size: 12px; font-weight: 600; color: var(--text-muted);
+            cursor: pointer; transition: 0.2s;
         }
-        @keyframes slideIn { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
-        
-        .msg.me { border-left-color: var(--neon-blue); } 
-        .msg.other { border-left-color: var(--neon-pink); }
-        
-        .msg-header { display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 13px; font-family: 'Orbitron'; letter-spacing: 1px;}
-        .msg.me .msg-header b { color: var(--neon-blue); } .msg.other .msg-header b { color: var(--neon-pink); }
-        
-        .raw-cipher-box { 
-            width: 100%; height: 65px; background: #03050a; color: rgba(0,243,255,0.6); 
-            border: 1px solid rgba(0,243,255,0.2); border-radius: 8px; padding: 10px; 
-            font-family: 'Source Code Pro', monospace; font-size: 11px; resize: none; margin-bottom: 15px; user-select: all; 
-        }
-        
-        .msg-action-row { display: flex; gap: 10px; flex-wrap: wrap; }
-        .action-btn { 
-            flex: 1; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); 
-            color: #fff; padding: 10px; font-size: 11px; border-radius: 6px; cursor: pointer; 
-            font-family: 'Orbitron'; transition: all 0.2s ease; margin-top: 0; min-width: 100px; 
-            letter-spacing: 1px;
-        }
-        .btn-copy:hover { background: #fff; color: #000; } 
-        .btn-transfer:hover { background: var(--neon-blue); color: #000; border-color: var(--neon-blue); } 
-        .btn-decrypt:hover { background: var(--neon-green); color: #000; border-color: var(--neon-green); box-shadow: 0 0 15px rgba(0,255,157,0.4); }
-        
-        .decrypted-content { 
-            margin-top: 15px; padding: 18px; background: rgba(0,255,157,0.03); 
-            border: 1px solid rgba(0,255,157,0.2); border-radius: 10px; color: #fff; 
-            font-family: 'Rajdhani', sans-serif; font-size: 16px; word-break: break-word; 
-            box-shadow: inset 0 0 15px rgba(0,255,157,0.05);
-        }
+        .layer:hover { border-color: var(--text-muted); }
+        .layer.active { background: var(--accent-indigo); color: #fff; border-color: var(--accent-indigo); }
 
-        /* =========================================
-           8. SAĞ PANEL (GÜZELLEŞTİRİLMİŞ SONUÇ KUTUSU)
-           ========================================= */
-        #result { 
-            margin-top: 25px; padding: 20px; 
-            background: rgba(0, 255, 157, 0.03); 
-            border: 2px dashed rgba(0, 255, 157, 0.4); 
-            border-radius: 10px; color: var(--neon-green); 
-            font-family: 'Source Code Pro', monospace; font-size: 14px;
-            min-height: 90px; word-break: break-all; 
-            box-shadow: 0 0 20px rgba(0,255,157,0.05), inset 0 0 15px rgba(0,255,157,0.05);
-            transition: all 0.3s ease;
+        /* ARAÇ ÇUBUĞU (SES VE FOTOĞRAF) */
+        .tools-row { display: flex; gap: 8px; margin-top: 12px; }
+        .tool-btn { 
+            flex: 1; background: var(--bg-base); border: 1px dashed var(--border-subtle); 
+            color: var(--text-muted); padding: 10px; font-size: 12px; border-radius: 6px; cursor: pointer; text-align: center; transition: 0.2s;
+        }
+        .tool-btn:hover { border-color: var(--text-muted); color: var(--text-primary); }
+        .tool-btn.active-recording { background: rgba(239,68,68,0.1); border-color: var(--accent-red); color: var(--accent-red); animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+
+        /* MESAJ ALANI */
+        .msg-container { display: flex; flex-direction: column; gap: 16px; }
+        .msg-box {
+            background: var(--bg-base); border: 1px solid var(--border-subtle);
+            border-radius: 10px; padding: 16px; animation: fadeUp 0.3s ease;
+        }
+        @keyframes fadeUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+        
+        .msg-header { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 12px; color: var(--text-muted); }
+        .msg-header strong { color: var(--accent-blue); font-weight: 600;}
+        .msg.me .msg-header strong { color: var(--accent-green); }
+
+        .raw-data {
+            background: #000; border: 1px solid #1f2937; border-radius: 6px; padding: 10px;
+            font-family: 'Space Grotesk', monospace; font-size: 11px; color: #4b5563; word-break: break-all;
+            margin-bottom: 12px; max-height: 60px; overflow: hidden;
         }
 
-        #typing-indicator { position: absolute; bottom: 12px; left: 25px; font-size: 13px; color: var(--neon-pink); font-style: italic; opacity: 0; transition: opacity 0.3s; font-weight: 600;}
+        .action-row { display: flex; gap: 8px; }
+        .action-btn {
+            background: var(--border-subtle); color: var(--text-primary); padding: 6px 12px; font-size: 11px; border-radius: 4px; border: none; cursor: pointer; flex: 1; transition: 0.2s;
+        }
+        .action-btn:hover { background: #3f3f46; }
+        .action-btn.solve { background: rgba(16, 185, 129, 0.1); color: var(--accent-green); border: 1px solid rgba(16, 185, 129, 0.2); }
+        .action-btn.solve:hover { background: var(--accent-green); color: #000; }
 
-        /* =========================================
-           9. MOBİL UYUM (RESPONSIVE)
-           ========================================= */
-        @media (max-width: 1100px) { 
-            .main-grid { grid-template-columns: 1fr; overflow-y: auto; } 
-            .messages-panel { height: 500px; grid-column: 1; } 
-            .container { height: auto; min-height: 85vh; margin-top: 110px; } 
-            .panel { overflow: visible; } 
-            .top-nav { width: 90%; justify-content: center; padding: 10px; } 
+        .decrypted-view {
+            margin-top: 12px; padding-top: 12px; border-top: 1px dashed var(--border-subtle);
+            color: var(--text-primary); font-size: 14px; line-height: 1.5;
+        }
+
+        /* SAĞ PANEL SONUÇ */
+        #result {
+            margin-top: 20px; padding: 16px; background: rgba(14, 165, 233, 0.05);
+            border: 1px solid rgba(14, 165, 233, 0.2); border-radius: 8px;
+            color: var(--accent-blue); font-family: 'Space Grotesk', monospace; font-size: 13px; word-break: break-word; min-height: 80px;
+        }
+
+        #typing-indicator { font-size: 12px; color: var(--text-muted); opacity: 0; transition: 0.3s; padding: 0 20px 10px 20px;}
+
+        /* MODAL */
+        .modal-bg {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px);
+            z-index: 1000; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: 0.3s;
+        }
+        .modal-bg.active { opacity: 1; pointer-events: auto; }
+        .modal-card {
+            background: var(--bg-panel); border: 1px solid var(--border-subtle); border-radius: 16px;
+            width: 500px; max-width: 90%; padding: 30px; box-shadow: var(--shadow-md); transform: scale(0.95); transition: 0.3s;
+        }
+        .modal-bg.active .modal-card { transform: scale(1); }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .modal-header h3 { font-size: 18px; color: var(--text-primary); }
+        .close-modal { background: none; border: none; color: var(--text-muted); font-size: 20px; cursor: pointer; width: auto; padding: 0;}
+        .close-modal:hover { color: var(--accent-red); }
+
+        /* MOBİL UYUM */
+        @media (max-width: 1024px) {
+            .main-grid { grid-template-columns: 1fr; overflow-y: auto; gap: 15px;}
+            .workspace-panel { overflow: visible; }
+            .messages-panel { height: 500px; order: -1; /* Mobilde sohbeti üste alır */ }
+            .top-navbar { flex-direction: column; align-items: stretch; }
+            .nav-right { justify-content: space-between; }
         }
     </style>
 </head>
 <body>
 
-    <canvas id="cyber-canvas"></canvas>
+    <div id="login" class="card">
+        <div class="logo-text">Volktronic</div>
+        <div class="logo-sub">Enterprise Security</div>
 
-    <div class="top-nav">
-        <button class="nav-btn" onclick="openModal('guideModal')">📖 Sistem Kılavuzu</button>
-        <button class="nav-btn" style="border-color:var(--neon-pink); color:var(--neon-pink);" onclick="openModal('supportModal')">✉️ Destek & Talep</button>
+        <div class="input-group">
+            <label class="input-label">Ajan Kimliği</label>
+            <input id="username" type="text" placeholder="Örn: Volkan" autocomplete="off">
+        </div>
+        
+        <div class="input-group" style="display: flex; gap:10px;">
+            <div style="flex:2;">
+                <label class="input-label">Sunucu (Oda) Adı</label>
+                <input id="room" type="text" placeholder="Bağlantı Noktası" autocomplete="off">
+            </div>
+            <div style="flex:1;">
+                <label class="input-label">Oda PIN</label>
+                <input id="roomPin" type="password" placeholder="****" maxlength="6" autocomplete="off">
+            </div>
+        </div>
+
+        <div class="input-group">
+            <label class="input-label">Master Kripto Anahtarı</label>
+            <input id="secretKey" type="password" placeholder="Şifreleme parolası" autocomplete="off">
+        </div>
+
+        <button class="btn-primary" onclick="window.enterRoom()">GÜVENLİ AĞA BAĞLAN</button>
     </div>
 
-    <div class="modal-backdrop" id="guideModal">
-        <div class="modal-box">
-            <span class="close-btn" onclick="closeModal('guideModal')">✖</span>
-            <h2 class="modal-title">SİSTEM KILAVUZU & GÜNCELLEMELER</h2>
-            <div class="modal-content-text">
-                <h4>Nasıl Kullanılır?</h4>
-                <p>Volktronic Crypto Chat, AES-256 standartlarında uçtan uca şifreleme sağlar. Mesajı şifrelerken sol panelden (Örn: L-02 ve L-08) katmanları seçin. Karşı tarafın mesajı okuyabilmesi için sağdaki çözücü panelden <b>birebir aynı katmanları</b> seçmesi ve "Direkt Çöz" butonuna basması gerekir.</p>
-                
-                <h4>v3.1 Sürüm Notları</h4>
-                <ul style="padding-left: 20px;">
-                    <li><b>Askeri Şifreleme:</b> Çok Katmanlı AES-256 motoruna geçildi.</li>
-                    <li><b>İmha Protokolü:</b> Okunduktan sonra saniyeler içinde kendini veritabanından kalıcı olarak silen zamanlayıcı (Burn-Timer) eklendi.</li>
-                    <li><b>Görsel Aktarım:</b> Resimler Base64'e dönüştürülüp kriptolanarak aktarılabilir hale getirildi.</li>
-                    <li><b>Panik Butonu (Async):</b> Acil durumlarda odadaki tüm verileri anında ve geri dönüşsüz yok eden sistem geliştirildi.</li>
-                </ul>
-
-                <div class="legal-warning">
-                    <b>YASAL UYARI:</b> Bu platform sadece siber güvenlik araştırmaları, şifreleme eğitimleri ve güvenli iletişim demosu amacıyla Volkan Özdemir tarafından geliştirilmiştir. <br><br>
-                    Sistem üzerinden aktarılan verilerin içeriğinden, sistemin illegal/yasadışı amaçlarla kullanımından doğacak her türlü hukuki ve cezai sorumluluk <b>tamamen kullanıcıya aittir.</b> Geliştirici hiçbir sorumluluk kabul etmez. Tüm hakları saklıdır.
+    <div id="chat" class="app-container hidden">
+        
+        <header class="top-navbar">
+            <div class="nav-left">
+                <div class="nav-brand">Volktronic <span>Bağlantı Şifreli</span></div>
+                <div style="font-size: 13px; color: var(--text-muted);">
+                    Kullanıcı: <b style="color:var(--text-primary)" id="userNameDisplay">-</b> | 
+                    Oda: <b style="color:var(--text-primary)" id="roomNameDisplay">-</b>
                 </div>
             </div>
-        </div>
-    </div>
-
-    <div class="modal-backdrop" id="supportModal">
-        <div class="modal-box" style="border-color:var(--neon-pink); box-shadow: 0 10px 50px rgba(255,0,153,0.15);">
-            <span class="close-btn" onclick="closeModal('supportModal')">✖</span>
-            <h2 class="modal-title" style="color:var(--neon-pink); border-color:rgba(255,0,153,0.2);">DESTEK / TALEP İLETİSİ</h2>
-            <div class="modal-content-text">
-                <p>Geliştirmeler, hata bildirimleri veya özel talepleriniz için aşağıdaki formu doldurarak doğrudan sisteme mail gönderebilirsiniz.</p>
-                
-                <form action="https://formspree.io/f/xdaldnap" method="POST">
-                    <div class="input-group">
-                        <input type="text" name="Konu" placeholder="İleti Konusu / Başlık" required>
-                    </div>
-                    <div class="input-group">
-                        <input type="email" name="Email" placeholder="Size Ulaşabileceğimiz E-posta Adresiniz" required>
-                    </div>
-                    <div class="input-group">
-                        <textarea name="Mesaj" placeholder="Mesajınızı veya talebinizi buraya detaylıca yazın..." required style="min-height:120px;"></textarea>
-                    </div>
-                    <button type="submit" class="secondary" style="width:100%; margin-top:10px;">ŞİFRELİ AĞ ÜZERİNDEN GÖNDER</button>
-                </form>
-
+            <div class="nav-right">
+                <button class="menu-btn" onclick="openModal('guideModal')">Kılavuz</button>
+                <button class="menu-btn" onclick="openModal('supportModal')">Destek / İletişim</button>
+                <button class="btn-danger" style="width:auto; padding:8px 16px;" onclick="window.triggerPanic()">PANİK İMHA</button>
             </div>
-        </div>
-    </div>
-
-    <div class="cyber-card" id="login">
-        <h1>VOLKTRONIC</h1>
-        <span class="subtitle">İSTİHBARAT AĞI BAĞLANTISI</span>
-
-        <div class="input-group">
-            <input id="username" type="text" placeholder="Kullanıcı Adı" autocomplete="off">
-        </div>
-        <div class="input-group">
-            <input id="room" type="text" placeholder="Oda oluştur/katıl" autocomplete="off">
-        </div>
-        <div class="input-group">
-            <input id="secretKey" type="password" placeholder="Şifreli kod (Gizli Anahtar)" autocomplete="off">
-        </div>
-
-        <button class="primary" onclick="window.enterRoom()">SİSTEME GİRİŞ YAP</button>
-    </div>
-
-    <div class="container hidden" id="chat">
-        
-        <div class="header">
-            <h2>ODA: <span id="roomNameDisplay" style="color:var(--neon-green)">---</span></h2>
-            <div>
-                <span class="user-info">KULLANICI: <span id="userNameDisplay" class="user-highlight">---</span></span>
-                <button class="panic-btn" onclick="window.triggerPanic()">🚨 ACİL DURUM (PANİK)</button>
-            </div>
-        </div>
+        </header>
 
         <div class="main-grid">
             
-            <div class="panel cyber-card" style="border:none; box-shadow:none; padding:0;">
-                <h3>🔒 ŞİFRELE & GÖNDER</h3>
-                <div class="layers" id="encLayers"></div>
-                <textarea id="message" placeholder="Gizli mesajınızı buraya yazın..."></textarea>
-                <div class="tools-row">
-                    <select id="burnTimer" style="margin-top:0; flex:1;">
-                        <option value="0">⏳ İmha Yok (Kalıcı)</option>
-                        <option value="10">🔥 10 Saniye Sonra İmha</option>
-                        <option value="30">🔥 30 Saniye Sonra İmha</option>
-                        <option value="60">🔥 1 Dakika Sonra İmha</option>
-                    </select>
-                    <label for="imageInput" class="file-upload-label upload-btn">📷 FOTOĞRAF</label>
-                    <input type="file" id="imageInput" accept="image/*" style="display:none;">
+            <div class="workspace-panel">
+                <div class="panel-header">Veri Şifreleyici (Encoder)</div>
+                <div class="panel-body">
+                    <div class="input-label">Katman Seçimi</div>
+                    <div class="layers-grid" id="encLayers"></div>
+                    
+                    <textarea id="message" placeholder="Şifrelenecek metni girin..."></textarea>
+                    
+                    <div class="input-group" style="margin-top: 12px; margin-bottom:0;">
+                        <select id="burnTimer">
+                            <option value="0">Kalıcı Mesaj (İmha Yok)</option>
+                            <option value="10">10 Saniye Sonra İmha Et</option>
+                            <option value="30">30 Saniye Sonra İmha Et</option>
+                            <option value="60">60 Saniye Sonra İmha Et</option>
+                        </select>
+                    </div>
+
+                    <div class="tools-row">
+                        <label for="imageInput" class="tool-btn" id="imgLabel">🖼️ Fotoğraf</label>
+                        <input type="file" id="imageInput" accept="image/*" class="hidden">
+                        
+                        <div class="tool-btn" id="micBtn" onclick="window.toggleAudioRecord()">🎤 Ses Kaydet</div>
+                    </div>
+
+                    <button class="btn-primary" style="margin-top: 16px;" onclick="window.encryptAndSend()">ŞİFRELE VE İLET</button>
                 </div>
-                <button class="primary" onclick="window.encryptAndSend()">VERİYİ ŞİFRELE VE GÖNDER</button>
             </div>
 
-            <div class="panel messages-panel cyber-card" style="border:1px solid rgba(0,243,255,0.15); box-shadow:none; padding:20px;">
-                <h3 style="opacity:0.6; font-size:12px; border:none; padding-bottom:0;">/// KRİPTOLU VERİ AKIŞI ///</h3>
-                <div id="log"></div>
-                <div id="typing-indicator">Ajan yazıyor...</div>
+            <div class="workspace-panel messages-panel">
+                <div class="panel-header" style="display:flex; justify-content:space-between;">
+                    <span>Canlı Ağ Akışı</span>
+                    <span style="color:var(--accent-green); font-size:10px;">● ONLINE</span>
+                </div>
+                <div class="panel-body" id="log" style="display: flex; flex-direction: column; gap: 16px;">
+                    </div>
+                <div id="typing-indicator">Ajan veri şifreliyor...</div>
             </div>
 
-            <div class="panel cyber-card" style="border:none; box-shadow:none; padding:0;">
-                <h3>🔓 HARİCİ ÇÖZÜCÜ</h3>
-                <div class="layers" id="decLayers"></div>
-                <textarea id="cipher" placeholder="Çözülecek RAW kodunu buraya yapıştırın..."></textarea>
-                <button class="secondary" onclick="window.decryptExternal()">MANUEL OLARAK ÇÖZ</button>
-                <div id="result">Sonuç bekleniyor...</div>
+            <div class="workspace-panel">
+                <div class="panel-header">Manuel Çözücü (Decoder)</div>
+                <div class="panel-body">
+                    <div class="input-label">Karşı Tarafın Katmanları</div>
+                    <div class="layers-grid" id="decLayers"></div>
+                    
+                    <textarea id="cipher" placeholder="Çözülecek RAW kodunu buraya yapıştırın..."></textarea>
+                    
+                    <button class="btn-primary" style="background:var(--border-subtle); color:var(--text-primary); margin-top:12px;" onclick="window.decryptExternal()">MANUEL ÇÖZ</button>
+
+                    <div id="result">Bekleniyor...</div>
+                </div>
             </div>
 
+        </div>
+    </div>
+
+    <div class="modal-bg" id="guideModal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3>Sistem Kılavuzu & Notlar</h3>
+                <button class="close-modal" onclick="closeModal('guideModal')">✖</button>
+            </div>
+            <div style="font-size: 14px; color: var(--text-muted); line-height: 1.6;">
+                <p><strong style="color:var(--text-primary)">Güvenlik Prosedürü:</strong> Mesaj göndermeden önce katmanlar (Örn: L-02) seçin. Karşı taraf mesajı okuyabilmek için sizinle aynı Katmanları ve aynı Master Anahtarı kullanmalıdır.</p>
+                <br>
+                <p><strong style="color:var(--text-primary)">YENİ - Oda PIN Kodu:</strong> Sisteme girerken belirlediğiniz PIN kodu, veritabanı klasörünüzü kriptolar. Yanlış PIN girenler odaya girmiş gibi görünse de sizin verilerinizi göremez.</p>
+                <br>
+                <p><strong style="color:var(--text-primary)">YENİ - Sesli Kripto:</strong> Mikrofon simgesine basarak ses kaydedin, tekrar basarak kaydı bitirin. Sesiniz anında AES-256 ile şifrelenir.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-bg" id="supportModal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3>Destek & Talep</h3>
+                <button class="close-modal" onclick="closeModal('supportModal')">✖</button>
+            </div>
+            <form action="https://formspree.io/f/xdaldnap" method="POST">
+                <div class="input-group">
+                    <label class="input-label">Konu</label>
+                    <input type="text" name="Konu" required>
+                </div>
+                <div class="input-group">
+                    <label class="input-label">E-Posta</label>
+                    <input type="email" name="Email" required>
+                </div>
+                <div class="input-group">
+                    <label class="input-label">Mesaj</label>
+                    <textarea name="Mesaj" required></textarea>
+                </div>
+                <button type="submit" class="btn-primary">TALEBİ GÖNDER</button>
+            </form>
         </div>
     </div>
 
     <script>
-        // Modal (Açılır Pencere) Fonksiyonları
         function openModal(id) { document.getElementById(id).classList.add('active'); }
         function closeModal(id) { document.getElementById(id).classList.remove('active'); }
-
-        // 3D Tilt Efekti (Performans İyileştirmeli)
-        const cards = document.querySelectorAll('.cyber-card');
-        cards.forEach(card => {
-            card.addEventListener('mousemove', (e) => {
-                const rect = card.getBoundingClientRect();
-                const rotateX = (((e.clientY - rect.top) - (rect.height / 2)) / (rect.height / 2)) * -4; 
-                const rotateY = (((e.clientX - rect.left) - (rect.width / 2)) / (rect.width / 2)) * 4;
-                card.style.transform = `perspective(1200px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.01, 1.01, 1.01)`;
-            });
-            card.addEventListener('mouseleave', () => {
-                card.style.transform = 'perspective(1200px) rotateX(0) rotateY(0) scale3d(1, 1, 1)';
-            });
-        });
-
-        // Arka Plan Parçacıkları
-        const canvas = document.getElementById('cyber-canvas');
-        const ctx = canvas.getContext('2d');
-        let width, height, particles = [];
-        function resize() { width = canvas.width = window.innerWidth; height = canvas.height = window.innerHeight; }
-        window.addEventListener('resize', resize); resize();
-
-        class Particle {
-            constructor() {
-                this.x = Math.random() * width; this.y = Math.random() * height;
-                this.vx = (Math.random() - 0.5) * 0.5; this.vy = (Math.random() - 0.5) * 0.5;
-                this.size = Math.random() * 2 + 1; this.color = Math.random() > 0.5 ? '#00f3ff' : '#ff0099';
-            }
-            update() {
-                this.x += this.vx; this.y += this.vy;
-                if(this.x < 0 || this.x > width) this.vx *= -1; if(this.y < 0 || this.y > height) this.vy *= -1;
-            }
-            draw() {
-                ctx.fillStyle = this.color; ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI*2); ctx.fill();
-            }
-        }
-        for(let i=0; i<120; i++) particles.push(new Particle());
-
-        function animate() {
-            ctx.clearRect(0, 0, width, height);
-            for(let i=0; i<particles.length; i++) {
-                particles[i].update(); particles[i].draw();
-                for(let j=i; j<particles.length; j++) {
-                    const dist = Math.sqrt(Math.pow(particles[i].x - particles[j].x, 2) + Math.pow(particles[i].y - particles[j].y, 2));
-                    if(dist < 110) {
-                        ctx.strokeStyle = `rgba(0, 243, 255, ${1 - dist/110})`; ctx.lineWidth = 0.5;
-                        ctx.beginPath(); ctx.moveTo(particles[i].x, particles[i].y); ctx.lineTo(particles[j].x, particles[j].y); ctx.stroke();
-                    }
-                }
-            }
-            requestAnimationFrame(animate);
-        }
-        animate();
     </script>
 
-    <script type="module" src="crypto.js?v=7"></script>
+    <script type="module" src="crypto.js?v=8"></script>
 
 </body>
 </html>
