@@ -3,344 +3,417 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+
     <title>Volktronic | Premium Secure Workspace</title>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
     
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Plus+Jakarta+Sans:wght@600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
     <style>
         /* =========================================
-           1. MODERN PREMIUM RENK PALETİ
+           1. PREMIUM RENK PALETİ VE EFEKTLER
            ========================================= */
         :root {
-            --bg-body: #050806;       
-            --bg-panel: #0d1411; 
-            --bg-input: #151e19;
-            --border-light: rgba(16, 185, 129, 0.15);
+            --bg-base: #080c0a;       
+            --bg-panel: rgba(16, 24, 20, 0.65); 
+            --border-light: rgba(255, 255, 255, 0.08);
             --border-focus: rgba(16, 185, 129, 0.5);
             
-            --accent-main: #10b981; 
+            --text-primary: #ffffff;
+            --text-secondary: #94a3b8;
+            
+            --accent-primary: #10b981; 
             --accent-hover: #059669;
-            --accent-glow: rgba(16, 185, 129, 0.3); 
+            --accent-glow: rgba(16, 185, 129, 0.4); 
             
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
             --danger: #ef4444;
-            --admin-color: #f59e0b; 
+            --danger-bg: rgba(239, 68, 68, 0.15);
+            --admin-color: #f59e0b;
             
-            --radius-sm: 8px;
-            --radius-md: 16px;
+            --shadow-soft: 0 20px 40px -10px rgba(0,0,0,0.7);
+            --radius-md: 14px;
             --radius-lg: 24px;
+            
+            --transition-smooth: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1); 
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; outline: none; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; outline: none;}
 
-        html, body { 
-            width: 100%; height: 100%; 
-            background-color: var(--bg-body); color: var(--text-main); 
-            position: relative; overflow: hidden;
+        html, body {
+            width: 100%; height: 100%; margin: 0; padding: 0;
+            background: var(--bg-base); color: var(--text-primary);
+            overflow: hidden; 
         }
 
-        /* Zarif & Sade Arka Plan Animasyonu (Telefonu Kasmaz) */
+        body {
+            display: flex; align-items: center; justify-content: center;
+            background: radial-gradient(circle at top center, rgba(16, 185, 129, 0.15) 0%, var(--bg-base) 60%);
+        }
+
+        /* Arka plan siber ağ efekti (Çok Hafif) */
         body::before {
-            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
-            background: radial-gradient(circle at 50% 50%, rgba(16, 185, 129, 0.03) 0%, transparent 60%);
-            animation: rotateBg 60s linear infinite; z-index: -1; pointer-events: none;
+            content: ''; position: fixed; top: -20%; left: -20%; width: 140%; height: 140%;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect fill="rgba(16,185,129,0.03)" width="1" height="1" x="50" y="50"/></svg>') repeat;
+            opacity: 0.3; animation: bgMove 90s linear infinite; z-index: -2; pointer-events: none;
         }
-        @keyframes rotateBg { 100% { transform: rotate(360deg); } }
+        @keyframes bgMove { from { background-position: 0 0; } to { background-position: 100px 100px; } }
 
-        .brand-font { font-family: 'Plus Jakarta Sans', sans-serif; }
-        .mono { font-family: 'JetBrains Mono', monospace; }
+        h1, h2, h3, h4, h5, .brand-font { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .mono-font { font-family: 'JetBrains Mono', monospace; }
         .hidden { display: none !important; }
 
         /* =========================================
-           2. FORM ELEMANLARI VE ANİMASYONLU BUTONLAR
+           2. PREMIUM ANİMASYONLU BUTONLAR
            ========================================= */
-        input, textarea, select {
-            width: 100%; padding: 14px 16px; background: var(--bg-input); 
-            border: 1px solid var(--border-light); border-radius: var(--radius-md); 
-            color: var(--text-main); font-size: 16px; transition: all 0.3s ease;
-        }
-        input:focus, textarea:focus, select:focus { border-color: var(--accent-main); box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15); }
-
         button {
-            padding: 14px 20px; border: none; border-radius: var(--radius-md);
-            font-family: 'Plus Jakarta Sans', sans-serif; font-size: 14px; font-weight: 700;
-            cursor: pointer; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); 
-            display: flex; align-items: center; justify-content: center; gap: 8px;
+            padding: 16px 28px; border: none; border-radius: var(--radius-md);
+            font-family: 'Plus Jakarta Sans', sans-serif; font-size: 15px; font-weight: 700;
+            cursor: pointer; transition: var(--transition-smooth);
+            display: flex; align-items: center; justify-content: center; gap: 10px;
             will-change: transform;
         }
-        button:active { transform: scale(0.96); }
+        button:active { transform: scale(0.96); } /* Tıklama hissiyatı */
 
-        /* Ufak ve Şık Buton Animasyonları */
-        .btn-primary { background: linear-gradient(135deg, var(--accent-main), var(--accent-hover)); color: #000; box-shadow: 0 4px 15px var(--accent-glow); }
+        .btn-primary { background: linear-gradient(135deg, var(--accent-primary), var(--accent-hover)); color: #000; box-shadow: 0 4px 15px var(--accent-glow); }
         .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(16, 185, 129, 0.5); }
         
-        .btn-secondary { background: rgba(255,255,255,0.03); border: 1px solid var(--border-light); color: var(--accent-main); }
-        .btn-secondary:hover { transform: translateY(-2px); background: rgba(16, 185, 129, 0.08); }
+        .btn-secondary { background: rgba(255, 255, 255, 0.04); border: 1px solid var(--border-light); color: var(--text-primary); }
+        .btn-secondary:hover { background: rgba(255, 255, 255, 0.08); border-color: var(--border-focus); transform: translateY(-2px); }
         
-        .btn-danger { background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); color: var(--danger); font-size: 12px; padding: 10px 16px; }
-        .btn-danger:hover { background: rgba(239, 68, 68, 0.2); }
-        
-        /* Özel Yönetici Butonu Animasyonu */
-        @keyframes adminPulse {
-            0% { box-shadow: 0 0 10px rgba(245, 158, 11, 0.2); }
-            50% { box-shadow: 0 0 20px rgba(245, 158, 11, 0.5); }
-            100% { box-shadow: 0 0 10px rgba(245, 158, 11, 0.2); }
-        }
-        .btn-admin { background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.4); color: var(--admin-color); font-size: 12px; padding: 10px 16px; animation: adminPulse 3s infinite; }
-        .btn-admin:hover { transform: translateY(-2px); background: rgba(245, 158, 11, 0.2); }
+        .btn-danger { background: var(--danger-bg); border: 1px solid rgba(239, 68, 68, 0.3); color: var(--danger); padding: 10px 16px; font-size: 12px; font-weight: 600; }
+        .btn-danger:hover { background: rgba(239, 68, 68, 0.25); transform: translateY(-2px); }
 
-        .input-group { margin-bottom: 20px; text-align: left; }
-        .input-label { display: block; font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 8px; letter-spacing: 0.5px; text-transform: uppercase;}
+        .btn-admin { background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.4); color: var(--admin-color); padding: 10px 16px; font-size: 12px; font-weight: 700; box-shadow: 0 0 10px rgba(245, 158, 11, 0.2); }
+        .btn-admin:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(245, 158, 11, 0.4); }
 
         /* =========================================
-           3. GİRİŞ EKRANI (RESMİ VE PROFESYONEL)
+           3. GİRİŞ EKRANI
            ========================================= */
-        #login-screen {
-            position: fixed; inset: 0; display: flex; flex-direction: column; justify-content: center; align-items: center;
-            padding: 20px; z-index: 100;
+        #login {
+            width: 100%; max-width: 440px; z-index: 10;
+            background: var(--bg-panel); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.1); border-radius: var(--radius-lg);
+            padding: 45px; box-shadow: var(--shadow-soft);
+            animation: loginAppear 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
         }
-        .login-card {
-            background: var(--bg-panel); width: 100%; max-width: 420px;
-            padding: 40px 30px; border-radius: var(--radius-lg); border: 1px solid var(--border-light);
-            box-shadow: 0 25px 50px rgba(0,0,0,0.6), inset 0 0 20px rgba(16, 185, 129, 0.02);
-            transition: 0.3s;
+        @keyframes loginAppear { from { opacity: 0; transform: translateY(20px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
+
+        .brand-header { text-align: center; margin-bottom: 40px; }
+        .brand-logo { font-size: 34px; font-weight: 800; color: #fff; letter-spacing: -0.5px; margin-bottom: 6px; text-shadow: 0 0 15px var(--accent-glow); }
+        .brand-logo span { color: var(--accent-primary); }
+        .brand-sub { font-size: 14px; color: var(--text-secondary); font-weight: 500; letter-spacing: 0.5px; }
+
+        .input-group { margin-bottom: 24px; position: relative; text-align: left;}
+        .input-label { display: block; font-size: 13px; color: var(--text-secondary); margin-bottom: 10px; font-weight: 600; letter-spacing: 0.5px; }
+        
+        input, textarea, select {
+            width: 100%; padding: 16px 18px; background: rgba(0,0,0,0.5); 
+            border: 2px solid var(--border-light); border-radius: var(--radius-md); 
+            color: var(--text-primary); font-size: 16px !important; /* Mobilde zoom engeli */
+            font-family: 'Inter', sans-serif; font-weight: 500;
+            transition: var(--transition-smooth); 
         }
-        .login-card:hover { border-color: rgba(16, 185, 129, 0.3); }
-        .login-header { text-align: center; margin-bottom: 35px; }
-        .login-title { font-size: 32px; font-weight: 800; color: #fff; margin-bottom: 5px; letter-spacing: -0.5px;}
-        .login-title span { color: var(--accent-main); }
-        .login-subtitle { font-size: 12px; color: var(--accent-main); letter-spacing: 2px; font-weight: 600;}
+        input:focus, textarea:focus, select:focus { 
+            border-color: var(--accent-primary); background: rgba(0,0,0,0.7);
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
+        }
 
         /* =========================================
-           4. PC ARAYÜZÜ
+           4. ANA ÇALIŞMA ALANI & ÜST MENÜ
            ========================================= */
+        .app-container {
+            width: 100%; max-width: 1450px; height: 92vh;
+            display: flex; flex-direction: column; padding: 20px; gap: 24px; z-index: 5;
+            animation: appAppear 0.5s ease;
+        }
+        @keyframes appAppear { from { opacity: 0; } to { opacity: 1; } }
+
+        .top-navbar {
+            display: flex; justify-content: space-between; align-items: center;
+            background: var(--bg-panel); border: 1px solid var(--border-light);
+            padding: 18px 30px; border-radius: var(--radius-md); backdrop-filter: blur(20px);
+            box-shadow: 0 10px 30px -10px rgba(0,0,0,0.5); z-index: 10; flex-shrink: 0;
+        }
+        
+        .nav-brand { font-size: 20px; font-weight: 800; color: #fff; display: flex; align-items: center; gap: 12px; text-shadow: 0 0 10px var(--accent-glow); }
+        .nav-badge { background: rgba(16, 185, 129, 0.15); color: var(--accent-primary); padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 700; border: 1px solid var(--accent-glow); }
+        
+        .nav-links { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; justify-content: center;}
+        .nav-item { color: var(--text-secondary); font-size: 13px; font-weight: 600; cursor: pointer; transition: var(--transition-smooth); background: rgba(255,255,255,0.03); border: 1px solid var(--border-light); padding: 10px 16px; border-radius: var(--radius-md);}
+        .nav-item:hover { color: var(--text-primary); background: rgba(255,255,255,0.08); border-color: var(--accent-primary); transform: translateY(-2px); }
+
+        .main-grid { display: grid; grid-template-columns: 360px 1fr 360px; gap: 28px; flex: 1; min-height: 0; position: relative; }
+
+        .workspace-panel {
+            background: var(--bg-panel); border: 1px solid rgba(255,255,255,0.08);
+            border-radius: var(--radius-lg); display: flex; flex-direction: column; overflow: hidden;
+            backdrop-filter: blur(20px); box-shadow: var(--shadow-soft); transition: var(--transition-smooth);
+        }
+        
+        .panel-header { 
+            padding: 22px 28px; border-bottom: 1px solid var(--border-light); 
+            display: flex; justify-content: space-between; align-items: center;
+            background: rgba(255,255,255,0.02); flex-shrink: 0; 
+        }
+        .panel-title { font-size: 16px; font-weight: 700; color: var(--text-primary); letter-spacing: 0.5px; }
+        .panel-body { padding: 28px; overflow-y: auto; flex: 1; display: flex; flex-direction: column; min-height: 0;} 
+        .panel-body::-webkit-scrollbar { width: 6px; } .panel-body::-webkit-scrollbar-thumb { background: rgba(16, 185, 129, 0.3); border-radius: 6px; }
+
+        .status-indicator { display: flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 600; color: var(--text-primary); background: rgba(16, 185, 129, 0.1); padding: 6px 12px; border-radius: 20px; border: 1px solid var(--accent-glow); flex-shrink: 0;}
+        .status-dot { width: 10px; height: 10px; background: var(--accent-primary); border-radius: 50%; box-shadow: 0 0 10px var(--accent-primary); animation: pulseDot 2s infinite; }
+        @keyframes pulseDot { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+        /* =========================================
+           5. KATMAN SEÇİCİLER & KUTULAR
+           ========================================= */
+        .layers-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 24px; flex-shrink:0;}
+        .layer {
+            aspect-ratio: 1; display: flex; align-items: center; justify-content: center;
+            background: rgba(255,255,255,0.03); border: 2px solid var(--border-light);
+            border-radius: var(--radius-md); font-size: 14px; font-weight: 700; color: var(--text-secondary);
+            cursor: pointer; transition: var(--transition-smooth); position: relative; overflow: hidden;
+            user-select: none;
+        }
+        .layer:hover { border-color: var(--accent-primary); color: var(--text-primary); transform: translateY(-2px); }
+        .layer.active { background: var(--accent-primary); color: #000; border-color: var(--accent-primary); box-shadow: 0 5px 15px var(--accent-glow); transform: translateY(-2px); }
+
+        #message, #cipher { min-height: 150px; resize: none; font-family: 'JetBrains Mono', monospace; font-size: 14px; line-height: 1.6; padding: 18px; margin-top: 10px; flex-shrink: 0; }
+
+        .tools-row { display: flex; gap: 12px; margin-top: 20px; flex-shrink: 0;}
+        .tool-btn { flex: 1; background: rgba(255,255,255,0.03); border: 2px solid var(--border-light); color: var(--text-secondary); padding: 14px; font-size: 14px; font-weight: 600; border-radius: var(--radius-md); cursor: pointer; text-align: center; transition: var(--transition-smooth); display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .tool-btn:hover { background: rgba(255,255,255,0.08); border-color: var(--accent-primary); color: var(--text-primary); transform: translateY(-2px); }
+        .tool-btn.active-state { background: rgba(16, 185, 129, 0.15); border-color: var(--accent-primary); color: var(--accent-primary); }
+
+        /* =========================================
+           6. SOHBET ALANI
+           ========================================= */
+        #log { display: flex; flex-direction: column; gap: 18px; padding-bottom: 20px; }
+        .msg-box { background: rgba(0,0,0,0.3); border: 1px solid var(--border-light); border-radius: var(--radius-md); padding: 20px; position: relative; flex-shrink: 0; }
+        .msg.me { border-left: 4px solid var(--accent-primary); }
+        .msg.other { border-left: 4px solid #38bdf8; }
+        .msg-header { display: flex; justify-content: space-between; margin-bottom: 14px; font-size: 13px; color: var(--text-secondary); font-weight: 500; }
+        .msg.me .msg-header strong { color: var(--accent-primary); font-weight: 700;}
+        .msg.other .msg-header strong { color: #38bdf8; font-weight: 700;}
+
+        .raw-data { background: #030504; border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 14px; font-size: 12px; color: #64748b; word-break: break-all; margin-bottom: 18px; max-height: 80px; overflow-y: auto; font-family: 'JetBrains Mono', monospace; }
+        .action-row { display: flex; gap: 10px; }
+        .action-btn { background: rgba(255,255,255,0.05); color: var(--text-secondary); padding: 10px 14px; font-size: 12px; font-weight: 600; border-radius: 8px; border: none; cursor: pointer; flex: 1; transition: var(--transition-smooth); }
+        .action-btn:hover { background: rgba(255,255,255,0.1); color: #fff; transform: translateY(-2px);}
+        .action-btn.solve { background: rgba(16, 185, 129, 0.15); color: var(--accent-primary); }
+        .action-btn.solve:hover { background: var(--accent-primary); color: #000; }
+
+        .decrypted-view { margin-top: 15px; padding: 15px; border-top: 1px dashed var(--border-light); color: var(--text-primary); font-size: 15px; line-height: 1.6; background: rgba(16, 185, 129, 0.03); border-radius: 0 0 var(--radius-md) var(--radius-md); display: none; word-break: break-word;}
+
+        #result { margin-top: auto; padding: 24px; background: rgba(0,0,0,0.4); border: 2px solid var(--border-light); border-left: 6px solid var(--accent-primary); border-radius: var(--radius-md); color: var(--text-primary); font-size: 15px; word-break: break-word; min-height: 120px; font-family: 'JetBrains Mono', monospace; line-height: 1.6; flex-shrink: 0;}
+        #typing-indicator { font-size: 13px; color: var(--text-secondary); font-weight: 600; padding-top: 10px; min-height: 25px;}
+
+        /* =========================================
+           7. MOBİL ARAYÜZ (TAMAMEN STABİL MANTIK)
+           ========================================= */
+        .mobile-nav { display: none; }
+
         @media (min-width: 1025px) {
-            #app-screen { width: 100%; max-width: 1500px; height: 100vh; margin: 0 auto; display: flex; flex-direction: column; padding: 25px; gap: 20px; }
-            .main-grid { display: grid; grid-template-columns: 350px 1fr 350px; gap: 20px; flex: 1; min-height: 0; }
-            
-            .panel { background: var(--bg-panel); border: 1px solid var(--border-light); border-radius: var(--radius-lg); display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.3); transition: border-color 0.3s;}
-            .panel:hover { border-color: rgba(16, 185, 129, 0.3); }
-            
-            .panel-header { padding: 20px 24px; border-bottom: 1px solid var(--border-light); background: rgba(0,0,0,0.2); font-weight: 800; font-size: 14px; color: var(--accent-main); letter-spacing: 0.5px;}
-            .panel-body { padding: 24px; overflow-y: auto; flex: 1; }
-            .panel-body::-webkit-scrollbar { width: 6px; } .panel-body::-webkit-scrollbar-thumb { background: var(--border-light); border-radius: 10px; }
-            
-            .top-navbar { background: var(--bg-panel); border: 1px solid var(--border-light); padding: 16px 24px; border-radius: var(--radius-lg); display: flex; justify-content: space-between; align-items: center; }
-            .mobile-nav-bar { display: none !important; } 
+            .workspace-panel { display: flex !important; }
         }
 
-        /* =========================================
-           5. MOBİL ARAYÜZ
-           ========================================= */
         @media (max-width: 1024px) {
-            body { overflow-y: auto; min-height: 100dvh; }
-            #app-screen { display: flex; flex-direction: column; padding: 12px; gap: 15px; padding-bottom: 90px; }
+            body { 
+                height: 100dvh; width: 100vw; overflow: hidden; 
+            }
             
-            .top-navbar { background: var(--bg-panel); border: 1px solid var(--border-light); padding: 15px; border-radius: 16px; display: flex; flex-direction: column; gap: 12px; text-align: center; }
+            #login { width: 90%; max-height: 85vh; overflow-y: auto; padding: 30px 20px;}
+            
+            .app-container { 
+                position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
+                margin: 0; padding: 10px; padding-bottom: 85px; 
+                display: flex; flex-direction: column; gap: 10px;
+            }
+            
+            .top-navbar { flex-direction: column; gap: 10px; padding: 12px; border-radius: var(--radius-md); flex-shrink: 0; }
+            .nav-links { width: 100%; justify-content: center; gap: 6px;}
 
-            .main-grid { display: block; flex: 1; position: relative; }
-            .panel { display: none !important; background: var(--bg-panel); border: 1px solid var(--border-light); border-radius: 18px; flex-direction: column; overflow: hidden; }
-            .panel.active-tab { display: flex !important; }
-            .panel-header { padding: 15px 20px; font-size: 13px; font-weight: 800; color: var(--accent-main); border-bottom: 1px solid rgba(255,255,255,0.05); background: rgba(0,0,0,0.3);}
-            .panel-body { padding: 16px; }
-            #chat-scroll-container { height: 55vh; overflow-y: auto; } 
+            .main-grid { display: flex; position: relative; flex: 1; width: 100%; margin: 0; min-height: 0; }
+            
+            /* Mobilde Paneller Display None ile Kusursuz Çalışır */
+            .workspace-panel { 
+                display: none !important; 
+                width: 100%; height: 100%; margin: 0; border-radius: 16px;
+                background: rgba(16, 24, 20, 0.95); backdrop-filter: none; 
+            }
+            .workspace-panel.active-tab { display: flex !important; flex-direction: column; }
 
-            .mobile-nav-bar { display: flex; position: fixed; bottom: 0; left: 0; width: 100%; background: #080c0a; border-top: 1px solid rgba(255,255,255,0.1); padding: 10px 10px 20px 10px; justify-content: space-around; z-index: 1000; box-shadow: 0 -5px 20px rgba(0,0,0,0.5); }
-            .nav-tab-btn { background: transparent; border: none; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 11px; font-weight: 700; padding: 8px 20px; border-radius: 12px; cursor: pointer; transition: 0.3s; }
-            .nav-tab-icon { font-size: 18px; margin-bottom: 2px;}
-            .nav-tab-btn.active { color: var(--accent-main); background: rgba(16, 185, 129, 0.1); transform: translateY(-3px);}
+            .panel-header { padding: 14px 18px; }
+            .panel-title { font-size: 14px; }
+            .panel-body { padding: 15px; overflow-y: auto; flex: 1; -webkit-overflow-scrolling: touch;} 
+
+            /* Harika Yüzen Alt Menü */
+            .mobile-nav {
+                display: flex; position: fixed; bottom: 15px; left: 50%; transform: translateX(-50%);
+                background: rgba(10, 15, 12, 0.95); border: 1px solid rgba(255,255,255,0.1); 
+                padding: 6px; border-radius: 50px; gap: 5px; width: 92%; max-width: 400px;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.8); z-index: 1000; 
+            }
+            .m-nav-btn {
+                flex: 1; background: transparent; border: none; color: var(--text-secondary);
+                padding: 12px 0; font-size: 13px; font-family: 'Plus Jakarta Sans'; font-weight: 700;
+                border-radius: 40px; transition: 0.2s; cursor: pointer;
+            }
+            .m-nav-btn.active { background: rgba(16, 185, 129, 0.15); color: var(--accent-primary); }
+            
+            .layers-grid { gap: 6px; margin-bottom: 15px;}
+            .layer { font-size: 12px; height: 42px; aspect-ratio: auto; }
+            #message, #cipher { min-height: 80px; padding: 12px;}
         }
 
         /* =========================================
-           6. İÇERİK & BİLEŞENLER
+           8. MODALLAR (KILAVUZ, İLETİŞİM, YÖNETİCİ)
            ========================================= */
-        .nav-info { display: flex; align-items: center; justify-content: center; gap: 12px; font-size: 14px; font-weight: 600; color: var(--text-main); flex-wrap: wrap; }
-        .live-badge { display: flex; align-items: center; gap: 6px; background: rgba(16, 185, 129, 0.1); padding: 4px 10px; border-radius: 20px; border: 1px solid var(--border-light); font-size: 11px; color: var(--accent-main); }
-        .live-dot { width: 8px; height: 8px; background: var(--accent-main); border-radius: 50%; box-shadow: 0 0 10px var(--accent-main); animation: pulse 2s infinite; }
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
-
-        .header-actions { display: flex; gap: 8px; align-items: center; justify-content: center; margin-top: 5px; flex-wrap: wrap;}
-        .icon-btn { background: rgba(255,255,255,0.05); border: 1px solid var(--border-light); color: var(--text-main); padding: 8px 12px; font-size: 12px; border-radius: 8px; font-weight: 600; transition: 0.3s;}
-        .icon-btn:hover { background: rgba(255,255,255,0.1); transform: translateY(-2px); box-shadow: 0 5px 15px rgba(255,255,255,0.05);}
-
-        .layers-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: 20px; }
-        .layer-btn { height: 44px; display: flex; align-items: center; justify-content: center; background: var(--bg-input); border: 1px solid var(--border-light); border-radius: 10px; font-size: 14px; font-weight: 700; color: var(--text-muted); cursor: pointer; user-select: none; transition: 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); }
-        .layer-btn:hover { background: rgba(255,255,255,0.05); border-color: var(--accent-main); }
-        .layer-btn.active { background: var(--accent-main); color: #000; border-color: var(--accent-main); box-shadow: 0 0 12px var(--accent-glow); transform: translateY(-3px); }
-
-        .tools-row { display: flex; gap: 10px; margin: 15px 0; }
-        .tool-btn { flex: 1; background: var(--bg-input); border: 1px dashed var(--border-light); padding: 12px; font-size: 12px; font-weight: 600; text-align: center; border-radius: var(--radius-md); cursor: pointer; color: var(--text-muted); transition: 0.3s;}
-        .tool-btn:hover { border-color: var(--accent-main); color: var(--text-main); }
-        .tool-btn.active-state { background: rgba(16, 185, 129, 0.1); border-style: solid; border-color: var(--accent-main); color: var(--accent-main); }
-
-        #chat-log { display: flex; flex-direction: column; gap: 16px; padding-bottom: 15px;}
-        .msg-box { background: var(--bg-input); border: 1px solid var(--border-light); border-radius: 18px; padding: 16px; display: flex; flex-direction: column; gap: 10px; transition: transform 0.2s;}
-        .msg-box:hover { border-color: rgba(16, 185, 129, 0.3); }
-        .msg-me { border-right: 4px solid var(--accent-main); border-bottom-right-radius: 4px; }
-        .msg-other { border-left: 4px solid #3b82f6; border-bottom-left-radius: 4px; }
-        .msg-header { display: flex; justify-content: space-between; font-size: 12px; color: var(--text-muted); font-weight: 500; }
-        .msg-me .msg-header strong { color: var(--accent-main); font-size: 13px;}
-        .msg-other .msg-header strong { color: #3b82f6; font-size: 13px;}
-        
-        .raw-data { background: #050706; padding: 12px; border-radius: 8px; font-size: 11px; word-break: break-all; border: 1px solid rgba(255,255,255,0.05); color: #64748b; max-height: 80px; overflow-y: auto;}
-        
-        .action-row { display: flex; gap: 8px; }
-        .action-btn { flex: 1; padding: 10px; font-size: 11px; background: rgba(255,255,255,0.03); border: none; border-radius: 8px; color: var(--text-muted); font-weight: 600; cursor: pointer; transition: 0.2s;}
-        .action-btn:hover { background: rgba(255,255,255,0.08); color: #fff; transform: translateY(-2px);}
-        .action-btn.solve { background: rgba(16, 185, 129, 0.15); color: var(--accent-main); }
-        .action-btn.solve:hover { background: var(--accent-main); color: #000; }
-        .decrypted-view { margin-top: 5px; padding: 12px; background: rgba(16, 185, 129, 0.05); border-radius: 8px; font-size: 14px; display: none; line-height: 1.5; border: 1px solid rgba(16,185,129,0.2); word-break: break-word;}
-
-        #result-box { margin-top: 15px; padding: 16px; background: var(--bg-input); border-left: 4px solid var(--accent-main); border-radius: var(--radius-md); min-height: 80px; font-size: 14px; word-break: break-word; color: var(--accent-main); transition: 0.3s;}
-
-        /* =========================================
-           7. MODALLAR (KILAVUZ, İLETİŞİM, ADMIN)
-           ========================================= */
-        .modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 2000; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: 0.3s; padding: 20px; backdrop-filter: blur(5px);}
+        .modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); z-index: 2000; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: 0.3s; padding: 15px;}
         .modal-bg.active { opacity: 1; pointer-events: auto; }
-        .modal-card { background: var(--bg-panel); border: 1px solid var(--border-light); border-radius: var(--radius-lg); width: 100%; max-width: 450px; padding: 30px; box-shadow: 0 20px 50px rgba(0,0,0,0.8); transform: translateY(20px) scale(0.95); transition: 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); }
+        .modal-card { background: var(--bg-panel); border: 1px solid var(--border-light); border-radius: var(--radius-lg); width: 100%; max-width: 450px; padding: 30px; transform: translateY(20px) scale(0.95); transition: 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); box-shadow: 0 20px 50px rgba(0,0,0,0.8);}
         .modal-bg.active .modal-card { transform: translateY(0) scale(1); }
-        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--border-light); padding-bottom: 15px;}
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--border-light); padding-bottom: 15px; }
         .modal-title { font-size: 18px; font-weight: 800; color: #fff; }
-        .close-modal { background: none; border: none; color: var(--text-muted); font-size: 24px; padding: 0; cursor: pointer; transition: 0.2s;}
+        .close-modal { background: none; border: none; color: var(--text-secondary); font-size: 24px; cursor: pointer; padding: 0; transition: 0.2s;}
         .close-modal:hover { color: var(--danger); transform: rotate(90deg);}
-        
-        /* ADMIN PANEL ÖZEL TABLOSU */
-        .admin-stat-box { background: #050706; border: 1px solid rgba(245, 158, 11, 0.3); padding: 15px; border-radius: 12px; text-align: center; margin-bottom: 15px; transition: 0.3s;}
-        .admin-stat-box:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(245, 158, 11, 0.1); }
+
+        .admin-stat-box { background: #050706; border: 1px solid rgba(245, 158, 11, 0.3); padding: 15px; border-radius: 12px; text-align: center; margin-bottom: 15px; }
         .admin-stat-num { font-size: 32px; font-weight: 800; color: var(--admin-color); font-family: 'JetBrains Mono', monospace;}
         .admin-stat-title { font-size: 11px; color: var(--text-muted); font-weight: 600; letter-spacing: 1px; text-transform: uppercase; }
-
     </style>
 </head>
 <body>
 
-    <div id="login-screen">
-        <div class="login-card">
-            <div class="login-header">
-                <div class="brand-font login-title">VOLKTRONIC<span>.</span></div>
-                <div class="login-subtitle">PREMIUM SECURE TERMINAL</div>
-            </div>
-
-            <div class="input-group">
-                <label class="input-label">Sistem Kimliği</label>
-                <input id="username" type="text" placeholder="Kullanıcı Adı" autocomplete="off">
-            </div>
-            
-            <div style="display: flex; gap:12px; margin-bottom: 20px;">
-                <div style="flex:2;">
-                    <label class="input-label">Bağlantı Noktası</label>
-                    <input id="room" type="text" placeholder="Oda Kodu" autocomplete="off">
-                </div>
-                <div style="flex:1;">
-                    <label class="input-label">Güvenlik PIN</label>
-                    <input id="roomPin" type="password" placeholder="****" maxlength="4" style="text-align: center;">
-                </div>
-            </div>
-
-            <div class="input-group" style="margin-bottom: 35px;">
-                <label class="input-label">Master Şifreleme Anahtarı</label>
-                <input id="secretKey" type="password" placeholder="Yetki Parolası" autocomplete="off">
-            </div>
-
-            <button class="btn-primary" style="width: 100%;" onclick="app.login()">GÜVENLİ AĞA BAĞLAN</button>
+    <div id="login">
+        <div class="brand-header">
+            <div class="brand-logo">Volktronic<span>.</span></div>
+            <div class="brand-sub">Premium Secure Workspace</div>
         </div>
+
+        <div class="input-group">
+            <label class="input-label">Kullanıcı Kimliği</label>
+            <input id="username" type="text" placeholder="Örn: VXLKVN" autocomplete="off">
+        </div>
+        
+        <div style="display: flex; gap:16px; margin-bottom: 24px;">
+            <div style="flex:2;">
+                <label class="input-label">Bağlantı Noktası</label>
+                <input id="room" type="text" placeholder="Proje Kodu" autocomplete="off">
+            </div>
+            <div style="flex:1;">
+                <label class="input-label">Oda PIN</label>
+                <input id="roomPin" type="password" placeholder="****" maxlength="4" autocomplete="off" style="text-align: center; letter-spacing: 2px;">
+            </div>
+        </div>
+
+        <div class="input-group" style="margin-bottom: 35px;">
+            <label class="input-label">Master Şifreleme Anahtarı</label>
+            <input id="secretKey" type="password" placeholder="Anahtar Parolası" autocomplete="off">
+        </div>
+
+        <button class="btn-primary" style="width: 100%;" onclick="app.login()"><span>Güvenli Ağa Bağlan</span></button>
     </div>
 
 
-    <div id="app-screen" class="hidden">
-        
+    <div id="chat" class="app-container hidden">
         <header class="top-navbar">
-            <div class="brand-font" style="font-size: 22px; font-weight: 800; letter-spacing: -0.5px;">VOLKTRONIC<span style="color:var(--accent-main)">.</span></div>
-            
-            <div class="nav-info">
-                <span><span style="color:var(--text-muted)">Oda:</span> <span id="roomNameDisplay">-</span></span>
-                <span style="color:var(--border-light)">|</span>
-                <span id="userNameDisplay">-</span>
-                
-                <div class="live-badge">
-                    <div class="live-dot"></div> Ağ: <span id="globalCountDisplay" style="margin: 0 3px;">0</span> Kişi
-                </div>
+            <div class="nav-brand">
+                Volktronic <span class="nav-badge">Premium Encrypted</span>
             </div>
-            
-            <div class="header-actions">
-                <button class="icon-btn" onclick="app.openModal('modal-guide')">📘 Kılavuz</button>
-                <button class="icon-btn" onclick="app.openModal('modal-contact')">📨 İletişim</button>
-                <button class="btn-admin hidden" id="btn-admin" onclick="app.openAdminPanel()">👑 YÖNETİCİ ARAYÜZÜ</button>
-                <button class="btn-danger" onclick="app.triggerPanic()">İMHÂ</button>
+            <div style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap; justify-content: center;">
+                <div style="font-size: 14px; color: var(--text-secondary); display: flex; gap: 15px; align-items: center;">
+                    <div>Oda: <span id="roomNameDisplay" style="color:var(--accent-primary); font-weight:700;">-</span></div>
+                    <div>Ajan: <span id="userNameDisplay" style="color:var(--accent-primary); font-weight:700;">-</span></div>
+                    
+                    <div class="status-indicator">
+                        <div class="status-dot"></div>
+                        Ağ: <span id="globalCountDisplay" style="margin:0 4px;">0</span> Kişi
+                    </div>
+                </div>
+                <div class="nav-links">
+                    <button class="nav-item" onclick="app.openModal('modal-guide')">📘 Kılavuz</button>
+                    <button class="nav-item" onclick="app.openModal('modal-contact')">📨 İletişim</button>
+                    <button class="btn-admin hidden" id="btn-admin" onclick="app.openAdminPanel()">👑 YÖNETİCİ ARAYÜZÜ</button>
+                    <button class="btn-danger" onclick="app.triggerPanic()">🚨 İmha Et</button>
+                </div>
             </div>
         </header>
 
         <div class="main-grid">
             
-            <div class="panel active-tab" id="panel-chat">
-                <div class="panel-header">AĞ AKIŞI // CANLI İLETİŞİM <span style="float:right; font-size:11px; opacity:0.6;">Oda Aktif: <span id="roomCountDisplay">0</span></span></div>
-                <div class="panel-body" id="chat-scroll-container">
-                    <div id="chat-log"></div>
-                    <div id="typing-indicator" style="font-size: 11px; font-weight: 600; color: var(--accent-main); margin-top:10px; height: 16px;"></div>
+            <div class="workspace-panel active-tab" id="encoder-panel">
+                <div class="panel-header">
+                    <span class="panel-title">Veri Şifreleme Terminali</span>
                 </div>
-            </div>
-
-            <div class="panel" id="panel-encoder">
-                <div class="panel-header">VERİ ŞİFRELEME TERMİNALİ</div>
                 <div class="panel-body">
-                    <label class="input-label">GÜVENLİK KATMANLARI (Sırayla Seçin)</label>
+                    <label class="input-label">Güvenlik Katmanları (Seçiniz)</label>
                     <div class="layers-grid" id="encLayers"></div>
                     
-                    <textarea id="message" placeholder="Ağa iletilecek gizli mesajı buraya yazın..." style="min-height: 100px;"></textarea>
+                    <textarea id="message" placeholder="Güvenli ağa iletilecek mesajı buraya girin..."></textarea>
                     
-                    <div class="tools-row">
-                        <label for="imageInput" class="tool-btn" id="imgLabel">🖼️ Görsel Ekle</label>
-                        <input type="file" id="imageInput" accept="image/*" class="hidden">
-                    </div>
-
-                    <div class="input-group" style="margin-top: 15px;">
-                        <label class="input-label">OTOMATİK İMHA SÜRESİ</label>
+                    <div style="margin-top: 20px; flex-shrink: 0;">
                         <select id="burnTimer">
-                            <option value="0">Kalıcı Mesaj (Sistemde Kalır)</option>
+                            <option value="0">🛡️ Kalıcı Mesaj (İmha Yok)</option>
                             <option value="15">🔥 15 Saniye Sonra İmha Et</option>
-                            <option value="60">🔥 60 Saniye Sonra İmha Et</option>
+                            <option value="60">⏲️ 60 Saniye Sonra İmha Et</option>
                         </select>
                     </div>
 
-                    <button class="btn-primary" style="width: 100%; margin-top: 10px;" onclick="app.sendData()">ŞİFRELE VE AĞA GÖNDER 🚀</button>
+                    <div class="tools-row">
+                        <label for="imageInput" class="tool-btn" id="imgLabel">🖼️ Dosya Seç</label>
+                        <input type="file" id="imageInput" accept="image/*" class="hidden">
+                    </div>
+
+                    <button class="btn-primary" style="margin-top: 20px; width: 100%; flex-shrink:0;" onclick="app.encryptAndSend()"><span>Şifrele ve İlet 🚀</span></button>
                 </div>
             </div>
 
-            <div class="panel" id="panel-decoder">
-                <div class="panel-header">MANUEL VERİ ÇÖZÜCÜ</div>
+            <div class="workspace-panel" id="chat-panel">
+                <div class="panel-header">
+                    <span class="panel-title">Ağ Akışı (Canlı)</span>
+                    <span style="font-size: 11px; color: var(--text-secondary);">Odada: <strong id="roomCountDisplay" style="color:var(--accent-primary);">0</strong> Aktif</span>
+                </div>
+                <div class="panel-body" id="chat-scroll-container">
+                    <div id="log"></div>
+                    <div id="typing-indicator"></div>
+                </div>
+            </div>
+
+            <div class="workspace-panel" id="decoder-panel">
+                <div class="panel-header">
+                    <span class="panel-title">Manuel Çözücü Terminali</span>
+                </div>
                 <div class="panel-body">
-                    <label class="input-label">GÖNDERİCİNİN KATMANLARI</label>
+                    <label class="input-label">Göndericinin Katmanları</label>
                     <div class="layers-grid" id="decLayers"></div>
                     
-                    <textarea id="cipher" placeholder="Çözülecek ham (RAW) veriyi buraya yapıştırın..." style="min-height: 100px;"></textarea>
+                    <textarea id="cipher" placeholder="Çözülecek ham (RAW) şifreli veriyi buraya yapıştırın..."></textarea>
                     
-                    <button class="btn-secondary" style="width: 100%; margin-top: 15px;" onclick="app.decryptManual()">🔓 ŞİFREYİ ÇÖZ</button>
+                    <button class="btn-secondary" style="width: 100%; margin-top: 20px;" onclick="app.decryptExternal()"><span>🔓 Veriyi Çöz</span></button>
 
-                    <div id="result-box">
-                        <span style="color: var(--text-muted); font-style: italic;">Çözüm sonucu bekleniyor...</span>
+                    <div id="result">
+                        <span style="color: var(--text-secondary); font-style: italic;">Çözüm sonucu burada görüntülenecek...</span>
                     </div>
                 </div>
             </div>
 
         </div>
 
-        <div class="mobile-nav-bar">
-            <button class="nav-tab-btn" onclick="app.switchTab('panel-encoder', this)">
-                <span class="nav-tab-icon">🔒</span> Şifrele
-            </button>
-            <button class="nav-tab-btn active" onclick="app.switchTab('panel-chat', this)">
-                <span class="nav-tab-icon">💬</span> Akış
-            </button>
-            <button class="nav-tab-btn" onclick="app.switchTab('panel-decoder', this)">
-                <span class="nav-tab-icon">🔓</span> Çözücü
-            </button>
+        <div class="mobile-nav">
+            <button class="m-nav-btn active" onclick="app.switchMobileTab('encoder-panel', this)">🔒 Şifrele</button>
+            <button class="m-nav-btn" onclick="app.switchMobileTab('chat-panel', this)">💬 Ağ Akışı</button>
+            <button class="m-nav-btn" onclick="app.switchMobileTab('decoder-panel', this)">🔓 Çözücü</button>
         </div>
+
     </div>
 
     <div class="modal-bg" id="modal-guide">
@@ -349,10 +422,10 @@
                 <div class="modal-title brand-font">Sistem Protokolleri</div>
                 <button class="close-modal" onclick="app.closeModal('modal-guide')">✖</button>
             </div>
-            <div style="font-size: 14px; color: var(--text-muted); line-height: 1.6;">
-                <p><strong style="color:var(--text-main)">1. Uçtan Uca Şifreleme:</strong> Tüm mesajlarınız AES-256 algoritmasıyla cihazınızda şifrelenir. Veritabanına sadece çözülemez RAW veri gider.</p><br>
-                <p><strong style="color:var(--text-main)">2. Güvenlik Katmanları:</strong> Şifreleme yaparken katman seçerseniz (örn: 04 ve 07), karşı tarafın da çözmek için tam olarak "04 ve 07" katmanlarını işaretlemesi gerekir.</p><br>
-                <p><strong style="color:var(--text-main)">3. Medya Gizliliği:</strong> Resim dosyalarınız sunucuya yüklenmez, doğrudan metne dönüştürülüp (Base64) şifrelenir.</p>
+            <div style="font-size: 14px; color: var(--text-secondary); line-height: 1.6;">
+                <p><strong style="color:var(--text-primary)">1. Uçtan Uca Şifreleme:</strong> Tüm mesajlarınız AES-256 algoritmasıyla cihazınızda şifrelenir.</p><br>
+                <p><strong style="color:var(--text-primary)">2. Güvenlik Katmanları:</strong> Şifreleme yaparken katman seçerseniz (örn: 04 ve 07), karşı tarafın da çözmek için "04 ve 07" katmanlarını işaretlemesi gerekir.</p><br>
+                <p><strong style="color:var(--text-primary)">3. Gelişmiş PIN:</strong> Yanlış PIN girenler odanızın loglarına erişemez.</p>
             </div>
         </div>
     </div>
@@ -373,8 +446,8 @@
                     <input type="text" name="Konu" placeholder="İletişim Konusu" required>
                 </div>
                 <div class="input-group">
-                    <label class="input-label">Talebiniz / Mesajınız</label>
-                    <textarea name="Mesaj" placeholder="Bize detaylıca yazın..." style="min-height: 100px;" required></textarea>
+                    <label class="input-label">Mesajınız</label>
+                    <textarea name="Mesaj" placeholder="Sistemsel bir sorun mu yaşıyorsunuz? Detaylıca yazın..." style="min-height: 100px;" required></textarea>
                 </div>
                 <input type="text" name="_gotcha" style="display:none" />
                 <button type="submit" class="btn-primary" style="width: 100%;">Talebi İlet</button>
@@ -390,20 +463,24 @@
             </div>
             <div>
                 <div class="admin-stat-box">
-                    <div class="admin-stat-title">Bugün Siteye Giren Toplam Kişi (Tekil)</div>
+                    <div class="admin-stat-title">Bugün Siteye Giren Toplam Kişi</div>
                     <div class="admin-stat-num" id="admin-daily-visits">Yükleniyor...</div>
                 </div>
-                <div class="admin-stat-box" style="border-color: var(--accent-main);">
-                    <div class="admin-stat-title" style="color:var(--text-muted)">Şu An Sitede Aktif Olanlar</div>
-                    <div class="admin-stat-num" id="admin-live-users" style="color:var(--accent-main)">-</div>
+                <div class="admin-stat-box" style="border-color: var(--accent-primary);">
+                    <div class="admin-stat-title" style="color:var(--text-secondary)">Şu An Sitede Aktif Olanlar</div>
+                    <div class="admin-stat-num" id="admin-live-users" style="color:var(--accent-primary)">-</div>
                 </div>
-                <p style="font-size: 11px; color: var(--text-muted); text-align: center; margin-top: 20px;">Sistem kontrolleri elinizde. Veriler her gün sıfırlanarak kaydedilir.</p>
+                <p style="font-size: 11px; color: var(--text-secondary); text-align: center; margin-top: 20px;">Sistem kontrolleri elinizde. Raporlar her gün sıfırlanır.</p>
             </div>
         </div>
     </div>
 
 
     <script>
+        /* =======================================================
+           VOLKTRONIC KUSURSUZ JS MOTORU 
+           ======================================================= */
+        
         const app = {
             db: null, user: "", roomPath: "", secret: "",
             ref: null, imgBase64: null,
@@ -420,30 +497,26 @@
 
                 this.buildLayers("encLayers", this.encLayers);
                 this.buildLayers("decLayers", this.decLayers);
-
-                document.addEventListener('keypress', (e) => {
-                    if (e.key === 'Enter' && !document.getElementById('login-screen').classList.contains('hidden')) {
-                        this.login();
-                    }
-                });
             },
 
             openModal: function(id) { document.getElementById(id).classList.add('active'); },
             closeModal: function(id) { document.getElementById(id).classList.remove('active'); },
 
-            switchTab: function(targetId, btnEl) {
+            // Mobil Sekme Yöneticisi (Donmaz)
+            switchMobileTab: function(targetId, btnEl) {
                 if(window.innerWidth > 1024) return; 
+                
                 if (document.activeElement) document.activeElement.blur(); 
 
-                document.querySelectorAll('.panel').forEach(p => p.classList.remove('active-tab'));
+                document.querySelectorAll('.workspace-panel').forEach(p => p.classList.remove('active-tab'));
                 document.getElementById(targetId).classList.add('active-tab');
                 
                 if(btnEl) {
-                    document.querySelectorAll('.nav-tab-btn').forEach(b => b.classList.remove('active'));
+                    document.querySelectorAll('.m-nav-btn').forEach(b => b.classList.remove('active'));
                     btnEl.classList.add('active');
                 }
 
-                if(targetId === 'panel-chat') {
+                if(targetId === 'chat-panel') {
                     setTimeout(() => {
                         const sc = document.getElementById("chat-scroll-container");
                         if(sc) sc.scrollTop = sc.scrollHeight;
@@ -455,8 +528,8 @@
                 const c = document.getElementById(containerId);
                 for (let i = 1; i <= 10; i++) {
                     const b = document.createElement("div");
-                    b.className = "layer-btn mono"; 
-                    b.innerHTML = i < 10 ? '0'+i : i;
+                    b.className = "layer mono-font"; 
+                    b.innerHTML = `<span>${i < 10 ? '0'+i : i}</span>`;
                     b.onclick = function() { 
                         if (setObj.has(i)) setObj.delete(i); else setObj.add(i); 
                         this.classList.toggle("active"); 
@@ -477,15 +550,15 @@
                 if (!this.user || !r || !this.secret || !p) { alert("Lütfen tüm alanları doldurun."); return; }
                 if (!this.db) { alert("Ağ bağlantısı kurulamadı. Lütfen sayfayı yenileyin."); return; }
 
-                // Kurucu (Admin) Şifre Doğrulaması
+                // VXLKVN ÖZEL GÜVENLİK KONTROLÜ
                 if (this.user.toUpperCase() === "VXLKVN") {
-                    const adminPass = prompt("Sistem Yöneticisi Algılandı.\nLütfen yetki parolanızı girin:");
+                    const adminPass = prompt("Sistem Yöneticisi Doğrulaması:\nLütfen yetki parolanızı girin:");
                     
                     if (adminPass !== "İO0614155") {
                         alert("Güvenlik İhlali: Hatalı yönetici parolası! Sisteme giriş engellendi.");
-                        return; // Şifre yanlışsa girmesine asla izin verme
+                        return; // Şifre yanlışsa ASLA girme
                     }
-                    // Şifre doğruysa altın renkli admin butonunu göster
+                    // Şifre doğruysa altın admin butonunu aktif et
                     document.getElementById("btn-admin").classList.remove("hidden");
                 }
 
@@ -495,14 +568,14 @@
                 document.getElementById("userNameDisplay").textContent = this.user;
                 document.getElementById("roomNameDisplay").textContent = r;
 
-                document.getElementById("login-screen").classList.add("hidden");
-                document.getElementById("app-screen").classList.remove("hidden");
+                document.getElementById("login").classList.add("hidden");
+                document.getElementById("chat").classList.remove("hidden");
 
                 if (!this.listenersOn) { this.startNetwork(); this.listenersOn = true; }
             },
 
             startNetwork: function() {
-                // Günlük Ziyaretçi Analizi
+                // Günlük Ziyaretçi Kaydı (Admin için)
                 this.db.ref("analytics/daily_visits/" + this.todayStr + "/" + this.user).set(Date.now());
 
                 const globalPresRef = this.db.ref("global_presence").push();
@@ -533,18 +606,18 @@
                     const sender = d.user || "Ajan"; const txt = d.text || "";
                     const time = d.time ? new Date(d.time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : "--:--";
 
-                    let displayRaw = txt.length > 80 ? txt.substring(0, 80) + "... [Büyük Veri]" : txt;
+                    let displayRaw = txt.length > 80 ? txt.substring(0, 80) + "... [Veri Kırpıldı]" : txt;
 
                     const div = document.createElement("div"); div.id = "msg-" + key; 
-                    div.className = "msg-box " + (sender === this.user ? "msg-me" : "msg-other");
+                    div.className = "msg-box msg " + (sender === this.user ? "me" : "other");
                     
                     div.innerHTML = `
                         <div class="msg-header"><strong>${sender}</strong><span>${time}</span></div>
-                        <div class="raw-data mono">${displayRaw}</div>
+                        <div class="raw-data mono-font">${displayRaw}</div>
                         <div class="action-row">
                             <button class="action-btn copy-btn">Kopyala</button>
-                            <button class="action-btn pass-btn">Çözücüye At</button>
-                            <button class="action-btn solve inline-decrypt-btn">Burada Çöz</button>
+                            <button class="action-btn pass-btn">Aktar</button>
+                            <button class="action-btn solve inline-decrypt-btn">Şifreyi Çöz</button>
                         </div>
                         <div class="decrypted-view"></div>
                     `;
@@ -554,8 +627,8 @@
                     div.querySelector('.pass-btn').onclick = () => {
                         document.getElementById('cipher').value = txt;
                         if(window.innerWidth <= 1024) {
-                            const btn = document.querySelectorAll('.nav-tab-btn')[2];
-                            this.switchTab('panel-decoder', btn);
+                            const btn = document.querySelectorAll('.m-nav-btn')[2];
+                            this.switchMobileTab('decoder-panel', btn);
                         }
                     };
 
@@ -578,14 +651,14 @@
                         }
                     };
 
-                    document.getElementById("chat-log").appendChild(div);
+                    document.getElementById("log").appendChild(div);
                     const sc = document.getElementById("chat-scroll-container");
                     if(sc) sc.scrollTop = sc.scrollHeight;
                 });
 
                 this.ref.on('child_removed', snap => {
                     const el = document.getElementById("msg-" + snap.key);
-                    if (el) { el.innerHTML = `<div style="text-align:center; font-size:12px; color:var(--text-muted); font-weight:600;">Mesaj güvenli şekilde imha edildi.</div>`; setTimeout(() => el.remove(), 2000); }
+                    if (el) { el.innerHTML = `<div style="text-align:center; font-size:12px; color:var(--text-secondary); font-weight:600;">Mesaj güvenli şekilde imha edildi.</div>`; setTimeout(() => el.remove(), 2000); }
                 });
             },
 
@@ -596,11 +669,10 @@
                 }).catch(err => {
                     document.getElementById("admin-daily-visits").innerText = "Hata";
                 });
-                
                 this.openModal('modal-admin');
             },
 
-            sendData: function() {
+            encryptAndSend: function() {
                 if (!this.db) return;
                 const i = document.getElementById("message"); const t = i.value.trim();
                 const burn = parseInt(document.getElementById("burnTimer").value);
@@ -616,14 +688,14 @@
                 document.getElementById("imgLabel").innerHTML = "🖼️ Görsel Ekle"; document.getElementById("imgLabel").classList.remove("active-state");
                 
                 if(window.innerWidth <= 1024) {
-                    const btn = document.querySelectorAll('.nav-tab-btn')[1];
-                    this.switchTab('panel-chat', btn);
+                    const btn = document.querySelectorAll('.m-nav-btn')[1];
+                    this.switchMobileTab('chat-panel', btn);
                 }
             },
 
-            decryptManual: function() {
+            decryptExternal: function() {
                 const c = document.getElementById("cipher").value.trim();
-                const res = document.getElementById("result-box");
+                const res = document.getElementById("result");
                 if (!c) { res.textContent = "Çözülecek veriyi girmediniz."; return; }
 
                 const p = this.crypto.decrypt(c, this.secret, this.decLayers);
@@ -631,7 +703,7 @@
                     res.innerHTML = "Sistem Reddi: Parola veya Katman uyuşmazlığı."; res.style.color = "var(--danger)";
                 } else {
                     res.innerHTML = p.startsWith("IMG||") ? "[Bu bir görseldir, Ağ Akışından çözünüz]" : p.replace("TXT||", "");
-                    res.style.color = "var(--accent-main)";
+                    res.style.color = "var(--accent-primary)";
                 }
             },
 
@@ -647,7 +719,7 @@
             triggerPanic: function() {
                 if (confirm("DİKKAT! Tüm sistem ve veritabanı imha edilecek. Onaylıyor musunuz?")) {
                     if(this.db) this.db.ref("rooms/" + this.roomPath).remove();
-                    document.body.innerHTML = `<div style="display:flex; height:100vh; align-items:center; justify-content:center; color:var(--danger); font-size:24px; font-weight:bold; background:#000;">SİSTEM İMHA EDİLDİ</div>`;
+                    document.body.innerHTML = `<div style="display:flex; height:100vh; align-items:center; justify-content:center; color:var(--danger); font-size:24px; font-weight:bold;">SİSTEM İMHA EDİLDİ</div>`;
                 }
             },
 
@@ -675,8 +747,17 @@
             }
         };
 
+        // Sistemi Başlat
         app.init();
 
+        // Enter ile Giriş
+        document.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && !document.getElementById('login').classList.contains('hidden')) {
+                app.login();
+            }
+        });
+
+        // Görsel Seçici
         document.getElementById("imageInput").addEventListener("change", function(e) {
             const f = e.target.files[0]; const lbl = document.getElementById("imgLabel");
             if (!f) return;
@@ -689,6 +770,7 @@
             r.readAsDataURL(f);
         });
 
+        // Yazıyor Özelliği
         let typeTimer; let lastT = 0;
         document.getElementById("message").addEventListener("input", () => {
             if(!app.roomPath || !app.db) return;
