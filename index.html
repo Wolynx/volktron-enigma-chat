@@ -9,7 +9,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
     
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Plus+Jakarta+Sans:wght@600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Plus+Jakarta+Sans:wght@600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 
     <style>
         /* =========================================
@@ -29,6 +29,7 @@
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
             --danger: #ef4444;
+            --admin-color: #f59e0b; /* VXLKVN Özel Rengi (Altın) */
             
             --radius-sm: 8px;
             --radius-md: 16px;
@@ -37,183 +38,117 @@
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; outline: none; }
 
-        html, body {
-            width: 100%; height: 100%;
-            background-color: var(--bg-body); color: var(--text-main);
-        }
-
+        html, body { width: 100%; height: 100%; background-color: var(--bg-body); color: var(--text-main); }
         .brand-font { font-family: 'Plus Jakarta Sans', sans-serif; }
         .mono { font-family: 'JetBrains Mono', monospace; }
         .hidden { display: none !important; }
 
         /* =========================================
-           2. PROFESYONEL FORM ELEMANLARI
+           2. FORM ELEMANLARI
            ========================================= */
         input, textarea, select {
             width: 100%; padding: 14px 16px; background: var(--bg-input); 
             border: 1px solid var(--border-light); border-radius: var(--radius-md); 
-            color: var(--text-main); font-size: 16px; /* MOBİLDE ZOOM OLMAMASI İÇİN 16px ŞART */
-            transition: border-color 0.2s;
+            color: var(--text-main); font-size: 16px; transition: all 0.3s ease;
         }
-        input:focus, textarea:focus, select:focus { 
-            border-color: var(--accent-main); 
-        }
+        input:focus, textarea:focus, select:focus { border-color: var(--accent-main); box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15); }
 
         button {
             padding: 14px 20px; border: none; border-radius: var(--radius-md);
             font-family: 'Plus Jakarta Sans', sans-serif; font-size: 14px; font-weight: 700;
-            cursor: pointer; transition: all 0.2s ease;
-            display: flex; align-items: center; justify-content: center; gap: 8px;
+            cursor: pointer; transition: all 0.2s ease; display: flex; align-items: center; justify-content: center; gap: 8px;
         }
         button:active { transform: scale(0.97); }
 
-        .btn-primary { 
-            background: linear-gradient(135deg, var(--accent-main), var(--accent-hover)); 
-            color: #000; box-shadow: 0 4px 15px var(--accent-glow); 
-        }
-        .btn-secondary { 
-            background: rgba(255,255,255,0.03); border: 1px solid var(--border-light); 
-            color: var(--accent-main); 
-        }
-        .btn-danger { 
-            background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); 
-            color: var(--danger); font-size: 12px; padding: 10px 16px;
-        }
+        .btn-primary { background: linear-gradient(135deg, var(--accent-main), var(--accent-hover)); color: #000; box-shadow: 0 4px 15px var(--accent-glow); }
+        .btn-secondary { background: rgba(255,255,255,0.03); border: 1px solid var(--border-light); color: var(--accent-main); }
+        .btn-danger { background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); color: var(--danger); font-size: 12px; padding: 10px 16px; }
+        
+        /* VXLKVN Özel Butonu */
+        .btn-admin { background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.4); color: var(--admin-color); font-size: 12px; padding: 10px 16px; box-shadow: 0 0 15px rgba(245, 158, 11, 0.2); }
 
         .input-group { margin-bottom: 20px; text-align: left; }
         .input-label { display: block; font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 8px; letter-spacing: 0.5px; }
 
         /* =========================================
-           3. ZARİF GİRİŞ EKRANI
+           3. GİRİŞ EKRANI
            ========================================= */
         #login-screen {
             position: fixed; inset: 0; display: flex; flex-direction: column; justify-content: center; align-items: center;
-            padding: 20px; z-index: 100;
+            padding: 20px; z-index: 100; background-image: radial-gradient(circle at top center, rgba(16, 185, 129, 0.05) 0%, transparent 70%);
         }
         .login-card {
             background: var(--bg-panel); width: 100%; max-width: 420px;
-            padding: 40px 30px; border-radius: var(--radius-lg);
-            border: 1px solid var(--border-light);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+            padding: 40px 30px; border-radius: var(--radius-lg); border: 1px solid var(--border-light);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5), inset 0 0 20px rgba(16, 185, 129, 0.02);
         }
-        .login-title { font-size: 32px; font-weight: 800; color: #fff; margin-bottom: 5px; text-align: center; }
+        .login-header { text-align: center; margin-bottom: 35px; }
+        .login-title { font-size: 32px; font-weight: 800; color: #fff; margin-bottom: 5px; }
         .login-title span { color: var(--accent-main); }
-        .login-subtitle { font-size: 13px; color: var(--accent-main); letter-spacing: 1px; font-weight: 600; text-align: center; margin-bottom: 35px;}
+        .login-subtitle { font-size: 13px; color: var(--accent-main); letter-spacing: 1px; font-weight: 600;}
 
         /* =========================================
-           4. PC ARAYÜZÜ (3 PANEL YANYANA)
+           4. PC ARAYÜZÜ
            ========================================= */
         @media (min-width: 1025px) {
-            body { 
-                overflow: hidden; 
-                background-image: radial-gradient(circle at top center, rgba(16, 185, 129, 0.05) 0%, transparent 70%);
-            }
+            body { overflow: hidden; background-image: radial-gradient(circle at top center, rgba(16, 185, 129, 0.05) 0%, transparent 70%); }
             #app-screen { width: 100%; max-width: 1500px; height: 100vh; margin: 0 auto; display: flex; flex-direction: column; padding: 25px; gap: 20px; }
             .main-grid { display: grid; grid-template-columns: 350px 1fr 350px; gap: 20px; flex: 1; min-height: 0; }
             
-            .panel { 
-                background: var(--bg-panel); border: 1px solid var(--border-light); 
-                border-radius: var(--radius-lg); display: flex; flex-direction: column; overflow: hidden; 
-                box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            }
+            .panel { background: var(--bg-panel); border: 1px solid var(--border-light); border-radius: var(--radius-lg); display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
             .panel-header { padding: 20px 24px; border-bottom: 1px solid var(--border-light); background: rgba(0,0,0,0.2); font-weight: 800; font-size: 14px; color: var(--accent-main); letter-spacing: 0.5px;}
             .panel-body { padding: 24px; overflow-y: auto; flex: 1; }
             .panel-body::-webkit-scrollbar { width: 6px; } .panel-body::-webkit-scrollbar-thumb { background: var(--border-light); border-radius: 10px; }
             
-            .top-navbar { 
-                background: var(--bg-panel); border: 1px solid var(--border-light); 
-                padding: 16px 24px; border-radius: var(--radius-lg); display: flex; justify-content: space-between; align-items: center; 
-            }
-            
-            .mobile-nav-bar { display: none !important; } /* PC'de alt menü gizli */
+            .top-navbar { background: var(--bg-panel); border: 1px solid var(--border-light); padding: 16px 24px; border-radius: var(--radius-lg); display: flex; justify-content: space-between; align-items: center; }
+            .mobile-nav-bar { display: none !important; } 
         }
 
         /* =========================================
-           5. MOBİL ARAYÜZ (MİNİ BARLI KUSURSUZ YAPI)
+           5. MOBİL ARAYÜZ
            ========================================= */
         @media (max-width: 1024px) {
-            body { 
-                overflow-y: auto; /* Doğal kaydırma (Klavye açılınca kasmayı önler) */
-                min-height: 100dvh;
-            }
+            body { overflow-y: auto; min-height: 100dvh; }
+            #app-screen { display: flex; flex-direction: column; padding: 12px; gap: 15px; padding-bottom: 90px; }
             
-            #app-screen { display: flex; flex-direction: column; padding: 12px; gap: 15px; padding-bottom: 90px; /* Alt bar için boşluk */ }
-            
-            .top-navbar { 
-                background: var(--bg-panel); border: 1px solid var(--border-light); 
-                padding: 15px; border-radius: 16px; display: flex; flex-direction: column; gap: 10px; text-align: center;
-            }
+            .top-navbar { background: var(--bg-panel); border: 1px solid var(--border-light); padding: 15px; border-radius: 16px; display: flex; flex-direction: column; gap: 12px; text-align: center; }
 
             .main-grid { display: block; flex: 1; position: relative; }
-            
-            /* KİLİT NOKTA: AKTİF OLMAYAN PANELLERİ DOM'DAN SİL (DISPLAY NONE) */
-            .panel { 
-                display: none !important; /* Standartta hepsi gizli */
-                background: var(--bg-panel); border: 1px solid var(--border-light); 
-                border-radius: 18px; flex-direction: column; overflow: hidden;
-            }
-            
-            .panel.active-tab { 
-                display: flex !important; /* Sadece seçili olan görünür */
-            }
-            
+            .panel { display: none !important; background: var(--bg-panel); border: 1px solid var(--border-light); border-radius: 18px; flex-direction: column; overflow: hidden; }
+            .panel.active-tab { display: flex !important; }
             .panel-header { padding: 15px 20px; font-size: 13px; font-weight: 800; color: var(--accent-main); border-bottom: 1px solid rgba(255,255,255,0.05); background: rgba(0,0,0,0.3);}
             .panel-body { padding: 16px; }
-            
-            /* Chat ekranı mobilde içten kaysın */
-            #chat-scroll-container { height: 60vh; overflow-y: auto; } 
+            #chat-scroll-container { height: 55vh; overflow-y: auto; } 
 
-            /* İŞTE KULLANICI DOSTU MİNİ ALT BAR */
-            .mobile-nav-bar {
-                display: flex; position: fixed; bottom: 0; left: 0; width: 100%;
-                background: #080c0a; border-top: 1px solid rgba(255,255,255,0.1); 
-                padding: 10px 10px 20px 10px; /* iOS için ekstra alt boşluk */
-                justify-content: space-around; z-index: 1000;
-                box-shadow: 0 -5px 20px rgba(0,0,0,0.5);
-            }
-            .nav-tab-btn {
-                background: transparent; border: none; color: var(--text-muted);
-                display: flex; flex-direction: column; align-items: center; gap: 4px;
-                font-size: 11px; font-weight: 700; padding: 8px 20px; border-radius: 12px; cursor: pointer; transition: 0.2s;
-            }
+            .mobile-nav-bar { display: flex; position: fixed; bottom: 0; left: 0; width: 100%; background: #080c0a; border-top: 1px solid rgba(255,255,255,0.1); padding: 10px 10px 20px 10px; justify-content: space-around; z-index: 1000; box-shadow: 0 -5px 20px rgba(0,0,0,0.5); }
+            .nav-tab-btn { background: transparent; border: none; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 11px; font-weight: 700; padding: 8px 20px; border-radius: 12px; cursor: pointer; transition: 0.2s; }
             .nav-tab-icon { font-size: 18px; margin-bottom: 2px;}
             .nav-tab-btn.active { color: var(--accent-main); background: rgba(16, 185, 129, 0.1); }
         }
 
         /* =========================================
-           6. İÇERİK BİLEŞENLERİ (KATMANLAR, MESAJLAR)
+           6. İÇERİK & BİLEŞENLER
            ========================================= */
-        
-        .nav-info { display: flex; align-items: center; justify-content: center; gap: 12px; font-size: 14px; font-weight: 600; color: var(--text-main); }
+        .nav-info { display: flex; align-items: center; justify-content: center; gap: 12px; font-size: 14px; font-weight: 600; color: var(--text-main); flex-wrap: wrap; }
         .live-badge { display: flex; align-items: center; gap: 6px; background: rgba(16, 185, 129, 0.1); padding: 4px 10px; border-radius: 20px; border: 1px solid var(--border-light); font-size: 11px; color: var(--accent-main); }
         .live-dot { width: 8px; height: 8px; background: var(--accent-main); border-radius: 50%; box-shadow: 0 0 10px var(--accent-main); animation: pulse 2s infinite; }
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
 
-        /* Katman Seçiciler */
+        /* Araç İkonları Header (Kılavuz ve İletişim) */
+        .header-actions { display: flex; gap: 8px; align-items: center; justify-content: center; margin-top: 5px; flex-wrap: wrap;}
+        .icon-btn { background: rgba(255,255,255,0.05); border: 1px solid var(--border-light); color: var(--text-main); padding: 8px 12px; font-size: 12px; border-radius: 8px; font-weight: 600; }
+        .icon-btn:hover { background: rgba(255,255,255,0.1); }
+
         .layers-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: 20px; }
-        .layer-btn { 
-            height: 44px; display: flex; align-items: center; justify-content: center; 
-            background: var(--bg-input); border: 1px solid var(--border-light); 
-            border-radius: 10px; font-size: 14px; font-weight: 700; color: var(--text-muted); 
-            cursor: pointer; user-select: none;
-        }
+        .layer-btn { height: 44px; display: flex; align-items: center; justify-content: center; background: var(--bg-input); border: 1px solid var(--border-light); border-radius: 10px; font-size: 14px; font-weight: 700; color: var(--text-muted); cursor: pointer; user-select: none; }
         .layer-btn.active { background: var(--accent-main); color: #000; border-color: var(--accent-main); box-shadow: 0 0 12px var(--accent-glow); transform: translateY(-2px); }
 
-        /* Araç Butonları */
         .tools-row { display: flex; gap: 10px; margin: 15px 0; }
-        .tool-btn { 
-            flex: 1; background: var(--bg-input); border: 1px dashed var(--border-light); 
-            padding: 12px; font-size: 12px; font-weight: 600; text-align: center; 
-            border-radius: var(--radius-md); cursor: pointer; color: var(--text-muted); 
-        }
+        .tool-btn { flex: 1; background: var(--bg-input); border: 1px dashed var(--border-light); padding: 12px; font-size: 12px; font-weight: 600; text-align: center; border-radius: var(--radius-md); cursor: pointer; color: var(--text-muted); }
         .tool-btn.active-state { background: rgba(16, 185, 129, 0.1); border-style: solid; border-color: var(--accent-main); color: var(--accent-main); }
 
-        /* Mesaj Balonları */
         #chat-log { display: flex; flex-direction: column; gap: 16px; padding-bottom: 15px;}
-        .msg-box { 
-            background: var(--bg-input); border: 1px solid var(--border-light); 
-            border-radius: 18px; padding: 16px; display: flex; flex-direction: column; gap: 10px;
-        }
+        .msg-box { background: var(--bg-input); border: 1px solid var(--border-light); border-radius: 18px; padding: 16px; display: flex; flex-direction: column; gap: 10px; }
         .msg-me { border-right: 4px solid var(--accent-main); border-bottom-right-radius: 4px; }
         .msg-other { border-left: 4px solid #3b82f6; border-bottom-left-radius: 4px; }
         .msg-header { display: flex; justify-content: space-between; font-size: 12px; color: var(--text-muted); font-weight: 500; }
@@ -229,6 +164,23 @@
 
         #result-box { margin-top: 15px; padding: 16px; background: var(--bg-input); border-left: 4px solid var(--accent-main); border-radius: var(--radius-md); min-height: 80px; font-size: 14px; word-break: break-word; color: var(--accent-main); }
 
+        /* =========================================
+           7. MODALLAR (KILAVUZ, İLETİŞİM, ADMIN)
+           ========================================= */
+        .modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 2000; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: 0.3s; padding: 20px; backdrop-filter: blur(5px);}
+        .modal-bg.active { opacity: 1; pointer-events: auto; }
+        .modal-card { background: var(--bg-panel); border: 1px solid var(--border-light); border-radius: var(--radius-lg); width: 100%; max-width: 450px; padding: 30px; box-shadow: 0 20px 50px rgba(0,0,0,0.8); transform: translateY(20px); transition: 0.3s; }
+        .modal-bg.active .modal-card { transform: translateY(0); }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--border-light); padding-bottom: 15px;}
+        .modal-title { font-size: 18px; font-weight: 800; color: #fff; }
+        .close-modal { background: none; border: none; color: var(--text-muted); font-size: 24px; padding: 0; cursor: pointer; }
+        .close-modal:hover { color: var(--danger); }
+        
+        /* ADMIN PANEL ÖZEL TABLOSU */
+        .admin-stat-box { background: #050706; border: 1px solid rgba(245, 158, 11, 0.3); padding: 15px; border-radius: 12px; text-align: center; margin-bottom: 15px; }
+        .admin-stat-num { font-size: 32px; font-weight: 800; color: var(--admin-color); font-family: 'JetBrains Mono', monospace;}
+        .admin-stat-title { font-size: 11px; color: var(--text-muted); font-weight: 600; letter-spacing: 1px; text-transform: uppercase; }
+
     </style>
 </head>
 <body>
@@ -242,7 +194,7 @@
 
             <div class="input-group">
                 <label class="input-label">Ajan Kimliği</label>
-                <input id="username" type="text" placeholder="Kullanıcı Adı" autocomplete="off">
+                <input id="username" type="text" placeholder="Adınız (Örn: VXLKVN)" autocomplete="off">
             </div>
             
             <div style="display: flex; gap:12px; margin-bottom: 20px;">
@@ -277,17 +229,22 @@
                 <span id="userNameDisplay">-</span>
                 
                 <div class="live-badge">
-                    <div class="live-dot"></div> <span id="onlineCountDisplay">0</span> Çevrimiçi
+                    <div class="live-dot"></div> Ağ: <span id="globalCountDisplay" style="margin: 0 3px;">0</span> Kişi
                 </div>
             </div>
             
-            <button class="btn-danger" onclick="app.triggerPanic()">TÜM VERİYİ SİL</button>
+            <div class="header-actions">
+                <button class="icon-btn" onclick="app.openModal('modal-guide')">📘 Kılavuz</button>
+                <button class="icon-btn" onclick="app.openModal('modal-contact')">📨 İletişim</button>
+                <button class="btn-admin hidden" id="btn-admin" onclick="app.openAdminPanel()">👑 YÖNETİCİ ARAYÜZÜ</button>
+                <button class="btn-danger" onclick="app.triggerPanic()">İMHÂ</button>
+            </div>
         </header>
 
         <div class="main-grid">
             
             <div class="panel active-tab" id="panel-chat">
-                <div class="panel-header">AĞ AKIŞI // CANLI İLETİŞİM</div>
+                <div class="panel-header">AĞ AKIŞI // CANLI İLETİŞİM <span style="float:right; font-size:11px; opacity:0.6;">Oda Aktif: <span id="roomCountDisplay">0</span></span></div>
                 <div class="panel-body" id="chat-scroll-container">
                     <div id="chat-log"></div>
                     <div id="typing-indicator" style="font-size: 11px; font-weight: 600; color: var(--accent-main); margin-top:10px; height: 16px;"></div>
@@ -349,20 +306,76 @@
                 <span class="nav-tab-icon">🔓</span> Çözücü
             </button>
         </div>
+    </div>
 
+    <div class="modal-bg" id="modal-guide">
+        <div class="modal-card">
+            <div class="modal-header">
+                <div class="modal-title brand-font">Sistem Protokolleri</div>
+                <button class="close-modal" onclick="app.closeModal('modal-guide')">✖</button>
+            </div>
+            <div style="font-size: 14px; color: var(--text-muted); line-height: 1.6;">
+                <p><strong style="color:var(--text-main)">1. Uçtan Uca Şifreleme:</strong> Tüm mesajlarınız AES-256 algoritmasıyla cihazınızda şifrelenir. Veritabanına sadece çözülemez RAW veri gider.</p><br>
+                <p><strong style="color:var(--text-main)">2. Güvenlik Katmanları:</strong> Şifreleme yaparken katman seçerseniz (örn: 04 ve 07), karşı tarafın da çözmek için tam olarak "04 ve 07" katmanlarını işaretlemesi gerekir.</p><br>
+                <p><strong style="color:var(--text-main)">3. Medya Gizliliği:</strong> Resim ve ses dosyalarınız sunucuya yüklenmez, doğrudan metne dönüştürülüp (Base64) şifrelenir.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-bg" id="modal-contact">
+        <div class="modal-card">
+            <div class="modal-header">
+                <div class="modal-title brand-font">Sistem Desteği</div>
+                <button class="close-modal" onclick="app.closeModal('modal-contact')">✖</button>
+            </div>
+            <form action="https://formspree.io/f/xdaldnap" method="POST">
+                <div class="input-group">
+                    <label class="input-label">E-Posta Adresiniz</label>
+                    <input type="email" name="email" placeholder="iletisim@ornek.com" required>
+                </div>
+                <div class="input-group">
+                    <label class="input-label">Talebiniz / Sorununuz</label>
+                    <textarea name="message" placeholder="Sistemsel bir sorun mu yaşıyorsunuz? Bize detaylıca yazın..." style="min-height: 100px;" required></textarea>
+                </div>
+                <input type="text" name="_gotcha" style="display:none" />
+                <button type="submit" class="btn-primary" style="width: 100%;">Talebi İlet</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal-bg" id="modal-admin">
+        <div class="modal-card" style="border-color: var(--admin-color);">
+            <div class="modal-header">
+                <div class="modal-title brand-font" style="color: var(--admin-color);">👑 Yönetici Terminali</div>
+                <button class="close-modal" onclick="app.closeModal('modal-admin')">✖</button>
+            </div>
+            <div>
+                <div class="admin-stat-box">
+                    <div class="admin-stat-title">Bugün Siteye Giren Toplam Kişi (Tekil)</div>
+                    <div class="admin-stat-num" id="admin-daily-visits">Yükleniyor...</div>
+                </div>
+                <div class="admin-stat-box" style="border-color: var(--accent-main);">
+                    <div class="admin-stat-title" style="color:var(--text-muted)">Şu An Sitede Aktif Olanlar</div>
+                    <div class="admin-stat-num" id="admin-live-users" style="color:var(--accent-main)">-</div>
+                </div>
+                <p style="font-size: 11px; color: var(--text-muted); text-align: center; margin-top: 20px;">Hoş geldin VXLKVN. Sistem kontrolleri senin elinde. LinkedIn raporların için veriler her gün sıfırlanarak kaydedilir.</p>
+            </div>
+        </div>
     </div>
 
 
     <script>
         /* =======================================================
-           VOLKTRONIC KUSURSUZ JS MOTORU 
-           (Firebase kopmalarını ve klavye donmalarını engeller)
+           VOLKTRONIC KUSURSUZ JS MOTORU (TÜM ÖZELLİKLER DAHİL)
            ======================================================= */
         
         const app = {
             db: null, user: "", roomPath: "", secret: "",
             ref: null, imgBase64: null,
             encLayers: new Set(), decLayers: new Set(), listenersOn: false,
+            
+            // Veri Takibi İçin Günün Tarihi
+            todayStr: new Date().toISOString().split('T')[0],
 
             init: function() {
                 try {
@@ -374,7 +387,7 @@
                 this.buildLayers("encLayers", this.encLayers);
                 this.buildLayers("decLayers", this.decLayers);
 
-                // Enter tuşu dinleyicisi
+                // Enter ile giriş
                 document.addEventListener('keypress', (e) => {
                     if (e.key === 'Enter' && !document.getElementById('login-screen').classList.contains('hidden')) {
                         this.login();
@@ -382,24 +395,24 @@
                 });
             },
 
-            // KİLİT NOKTA: MOBİL MENÜ GEÇİŞİ
-            switchTab: function(targetId, btnEl) {
-                if(window.innerWidth > 1024) return; // PC'de devre dışı
-                
-                // Klavye donmasını engellemek için inputlardan çık
-                if (document.activeElement) document.activeElement.blur(); 
+            // Modal İşlemleri
+            openModal: function(id) { document.getElementById(id).classList.add('active'); },
+            closeModal: function(id) { document.getElementById(id).classList.remove('active'); },
 
-                // Tüm panelleri gizle, hedef paneli göster (CSS 'display: none' mantığıyla)
+            // Mobil Sekme Yöneticisi
+            switchTab: function(targetId, btnEl) {
+                if(window.innerWidth > 1024) return; 
+                
+                if (document.activeElement) document.activeElement.blur(); // Klavye kapat
+
                 document.querySelectorAll('.panel').forEach(p => p.classList.remove('active-tab'));
                 document.getElementById(targetId).classList.add('active-tab');
                 
-                // Menü butonlarının rengini ayarla
                 if(btnEl) {
                     document.querySelectorAll('.nav-tab-btn').forEach(b => b.classList.remove('active'));
                     btnEl.classList.add('active');
                 }
 
-                // Sohbete geçilirse aşağı kaydır
                 if(targetId === 'panel-chat') {
                     setTimeout(() => {
                         const sc = document.getElementById("chat-scroll-container");
@@ -412,7 +425,7 @@
                 const c = document.getElementById(containerId);
                 for (let i = 1; i <= 10; i++) {
                     const b = document.createElement("div");
-                    b.className = "layer-btn brand-font"; 
+                    b.className = "layer-btn mono"; 
                     b.innerHTML = i < 10 ? '0'+i : i;
                     b.onclick = function() { 
                         if (setObj.has(i)) setObj.delete(i); else setObj.add(i); 
@@ -422,6 +435,7 @@
                 }
             },
 
+            // Sisteme Giriş ve Admin Kontrolü
             login: function() {
                 this.user = document.getElementById("username").value.trim();
                 const r = document.getElementById("room").value.trim();
@@ -430,6 +444,11 @@
 
                 if (!this.user || !r || !this.secret || !p) { alert("Lütfen tüm alanları doldurun."); return; }
                 if (!this.db) { alert("Ağ bağlantısı kurulamadı. Lütfen yenileyin."); return; }
+
+                // VXLKVN ADMIN KONTROLÜ
+                if (this.user.toUpperCase() === "VXLKVN") {
+                    document.getElementById("btn-admin").classList.remove("hidden");
+                }
 
                 const hash = CryptoJS.MD5(r + "_" + p).toString();
                 this.roomPath = r + "_" + hash.substring(0, 10);
@@ -444,26 +463,41 @@
             },
 
             startNetwork: function() {
-                const presRef = this.db.ref("rooms/" + this.roomPath + "/presence").push();
-                presRef.set(this.user); presRef.onDisconnect().remove();
+                // 1. Ziyaretçi Analizi Kaydı (Günde 1 kez kaydeder)
+                this.db.ref("analytics/daily_visits/" + this.todayStr + "/" + this.user).set(Date.now());
 
-                this.db.ref("rooms/" + this.roomPath + "/presence").on('value', snap => {
-                    document.getElementById('onlineCountDisplay').innerText = Object.keys(snap.val() || {}).length;
+                // 2. Global Ağ (Tüm Sitedeki Kullanıcılar)
+                const globalPresRef = this.db.ref("global_presence").push();
+                globalPresRef.set(this.user); globalPresRef.onDisconnect().remove();
+
+                this.db.ref("global_presence").on('value', snap => {
+                    const count = Object.keys(snap.val() || {}).length;
+                    document.getElementById('globalCountDisplay').innerText = count;
+                    document.getElementById('admin-live-users').innerText = count; // Admin paneline de yaz
                 });
 
+                // 3. Oda İçi Aktif Kullanıcılar
+                const roomPresRef = this.db.ref("rooms/" + this.roomPath + "/presence").push();
+                roomPresRef.set(this.user); roomPresRef.onDisconnect().remove();
+
+                this.db.ref("rooms/" + this.roomPath + "/presence").on('value', snap => {
+                    document.getElementById('roomCountDisplay').innerText = Object.keys(snap.val() || {}).length;
+                });
+
+                // 4. Yazıyor... (Typing) Bildirimi
                 this.db.ref("rooms/" + this.roomPath + "/typing").on('value', snap => {
                     const data = snap.val() || {}; 
                     const writers = Object.keys(data).filter(u => u !== this.user);
                     document.getElementById("typing-indicator").textContent = writers.length > 0 ? `${writers.join(", ")} yazıyor...` : "";
                 });
 
+                // 5. Mesajları Dinleme
                 this.ref = this.db.ref("rooms/" + this.roomPath + "/messages");
                 this.ref.on('child_added', snap => {
                     const d = snap.val() || {}; const key = snap.key;
                     const sender = d.user || "Ajan"; const txt = d.text || "";
                     const time = d.time ? new Date(d.time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : "--:--";
 
-                    // MOBİL KASMASINI ENGELLEYEN KIRPMA (DOM Sıkışmaz)
                     let displayRaw = txt.length > 80 ? txt.substring(0, 80) + "... [Büyük Veri]" : txt;
 
                     const div = document.createElement("div"); div.id = "msg-" + key; 
@@ -484,9 +518,8 @@
                     
                     div.querySelector('.pass-btn').onclick = () => {
                         document.getElementById('cipher').value = txt;
-                        // Mobilde alt menüden çözücüye geçir
                         if(window.innerWidth <= 1024) {
-                            const btn = document.querySelectorAll('.nav-tab-btn')[2]; // 3. buton Çözücü
+                            const btn = document.querySelectorAll('.nav-tab-btn')[2];
                             this.switchTab('panel-decoder', btn);
                         }
                     };
@@ -501,7 +534,7 @@
                         else {
                             let html = dec;
                             if (dec.startsWith("IMG||")) {
-                                html = `<img src="${dec.split("||")[1]}" style="max-width:100%; max-height:250px; border-radius:8px; display:block; margin-bottom:10px;"><p>${dec.split("||")[2]||""}</p>`;
+                                html = `<img src="${dec.split("||")[1]}" style="max-width:100%; border-radius:8px; display:block; margin-bottom:10px;"><p>${dec.split("||")[2]||""}</p>`;
                             } else if (dec.startsWith("TXT||")) { 
                                 html = dec.replace("TXT||", ""); 
                             }
@@ -517,8 +550,21 @@
 
                 this.ref.on('child_removed', snap => {
                     const el = document.getElementById("msg-" + snap.key);
-                    if (el) { el.innerHTML = `<div style="text-align:center; font-size:12px; color:var(--text-muted); font-weight:600;">Mesaj güvenli şekilde imha edildi.</div>`; setTimeout(() => el.remove(), 2000); }
+                    if (el) { el.innerHTML = `<div style="text-align:center; font-size:12px; color:var(--text-muted); font-weight:600;">Mesaj imha edildi.</div>`; setTimeout(() => el.remove(), 2000); }
                 });
+            },
+
+            // ADMIN PANELİNİ AÇMA
+            openAdminPanel: function() {
+                // Sadece veritabanından bugünün giriş yapan kişi sayısını çek
+                this.db.ref("analytics/daily_visits/" + this.todayStr).once('value').then(snap => {
+                    const visitors = snap.val() || {};
+                    document.getElementById("admin-daily-visits").innerText = Object.keys(visitors).length;
+                }).catch(err => {
+                    document.getElementById("admin-daily-visits").innerText = "Hata";
+                });
+                
+                this.openModal('modal-admin');
             },
 
             sendData: function() {
@@ -536,9 +582,8 @@
                 i.value = ""; this.imgBase64 = null;
                 document.getElementById("imgLabel").innerHTML = "🖼️ Görsel Ekle"; document.getElementById("imgLabel").classList.remove("active-state");
                 
-                // Mobilde gönderince direkt Chat'e at
                 if(window.innerWidth <= 1024) {
-                    const btn = document.querySelectorAll('.nav-tab-btn')[1]; // 2. buton Chat
+                    const btn = document.querySelectorAll('.nav-tab-btn')[1];
                     this.switchTab('panel-chat', btn);
                 }
             },
@@ -613,7 +658,7 @@
             r.readAsDataURL(f);
         });
 
-        // Throttle (PC Kilitlenmesini Önleyen) Yazıyor Özelliği
+        // Throttle Yazıyor Özelliği
         let typeTimer; let lastT = 0;
         document.getElementById("message").addEventListener("input", () => {
             if(!app.roomPath || !app.db) return;
