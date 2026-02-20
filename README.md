@@ -21,7 +21,6 @@ Volktronic Crypto Chat, tarayıcı tabanlı **uçtan uca şifreleme (E2EE)** man
 - 🔥 **Kendini İmha Eden Mesajlar (Burn-Timer):** 15 veya 60 saniye sonra Firebase veritabanından ve ekrandan *kalıcı olarak* silinen zaman ayarlı mesajlar.
 - 🎙️ & 📷 **Şifreli Medya Transferi:** Ses kayıtları ve fotoğrafları sunucuya yüklemeden, anında Base64 formatına çevirip AES-256 ile şifreleyerek güvenli iletim.
 - 🚨 **Panik Protokolü:** Tek tıkla odadaki tüm sohbet geçmişini ve verileri saniyeler içinde geri döndürülemez şekilde yok eden acil durum sistemi.
-- 📊 **Yönetici Analiz Terminali:** Sadece sistem yöneticisine özel; günlük tekil ziyaretçi sayısını ve ağdaki anlık canlı kullanıcıları gösteren gizli takip ekranı.
 - 📨 **Entegre Destek Sistemi:** Formspree API kullanılarak sisteme gömülmüş, spam korumalı doğrudan iletişim ve destek modülü.
 
 ---
