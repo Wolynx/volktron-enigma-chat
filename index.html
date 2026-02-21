@@ -466,7 +466,7 @@
                 <div class="modal-title brand-font">Sistem Desteği</div>
                 <button class="close-modal" onclick="app.closeModal('modal-contact')">✖</button>
             </div>
-            <form action="https://formspree.io/f/xdaldnap" method="POST">
+            <form action="https://formspree.io/f/SENIN_FORMSPREE_ID_BURAYA" method="POST">
                 <div class="input-group">
                     <label class="input-label">E-Posta Adresiniz</label>
                     <input type="email" name="Email" placeholder="ornek@mail.com" required>
@@ -521,7 +521,8 @@
 
             init: function() {
                 try {
-                    const cfg = { databaseURL: "https://volktron-chat-default-rtdb.firebaseio.com/" };
+                    // GITHUB GÜVENLİĞİ İÇİN VERİTABANI URL'Sİ GİZLENMİŞTİR
+                    const cfg = { databaseURL: "https://<SENIN-FIREBASE-PROJEN>.firebaseio.com/" };
                     if (!firebase.apps.length) firebase.initializeApp(cfg);
                     this.db = firebase.database();
                 } catch(e) { console.error("Firebase Hatası", e); }
@@ -580,10 +581,11 @@
                 if (!this.db) { alert("Ağ bağlantısı kurulamadı. Lütfen sayfayı yenileyin."); return; }
 
                 // VXLKVN GİZLİ YÖNETİCİ KONTROLÜ (Güvenlik için kelimeler kodlandı)
-                const adminId = String.fromCharCode(86, 88, 76, 75, 86, 78); // VXLKVN
+                // GITHUB İÇİN YÖNETİCİ KİMLİĞİ VE ŞİFRESİ SANSÜRLENMİŞTİR
+                const adminId = "ADMIN_KULLANICI_ADI_BURAYA"; 
                 if (this.user.toUpperCase() === adminId) {
                     const adminPass = prompt("Sistem Yöneticisi Doğrulaması:\nLütfen yetki parolanızı girin:");
-                    const secretKey = String.fromCharCode(304, 79, 48, 54, 49, 52, 49, 53, 53); // İO0614155
+                    const secretKey = "ADMIN_SIFRESI_BURAYA";
                     
                     if (adminPass !== secretKey) {
                         alert("Güvenlik İhlali: Hatalı yönetici parolası! Sisteme giriş engellendi.");
@@ -830,3 +832,4 @@
     </script>
 </body>
 </html>
+
