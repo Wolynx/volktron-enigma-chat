@@ -29,10 +29,10 @@ Volktronic Crypto Chat, tarayıcı tabanlı **uçtan uca şifreleme (E2EE)** man
 
 > *Görseller Volktronic ağının PC ve Mobil görünümlerini temsil etmektedir.*
 
-<img width="1919" height="866" alt="image" src="[https://github.com/user-attachments/assets/ae51892e-120f-41d1-b540-0d6dbfe8707d](https://github.com/user-attachments/assets/ae51892e-120f-41d1-b540-0d6dbfe8707d)" />
-<img width="1919" height="861" alt="image" src="[https://github.com/user-attachments/assets/dd0bcd98-e6f1-49ac-985c-20ffb100d979](https://github.com/user-attachments/assets/dd0bcd98-e6f1-49ac-985c-20ffb100d979)" />
-<img width="945" height="2048" alt="image" src="[https://github.com/user-attachments/assets/b91ca50e-26eb-4572-a2eb-bcfd58c951c6](https://github.com/user-attachments/assets/b91ca50e-26eb-4572-a2eb-bcfd58c951c6)" />
-<img width="945" height="2048" alt="image" src="[https://github.com/user-attachments/assets/0abac16a-6ea4-4853-ac25-87dc13d30940](https://github.com/user-attachments/assets/0abac16a-6ea4-4853-ac25-87dc13d30940)" />
+<img width="1919" height="866" alt="image" src="https://github.com/user-attachments/assets/ae51892e-120f-41d1-b540-0d6dbfe8707d" />
+<img width="1919" height="861" alt="image" src="https://github.com/user-attachments/assets/dd0bcd98-e6f1-49ac-985c-20ffb100d979" />
+<img width="945" height="2048" alt="image" src="https://github.com/user-attachments/assets/b91ca50e-26eb-4572-a2eb-bcfd58c951c6" />
+<img width="945" height="2048" alt="image" src="https://github.com/user-attachments/assets/0abac16a-6ea4-4853-ac25-87dc13d30940" />
 
 ---
 
@@ -64,12 +64,12 @@ Bu proje açık kaynak (Open Source) olarak paylaşılmıştır ancak güvenlik 
 
 ### Seçenek 1: Canlı Ağ Bağlantısı (Önerilen)
 Volktronic ağına doğrudan katılmak ve test etmek için aşağıdaki bağlantıyı kullanabilirsiniz:
-👉 **[Volktronic Premium Ağına Katıl](https://wolynx.github.io/volktron-enigma-chat/)**
+👉 **[Volktronic Premium Ağına Katıl](https://ozdemirvolkan.com/enigma.html)**
 
 ### Seçenek 2: Kendi İstasyonunuzu Kurun
-Projeyi kendi bilgisayarınızda çalıştırmak veya sunucunuza kurmak için aşağıdaki adımları izleyin:
+Projeyi kendi bilgisayarınızda çalıştırmak veya sunucunuza kurmak için aşağıdaki adımları izleyin. Kod içerisindeki gerekli yerleri kendi bilgilerinizle değiştirmeyi unutmayın!
 
 **1. Repository'i Klonlayın**
 ```bash
-git clone https://github.com/Wolynx/volktron-enigma-chat.git
+git clone [https://github.com/Wolynx/volktron-enigma-chat.git](https://github.com/Wolynx/volktron-enigma-chat.git)
 cd volktron-enigma-chat
