@@ -19,9 +19,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
     <style>
-        /* =========================================
-           1. PREMIUM RENK PALETİ VE EFEKTLER
-           ========================================= */
+        /* Color Variables */
         :root {
             --bg-base: #080c0a;       
             --bg-panel: rgba(16, 24, 20, 0.65); 
@@ -46,6 +44,7 @@
             --transition-smooth: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1); 
         }
 
+        /* Base Reset */
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; outline: none;}
 
         html, body {
@@ -59,7 +58,7 @@
             background: radial-gradient(circle at top center, rgba(16, 185, 129, 0.15) 0%, var(--bg-base) 60%);
         }
 
-        /* Arka plan siber ağ efekti (Çok Hafif) */
+        /* Background Network Effect */
         body::before {
             content: ''; position: fixed; top: -20%; left: -20%; width: 140%; height: 140%;
             background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect fill="rgba(16,185,129,0.03)" width="1" height="1" x="50" y="50"/></svg>') repeat;
@@ -67,13 +66,12 @@
         }
         @keyframes bgMove { from { background-position: 0 0; } to { background-position: 100px 100px; } }
 
+        /* Typography */
         h1, h2, h3, h4, h5, .brand-font { font-family: 'Plus Jakarta Sans', sans-serif; }
         .mono-font { font-family: 'JetBrains Mono', monospace; }
         .hidden { display: none !important; }
 
-        /* =========================================
-           2. PREMIUM ANİMASYONLU BUTONLAR
-           ========================================= */
+        /* Buttons */
         button {
             padding: 16px 28px; border: none; border-radius: var(--radius-md);
             font-family: 'Plus Jakarta Sans', sans-serif; font-size: 15px; font-weight: 700;
@@ -100,9 +98,7 @@
         .btn-admin { background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.4); color: var(--admin-color); padding: 10px 16px; font-size: 12px; font-weight: 700; animation: adminPulse 3s infinite; }
         .btn-admin:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(245, 158, 11, 0.4); }
 
-        /* =========================================
-           3. GİRİŞ EKRANI
-           ========================================= */
+        /* Login Layout */
         #login {
             width: 100%; max-width: 440px; z-index: 10;
             background: var(--bg-panel); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
@@ -117,13 +113,14 @@
         .brand-logo span { color: var(--accent-primary); }
         .brand-sub { font-size: 14px; color: var(--text-secondary); font-weight: 500; letter-spacing: 0.5px; }
 
+        /* Forms & Inputs */
         .input-group { margin-bottom: 24px; position: relative; text-align: left;}
         .input-label { display: block; font-size: 13px; color: var(--text-secondary); margin-bottom: 10px; font-weight: 600; letter-spacing: 0.5px; }
         
         input, textarea, select {
             width: 100%; padding: 16px 18px; background: rgba(0,0,0,0.5); 
             border: 2px solid var(--border-light); border-radius: var(--radius-md); 
-            color: var(--text-primary); font-size: 16px !important; /* Mobilde zoom engeli */
+            color: var(--text-primary); font-size: 16px !important; 
             font-family: 'Inter', sans-serif; font-weight: 500;
             transition: var(--transition-smooth); 
         }
@@ -132,9 +129,7 @@
             box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
         }
 
-        /* =========================================
-           4. ANA ÇALIŞMA ALANI & ÜST MENÜ
-           ========================================= */
+        /* Workspace & Navbar */
         .app-container {
             width: 100%; max-width: 1450px; height: 92vh;
             display: flex; flex-direction: column; padding: 20px; gap: 24px; z-index: 5;
@@ -158,6 +153,7 @@
 
         .main-grid { display: grid; grid-template-columns: 360px 1fr 360px; gap: 28px; flex: 1; min-height: 0; position: relative; }
 
+        /* Panels */
         .workspace-panel {
             background: var(--bg-panel); border: 1px solid rgba(255,255,255,0.08);
             border-radius: var(--radius-lg); display: flex; flex-direction: column; overflow: hidden;
@@ -177,9 +173,7 @@
         .status-dot { width: 10px; height: 10px; background: var(--accent-primary); border-radius: 50%; box-shadow: 0 0 10px var(--accent-primary); animation: pulseDot 2s infinite; }
         @keyframes pulseDot { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
 
-        /* =========================================
-           5. KATMAN SEÇİCİLER & KUTULAR
-           ========================================= */
+        /* Layer Selectors */
         .layers-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 24px; flex-shrink:0;}
         .layer {
             aspect-ratio: 1; display: flex; align-items: center; justify-content: center;
@@ -193,6 +187,7 @@
 
         #message, #cipher { min-height: 150px; resize: none; font-family: 'JetBrains Mono', monospace; font-size: 14px; line-height: 1.6; padding: 18px; margin-top: 10px; flex-shrink: 0; }
 
+        /* Toolbar */
         .tools-row { display: flex; gap: 12px; margin-top: 20px; flex-shrink: 0;}
         .tool-btn { flex: 1; background: rgba(255,255,255,0.03); border: 2px solid var(--border-light); color: var(--text-secondary); padding: 14px; font-size: 14px; font-weight: 600; border-radius: var(--radius-md); cursor: pointer; text-align: center; transition: var(--transition-smooth); display: flex; align-items: center; justify-content: center; gap: 8px; }
         .tool-btn:hover { background: rgba(255,255,255,0.08); border-color: var(--accent-primary); color: var(--text-primary); transform: translateY(-2px); }
@@ -200,9 +195,7 @@
         .tool-btn.recording { background: rgba(239, 68, 68, 0.15); border-color: var(--danger); color: var(--danger); animation: pulseRecord 1.5s infinite; }
         @keyframes pulseRecord { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
 
-        /* =========================================
-           6. SOHBET ALANI
-           ========================================= */
+        /* Chat Flow */
         #log { display: flex; flex-direction: column; gap: 18px; padding-bottom: 20px; }
         .msg-box { background: rgba(0,0,0,0.3); border: 1px solid var(--border-light); border-radius: var(--radius-md); padding: 20px; position: relative; flex-shrink: 0; }
         .msg.me { border-left: 4px solid var(--accent-primary); }
@@ -223,9 +216,7 @@
         #result { margin-top: auto; padding: 24px; background: rgba(0,0,0,0.4); border: 2px solid var(--border-light); border-left: 6px solid var(--accent-primary); border-radius: var(--radius-md); color: var(--text-primary); font-size: 15px; word-break: break-word; min-height: 120px; font-family: 'JetBrains Mono', monospace; line-height: 1.6; flex-shrink: 0;}
         #typing-indicator { font-size: 13px; color: var(--text-secondary); font-weight: 600; padding-top: 10px; min-height: 25px;}
 
-        /* =========================================
-           7. MOBİL ARAYÜZ (TAMAMEN STABİL MANTIK)
-           ========================================= */
+        /* Mobile Adjustments */
         .mobile-nav { display: none; }
 
         @media (min-width: 1025px) {
@@ -250,7 +241,6 @@
 
             .main-grid { display: flex; position: relative; flex: 1; width: 100%; margin: 0; min-height: 0; }
             
-            /* Mobilde Paneller Display None ile Kusursuz Çalışır */
             .workspace-panel { 
                 display: none !important; 
                 width: 100%; height: 100%; margin: 0; border-radius: 16px;
@@ -262,7 +252,6 @@
             .panel-title { font-size: 14px; }
             .panel-body { padding: 15px; overflow-y: auto; flex: 1; -webkit-overflow-scrolling: touch;} 
 
-            /* Yüzen Alt Menü */
             .mobile-nav {
                 display: flex; position: fixed; bottom: 15px; left: 50%; transform: translateX(-50%);
                 background: rgba(10, 15, 12, 0.95); border: 1px solid rgba(255,255,255,0.1); 
@@ -281,9 +270,7 @@
             #message, #cipher { min-height: 80px; padding: 12px;}
         }
 
-        /* =========================================
-           8. MODALLAR VE TELİF HAKKI
-           ========================================= */
+        /* Modals & UI Components */
         .modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); z-index: 2000; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: 0.3s; padding: 15px;}
         .modal-bg.active { opacity: 1; pointer-events: auto; }
         .modal-card { background: var(--bg-panel); border: 1px solid var(--border-light); border-radius: var(--radius-lg); width: 100%; max-width: 550px; max-height: 85vh; overflow-y: auto; padding: 30px; transform: translateY(20px) scale(0.95); transition: 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); box-shadow: 0 20px 50px rgba(0,0,0,0.8);}
@@ -299,7 +286,6 @@
         .admin-stat-num { font-size: 32px; font-weight: 800; color: var(--admin-color); font-family: 'JetBrains Mono', monospace;}
         .admin-stat-title { font-size: 11px; color: var(--text-muted); font-weight: 600; letter-spacing: 1px; text-transform: uppercase; }
 
-        /* Geliştirici İmzası */
         .footer-credit {
             position: fixed; bottom: 15px; right: 25px;
             font-size: 11px; color: rgba(255,255,255,0.3); font-weight: 500;
@@ -341,7 +327,6 @@
 
         <button class="btn-primary" style="width: 100%;" onclick="app.login()"><span>Güvenli Ağa Bağlan</span></button>
     </div>
-
 
     <div id="chat" class="app-container hidden">
         <header class="top-navbar">
@@ -505,11 +490,8 @@
         </div>
     </div>
 
-
     <script>
-        /* =======================================================
-           VOLKTRONIC KUSURSUZ JS MOTORU (Tüm Özellikler Aktif)
-           ======================================================= */
+        /* Application Logic */
         
         const app = {
             db: null, user: "", roomPath: "", secret: "",
@@ -521,7 +503,7 @@
 
             init: function() {
                 try {
-                    // GITHUB GÜVENLİĞİ İÇİN VERİTABANI URL'Sİ GİZLENMİŞTİR
+                    // Firebase configuration
                     const cfg = { databaseURL: "https://<SENIN-FIREBASE-PROJEN>.firebaseio.com/" };
                     if (!firebase.apps.length) firebase.initializeApp(cfg);
                     this.db = firebase.database();
@@ -568,9 +550,7 @@
                 }
             },
 
-            // ==========================================
-            // GİRİŞ VE GİZLİ YÖNETİCİ KONTROLÜ (ŞİFRELİ)
-            // ==========================================
+            // Login and Admin Check
             login: function() {
                 this.user = document.getElementById("username").value.trim();
                 const r = document.getElementById("room").value.trim();
@@ -580,8 +560,7 @@
                 if (!this.user || !r || !this.secret || !p) { alert("Lütfen tüm alanları doldurun."); return; }
                 if (!this.db) { alert("Ağ bağlantısı kurulamadı. Lütfen sayfayı yenileyin."); return; }
 
-                // VXLKVN GİZLİ YÖNETİCİ KONTROLÜ (Güvenlik için kelimeler kodlandı)
-                // GITHUB İÇİN YÖNETİCİ KİMLİĞİ VE ŞİFRESİ SANSÜRLENMİŞTİR
+                // Admin validation
                 const adminId = "ADMIN_KULLANICI_ADI_BURAYA"; 
                 if (this.user.toUpperCase() === adminId) {
                     const adminPass = prompt("Sistem Yöneticisi Doğrulaması:\nLütfen yetki parolanızı girin:");
@@ -589,9 +568,8 @@
                     
                     if (adminPass !== secretKey) {
                         alert("Güvenlik İhlali: Hatalı yönetici parolası! Sisteme giriş engellendi.");
-                        return; // Şifre yanlışsa girmesine asla izin verme
+                        return; 
                     }
-                    // Şifre doğruysa altın renkli admin butonunu göster
                     document.getElementById("btn-admin").classList.remove("hidden");
                 }
 
@@ -832,4 +810,3 @@
     </script>
 </body>
 </html>
-
